@@ -109,6 +109,18 @@ function toRGBColor(args) {
 	return [r, g, b]
 }
 
+function parseColor(color, alpha) {
+	if (alpha) {
+		if (color.charAt(0) === '#') {
+			var [r, g, b] = toRGBColor(color)
+		} else {
+			var [r, g, b] = colors[color]
+		}
+		color = `rgba(${r}, ${g}, ${b}, ${alpha})`
+	}
+	return color
+}
+
 function createControl(type) {
 	switch (type) {
 		case "Button":
@@ -136,6 +148,9 @@ function applyStyle(element, data) {
 	let style = element
 	style.width = data.width
 	style.height = data.height
+	if (data.text) {
+		style.color = data.text.color
+	}
 	if (data.background) {
 		style.backgroundColor = data.background.color
 		style.backgroundImage = data.background.image || "initial"
@@ -154,7 +169,7 @@ function applyStyle(element, data) {
 			boxShadow.push(shadow.offsetX, shadow.offsetY)
 			if (typeof shadow.blurRadius !== 'undefined') boxShadow.push(shadow.blurRadius)
 			if (typeof shadow.spreadRadius !== 'undefined') boxShadow.push(shadow.spreadRadius)
-			if (shadow.color) boxShadow.push(shadow.color)
+			if (shadow.color) boxShadow.push(parseColor(shadow.color, shadow.alpha))
 			boxShadows.push(boxShadow.join(" "))
 		}
 		style.boxShadow = boxShadows.join(", ")
@@ -181,8 +196,8 @@ function loadPanel(panelName) {
 		document.body.style.color = panel.text.color
 		
 		let panelElement = document.getElementById("panel")
-		panelElement.style.background = panel.background.color
-		// panelElement.style.backgroundImage = panel.background.image
+		panelElement.style.backgroundColor = panel.background.color
+		panelElement.style.backgroundImage = panel.background.image
 		panelElement.style.gridTemplateColumns = `repeat(${panel.grid.columns}, 1fr)`
 		panelElement.style.gridTemplateRows = `repeat(${panel.grid.rows}, 1fr)`
 		
@@ -213,7 +228,7 @@ function loadPanel(panelName) {
 		}
 		
 		function buttonPressed(element) {
-			if (element.dataset.mode) {
+			if (element.dataset.mode === "toggle") {
 				if (!element.classList.contains("active")) {
 					buttonActivated(element)
 				}
@@ -221,11 +236,12 @@ function loadPanel(panelName) {
 				buttonActivated(element)
 			}
 			element.dataset.pressed = true
+			element.classList.add("pressed")
 			console.log("pressed ", element.id)
 		}
 		
 		function buttonReleased(element) {
-			if (element.dataset.mode) {
+			if (element.dataset.mode === "toggle") {
 				element.classList.toggle("active")
 				if (!element.classList.contains("active"))
 					buttonDeactivated(element)
@@ -233,6 +249,7 @@ function loadPanel(panelName) {
 				buttonDeactivated(element)
 			}
 			delete element.dataset.pressed
+			element.classList.remove("pressed")
 			console.log("released", element.id)
 		}
 		
@@ -253,7 +270,6 @@ function loadPanel(panelName) {
 		document.addEventListener('touchend', function(e) {
 			e.preventDefault()
 			buttonReleased(e.target)
-			activeElement.classList.remove("active")
 		})
 		document.addEventListener('mouseout', function(e) {
 			if (e.target.dataset.pressed) {
@@ -284,7 +300,7 @@ function loadPanel(panelName) {
 			}
 			applyStyle(createStyleRule(`#${element.id}`), control)
 			if (control.active) {
-				let style = createStyleRule(`#${element.id}:active, #${element.id}.active`)
+				let style = createStyleRule(`#${element.id}.pressed, #${element.id}.active`)
 				applyStyle(style, control.active)
 			}
 			element.dataset.mode = control.mode
