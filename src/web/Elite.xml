@@ -1,0 +1,85 @@
+<Panel>
+	<Background color="#333" image="url(metal.jpg)"/>
+	<Text font="Calibri" size="28px" color="#ccc"/>
+	<Grid rows="5" columns="7"/>
+	<Templates>
+		<Default>
+			<Background color="#444"/>
+			<Padding x="10px" y="10px"/>
+			<Border radius="8px" width="2px" color="#ffc000"/>
+		</Default>
+	</Templates>
+	<Controls>
+		<Button height="2">
+			<Position x="1" y="1"/>
+		</Button>
+		<Button text="Cargo scoop" width="2">
+			<Position x="2" y="1"/>
+		</Button>
+		<Button icon="globe">
+			<Position x="3" y="2"/>
+		</Button>
+		<Button text="FSD" square="true">
+			<Position x="3" y="4"/>
+		</Button>
+		<Button text="FSD" circle="true">
+			<Position x="4" y="4"/>
+			<Action type="key" key="J"/>
+		</Button>
+		<Button mode="toggle" circle="true">
+			<Position x="1" y="4"/>
+			<Background color="#600"/>
+			<Shadows>
+				<Shadow offsetX="0" offsetY="-1px" blurRadius="7px" spreadRadius="1px" color="rgba(0, 0, 0, 0.2)"/>
+				<Shadow offsetX="0" offsetY="-1px" blurRadius="9px" color="#441313" inset="true"/>
+				<Shadow offsetX="0" offsetY="0" blurRadius="0" color="rgba(255, 0, 0, 0.5)"/>
+				<Shadow offsetX="0" offsetY="0" blurRadius="0" spreadRadius="6px" color="#222"/>
+			</Shadows>
+			<Active>
+				<Background color="#f11"/>
+				<Shadows>
+					<Shadow offsetX="0" offsetY="-1px" blurRadius="7px" spreadRadius="1px" color="rgba(0, 0, 0, 0.2)"/>
+					<Shadow offsetX="0" offsetY="-1px" blurRadius="9px" color="#441313" inset="true"/>
+					<Shadow offsetX="0" offsetY="0" blurRadius="12px" color="rgba(255, 0, 0, 0.5)"/>
+					<Shadow offsetX="0" offsetY="0" blurRadius="0" spreadRadius="6px" color="#222"/>
+				</Shadows>
+			</Active>
+		</Button>
+		<Button circle="true">
+			<Position x="2" y="4"/>
+			<Background color="#646464" image="-webkit-radial-gradient(top, #616161 0%, #616161 20%, #535353 60%)"/>
+			<Shadows>
+				<Shadow offsetX="0" offsetY="0" blurRadius="4px" color="#1C1C17"/>
+			</Shadows>
+			<Active>
+				<Background color="#ff4f4f"/>
+				<Shadows>
+					<Shadow offsetX="0" offsetY="0" blurRadius="20px" color="#1C1C17"/>
+					<Shadow offsetX="0" offsetY="0" blurRadius="25px" color="#FF4242"/>
+				</Shadows>
+			</Active>
+		</Button>
+		<Text text="Hahn Gateway">
+			<Position x="5" y="2"/>
+		</Text>
+		<Slider>
+			<Position x="6" y="4"/>
+			<Track height="20px">
+				<Background color="#222"/>
+				<Border radius="2px" width="1px" color="#010101"/>
+				<Shadows>
+					<Shadow offsetX="1px" offsetY="1px" blurRadius="1px" color="#000000"/>
+					<Shadow offsetX="0" offsetY="0" blurRadius="1px" color="#0d0d0d"/>
+				</Shadows>
+			</Track>
+			<Thumb width="16px" height="36px">
+				<Background color="#ffc000"/>
+				<Border radius="3px" width="1px" color="black"/>
+				<Shadows>
+					<Shadow offsetX="1px" offsetY="1px" blurRadius="1px" color="#000000"/>
+					<Shadow offsetX="0" offsetY="0" blurRadius="1px" color="#0d0d0d"/>
+				</Shadows>
+			</Thumb>
+		</Slider>
+	</Controls>
+</Panel>
