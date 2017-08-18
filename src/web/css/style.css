@@ -1,0 +1,93 @@
+body {
+	margin: 0;
+	height: 100vh;
+	font-family: sans-serif;
+}
+
+#panel {
+	display: grid;
+	height: 100%;
+}
+
+#panel > div {
+	position: relative;
+	overflow: hidden;
+}
+
+#panel > div > div {
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#panel > div > div > button {
+	width: 100%;
+	height: 100%;
+	outline: none;
+}
+
+#panel > div > div > span {
+	text-align: center;
+}
+
+#panel > div.square, #panel > div.circle {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#panel > div.square > div, #panel > div.circle > div {
+	position: relative;
+	width: 50%;
+	height: auto;
+}
+
+#panel > div.square > div:before, #panel > div.circle > div:before {
+	content: "";
+	display: block;
+	padding-top: 100%;
+}
+
+#panel > div.square > div > button, #panel > div.circle > div > button {
+	position:  absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+}
+
+#panel > div.circle > div > button {
+	border-radius: 50%;
+}
+
+#panel > div:nth-child(6) > div > button {
+	border: none;
+}
+
+#panel > div:nth-child(7) > div > button {
+	border: none;
+}
+
+input[type=range] {
+	-webkit-appearance: none;
+	background: none;
+	width: 100%;
+	height: 100%;
+}
+
+input[type=range]:focus {
+	outline: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+	/*
+	width: 100%;
+	*/
+}
+
+input[type=range]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+}
