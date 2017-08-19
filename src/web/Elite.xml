@@ -13,23 +13,33 @@
 		<Button height="2">
 			<Position x="1" y="1"/>
 		</Button>
-		<Button text="Cargo scoop" width="2">
+		<Button text="Cargo scoop" width="2" mode="toggle">
 			<Position x="2" y="1"/>
+			<Action type="joy" btn="2"/>
+			<Active>
+				<Text color="white"/>
+				<Background color="#404040"/>
+				<Border radius="8px" width="2px" color="white"/>
+			</Active>
 		</Button>
 		<Button icon="globe">
 			<Position x="3" y="2"/>
 			<Active>
-				<Text color="black"/>
+				<Text color="white"/>
+				<Background color="#404040"/>
+				<Border radius="8px" width="2px" color="white"/>
 			</Active>
 		</Button>
 		<Button text="FSD" square="true">
 			<Position x="3" y="4"/>
+			<Action type="joy" btn="1"/>
 		</Button>
 		<Button text="FSD" circle="true">
-			<Position x="4" y="4"/>
+			<Position x="3" y="3"/>
 			<Action type="key" key="J"/>
 		</Button>
 		<Button mode="toggle" circle="true">
+			<Action type="joy" btn="3"/>
 			<Position x="1" y="4"/>
 			<Background color="#600"/>
 			<Shadows>
@@ -50,7 +60,13 @@
 		</Button>
 		<Button circle="true">
 			<Position x="2" y="4"/>
-			<Background color="#646464" image="-webkit-radial-gradient(top, #616161 0%, #616161 20%, #535353 60%)"/>
+			<Background color="#646464" imagew="-webkit-radial-gradient(top, #616161 0%, #616161 20%, #535353 60%)">
+				<Gradient type="radial" position="top">
+					<Point color="#616161" stop="0%"/>
+					<Point color="#616161" stop="20%"/>
+					<Point color="#535353" stop="60%"/>
+				</Gradient>
+			</Background>
 			<Shadows>
 				<Shadow offsetX="0" offsetY="0" blurRadius="4px" color="#1C1C17"/>
 			</Shadows>
@@ -65,8 +81,8 @@
 		<Text text="Hahn Gateway">
 			<Position x="5" y="2"/>
 		</Text>
-		<Slider>
-			<Position x="6" y="4"/>
+		<Slider width="2">
+			<Position x="5" y="4"/>
 			<Track height="20px">
 				<Background color="#222"/>
 				<Border radius="2px" width="1px" color="#010101"/>

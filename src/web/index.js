@@ -3,6 +3,7 @@
 const collections = [
 	"Controls",
 	"Shadows",
+	"Gradient",
 ]
 
   // firstCharLowerCase = function(str) {
@@ -154,6 +155,21 @@ function applyStyle(element, data) {
 	if (data.background) {
 		style.backgroundColor = data.background.color
 		style.backgroundImage = data.background.image || "initial"
+		if (data.background.gradient) {
+			let gradient = []
+			for (point of data.background.gradient) {
+				let colorStop = point.color
+				if (point.stop) colorStop += ' ' +point.stop
+				gradient.push(colorStop)
+			}
+			gradient = gradient.join(", ")
+			if (data.background.gradient.type === "radial") {
+				if (data.background.gradient.position) gradient = data.background.gradient.position + ', ' + gradient
+				style.backgroundImage = `-webkit-radial-gradient(${gradient})`
+			} else {
+				style.backgroundImage = `-webkit-linear-gradient(${gradient})`
+			}
+		}
 	}
 	if (data.border) {
 		style.borderStyle = "solid"
@@ -220,10 +236,12 @@ function loadPanel(panelName) {
 		// style2.bottom = 0
 		
 		function buttonActivated(element) {
+			if (element.dataset.button) RelaySocket.send(element.dataset.button, 1)
 			console.log("activated  ", element.id)
 		}
 		
 		function buttonDeactivated(element) {
+			if (element.dataset.button) RelaySocket.send(element.dataset.button, 0)
 			console.log("deactivated", element.id)
 		}
 		
@@ -253,29 +271,29 @@ function loadPanel(panelName) {
 			console.log("released", element.id)
 		}
 		
-		let activeElement
+		// let activeElement
 		
-		document.addEventListener('mousedown', function(e) {
-			buttonPressed(e.target)
-			activeElement = e.target
-		})
-		document.addEventListener('mouseup', function(e) {
-			buttonReleased(e.target)
-		})
-		document.addEventListener('touchstart', function(e) {
-			// e.preventDefault()
-			buttonPressed(e.target)
-			activeElement = e.target
-		})
-		document.addEventListener('touchend', function(e) {
-			e.preventDefault()
-			buttonReleased(e.target)
-		})
-		document.addEventListener('mouseout', function(e) {
-			if (e.target.dataset.pressed) {
-				buttonReleased(e.target)
+		function mousedown(e) {
+			buttonPressed(e.currentTarget)
+			// activeElement = e.currentTarget
+		}
+		function mouseup(e) {
+			buttonReleased(e.currentTarget)
+		}
+		function mouseout(e) {
+			if (e.currentTarget.dataset.pressed) {
+				buttonReleased(e.currentTarget)
 			}
-		})
+		}
+		function touchstart(e) {
+			// e.preventDefault()
+			buttonPressed(e.currentTarget)
+			// activeElement = e.currentTarget
+		}
+		function touchend(e) {
+			e.preventDefault()
+			buttonReleased(e.currentTarget)
+		}
 		
 		let n = 0
 		
@@ -303,6 +321,9 @@ function loadPanel(panelName) {
 				let style = createStyleRule(`#${element.id}.pressed, #${element.id}.active`)
 				applyStyle(style, control.active)
 			}
+			if (control.action && control.action.type === "joy") {
+				element.dataset.button = parseInt(control.action.btn)
+			}
 			element.dataset.mode = control.mode
 			if (control.tag === "Slider") {
 				element.setAttribute("list", "datalist" + n)
@@ -319,6 +340,12 @@ function loadPanel(panelName) {
 			if (control.background) createStyleRule(`#${element.id}`).background = control.background.color
 			let container = cell.appendChild(document.createElement("div"))
 			container.appendChild(element)
+			
+			element.addEventListener('mousedown', mousedown)
+			element.addEventListener('mouseup', mouseup)
+			element.addEventListener('mouseout', mouseout)
+			element.addEventListener('touchstart', touchstart)
+			element.addEventListener('touchend', touchend)
 			
 			let label = cell.appendChild(document.createElement("span"))
 			// label.textContent = "Num " +control.position.x
