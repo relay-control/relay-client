@@ -139,7 +139,7 @@ function createControl(type) {
 }
 
 function createStyleRule(selector) {
-	let css = document.styleSheets[0]
+	let css = document.styleSheets[2]
 	let index = 0
 	css.insertRule(`${selector} {}`, index)
 	return css.rules[index].style
@@ -207,6 +207,19 @@ function loadPanel(panelName) {
 		let panel = parse(domparser.parseFromString(data, "text/xml")).panel
 		console.log(panel)
 		
+		let link = document.createElement('style')
+		
+		// link.type = 'text/css'
+		// link.rel = 'stylesheet'
+		// link.href = fileName
+		// link.appendChild(document.createTextNode(""))
+		
+		document.head.appendChild(link)
+		
+		// console.dir(link.sheet)
+		// console.dir(document.styleSheets[2])
+		// console.log(link.sheet === document.styleSheets[2])
+		
 		document.body.style.fontFamily = panel.text.font
 		document.body.style.fontSize = panel.text.size
 		document.body.style.color = panel.text.color
@@ -226,14 +239,6 @@ function loadPanel(panelName) {
 		style.fontFamily = panel.text.font
 		style.fontSize = panel.text.size
 		style.color = panel.text.color
-		
-		// let style2 = createStyleRule("span")
-		// style2.fontFamily = "Calibri"
-		// style2.fontSize = "14px"
-		// style2.fontWeight = "bold"
-		// style2.color = "#ccc"
-		// style2.position = "absolute"
-		// style2.bottom = 0
 		
 		function buttonActivated(element) {
 			if (element.dataset.button) RelaySocket.send(element.dataset.button, 1)
@@ -304,6 +309,7 @@ function loadPanel(panelName) {
 			cell.style.gridRowStart = control.position.y
 			cell.style.gridRowEnd = control.position.y + (control.height || 1)
 			panelElement.appendChild(cell)
+			cell.classList.add("cell")
 			if (control.square) cell.classList.add("square")
 			if (control.circle) cell.classList.add("circle")
 			

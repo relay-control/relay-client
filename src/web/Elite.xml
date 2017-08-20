@@ -41,6 +41,7 @@
 		<Button mode="toggle" circle="true">
 			<Action type="joy" btn="3"/>
 			<Position x="1" y="4"/>
+			<Border color="transparent"/>
 			<Background color="#600"/>
 			<Shadows>
 				<Shadow offsetX="0" offsetY="-1px" blurRadius="7px" spreadRadius="1px" color="black" alpha="0.2"/>
@@ -60,6 +61,7 @@
 		</Button>
 		<Button circle="true">
 			<Position x="2" y="4"/>
+			<Border color="transparent"/>
 			<Background color="#646464" imagew="-webkit-radial-gradient(top, #616161 0%, #616161 20%, #535353 60%)">
 				<Gradient type="radial" position="top">
 					<Point color="#616161" stop="0%"/>

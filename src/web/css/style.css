@@ -11,12 +11,12 @@ body {
 	height: 100%;
 }
 
-#panel > div {
+.cell {
 	position: relative;
 	overflow: hidden;
 }
 
-#panel > div > div {
+.cell > div {
 	width: 100%;
 	height: 100%;
 	box-sizing: border-box;
@@ -25,35 +25,39 @@ body {
 	align-items: center;
 }
 
-#panel > div > div > button {
+.cell > div > button {
 	width: 100%;
 	height: 100%;
 	outline: none;
 }
 
-#panel > div > div > span {
+.cell > div > span {
 	text-align: center;
 }
 
-#panel > div.square, #panel > div.circle {
+.cell.square,
+.cell.circle {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
 
-#panel > div.square > div, #panel > div.circle > div {
+.cell.square > div,
+.cell.circle > div {
 	position: relative;
 	width: 50%;
 	height: auto;
 }
 
-#panel > div.square > div:before, #panel > div.circle > div:before {
+.cell.square > div:before,
+.cell.circle > div:before {
 	content: "";
 	display: block;
 	padding-top: 100%;
 }
 
-#panel > div.square > div > button, #panel > div.circle > div > button {
+.cell.square > div > button,
+.cell.circle > div > button {
 	position:  absolute;
 	top: 0;
 	left: 0;
@@ -61,16 +65,8 @@ body {
 	right: 0;
 }
 
-#panel > div.circle > div > button {
+.cell.circle > div > button {
 	border-radius: 50%;
-}
-
-#panel > div:nth-child(6) > div > button {
-	border: none;
-}
-
-#panel > div:nth-child(7) > div > button {
-	border: none;
 }
 
 input[type=range] {

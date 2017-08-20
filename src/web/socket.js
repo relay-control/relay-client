@@ -1,6 +1,6 @@
 const net = require('net')
 
-const client = net.createConnection(8098, () => {
+const client = net.createConnection(8098, "192.168.0.202", () => {
 	//'connect' listener
 	console.log('connected to server!')
 })
