@@ -41,7 +41,7 @@
 		<Button mode="toggle" circle="true">
 			<Action type="joy" btn="3"/>
 			<Position x="1" y="4"/>
-			<Border color="transparent"/>
+			<Border style="none"/>
 			<Background color="#600"/>
 			<Shadows>
 				<Shadow offsetX="0" offsetY="-1px" blurRadius="7px" spreadRadius="1px" color="black" alpha="0.2"/>
@@ -61,8 +61,8 @@
 		</Button>
 		<Button circle="true">
 			<Position x="2" y="4"/>
-			<Border color="transparent"/>
-			<Background color="#646464" imagew="-webkit-radial-gradient(top, #616161 0%, #616161 20%, #535353 60%)">
+			<Border style="none"/>
+			<Background color="#646464">
 				<Gradient type="radial" position="top">
 					<Point color="#616161" stop="0%"/>
 					<Point color="#616161" stop="20%"/>
@@ -85,7 +85,7 @@
 		</Text>
 		<Slider width="2">
 			<Position x="5" y="4"/>
-			<Track height="20px">
+			<Track height="28px">
 				<Background color="#222"/>
 				<Border radius="2px" width="1px" color="#010101"/>
 				<Shadows>
@@ -93,7 +93,7 @@
 					<Shadow offsetX="0" offsetY="0" blurRadius="1px" color="#0d0d0d"/>
 				</Shadows>
 			</Track>
-			<Thumb width="16px" height="36px">
+			<Thumb width="36px" height="36px">
 				<Background color="#ffc000"/>
 				<Border radius="3px" width="1px" color="black"/>
 				<Shadows>

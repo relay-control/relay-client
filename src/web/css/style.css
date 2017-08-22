@@ -6,6 +6,14 @@ body {
 	cursor: default;
 }
 
+dialog {
+	border: none;
+}
+
+dialog::backdrop {
+	background: rgba(255, 255, 255, 0.5);
+}
+
 #panel {
 	display: grid;
 	height: 100%;

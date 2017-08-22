@@ -167,12 +167,15 @@ function applyStyle(element, data) {
 				if (data.background.gradient.position) gradient = data.background.gradient.position + ', ' + gradient
 				style.backgroundImage = `-webkit-radial-gradient(${gradient})`
 			} else {
+				let direction = data.background.gradient.direction
+				if (direction && !direction.match(/\d+deg/)) direction = "to " + direction
+				if (direction) gradient = data.background.gradient.direction + ', ' + gradient
 				style.backgroundImage = `-webkit-linear-gradient(${gradient})`
 			}
 		}
 	}
 	if (data.border) {
-		style.borderStyle = "solid"
+		style.borderStyle = data.border.style || "solid"
 		style.borderWidth = data.border.width
 		style.borderColor = data.border.color
 		style.borderRadius = data.border.radius
@@ -192,6 +195,84 @@ function applyStyle(element, data) {
 	}
 }
 
+let rules = [
+	['shadows', (style, data) => {
+		let boxShadows = []
+		for (shadow of data.shadows) {
+			let boxShadow = []
+			if (shadow.inset) boxShadow.push("inset")
+			boxShadow.push(shadow.offsetX, shadow.offsetY)
+			if (typeof shadow.blurRadius !== 'undefined') boxShadow.push(shadow.blurRadius)
+			if (typeof shadow.spreadRadius !== 'undefined') boxShadow.push(shadow.spreadRadius)
+			if (shadow.color) boxShadow.push(parseColor(shadow.color, shadow.alpha))
+			boxShadows.push(boxShadow.join(" "))
+		}
+		style.boxShadow = boxShadows.join(", ")
+	}],
+]
+
+
+function buttonActivated(element) {
+	if (element.dataset.button) RelaySocket.send(element.dataset.button, 1)
+	console.log("activated  ", element.id)
+}
+
+function buttonDeactivated(element) {
+	if (element.dataset.button) RelaySocket.send(element.dataset.button, 0)
+	console.log("deactivated", element.id)
+}
+
+function buttonPressed(element) {
+	if (element.dataset.mode === "toggle") {
+		if (!element.classList.contains("active")) {
+			buttonActivated(element)
+		}
+	} else {
+		buttonActivated(element)
+	}
+	element.dataset.pressed = true
+	element.classList.add("pressed")
+	console.log("pressed ", element.id)
+}
+
+function buttonReleased(element) {
+	if (element.dataset.mode === "toggle") {
+		element.classList.toggle("active")
+		if (!element.classList.contains("active"))
+			buttonDeactivated(element)
+	} else {
+		buttonDeactivated(element)
+	}
+	delete element.dataset.pressed
+	element.classList.remove("pressed")
+	console.log("released", element.id)
+}
+
+function mousedown(e) {
+	buttonPressed(e.currentTarget)
+}
+function mouseup(e) {
+	buttonReleased(e.currentTarget)
+}
+function mouseout(e) {
+	if (e.currentTarget.dataset.pressed) {
+		buttonReleased(e.currentTarget)
+	}
+}
+function touchstart(e) {
+	// e.preventDefault()
+	buttonPressed(e.currentTarget)
+}
+function touchend(e) {
+	e.preventDefault()
+	buttonReleased(e.currentTarget)
+}
+function input(e) {
+	// console.dir(e)
+	// console.log(e.currentTarget.value)
+	// buttonReleased(e.currentTarget)
+	if (element.dataset.axis) RelaySocket.send(element.dataset.button, 1)
+}
 
 let domparser = new DOMParser()
 
@@ -230,75 +311,15 @@ function loadPanel(panelName) {
 		panelElement.style.gridTemplateColumns = `repeat(${panel.grid.columns}, 1fr)`
 		panelElement.style.gridTemplateRows = `repeat(${panel.grid.rows}, 1fr)`
 		
-		let style0 = createStyleRule("#panel > div > div")
+		let style0 = createStyleRule(".cell > div")
 		style0.padding = `${panel.templates.default.padding.x} ${panel.templates.default.padding.x}`
 		
-		let style = createStyleRule("button")
+		let style = createStyleRule("button.default")
 		applyStyle(style, panel.templates.default)
 		
 		style.fontFamily = panel.text.font
 		style.fontSize = panel.text.size
 		style.color = panel.text.color
-		
-		function buttonActivated(element) {
-			if (element.dataset.button) RelaySocket.send(element.dataset.button, 1)
-			console.log("activated  ", element.id)
-		}
-		
-		function buttonDeactivated(element) {
-			if (element.dataset.button) RelaySocket.send(element.dataset.button, 0)
-			console.log("deactivated", element.id)
-		}
-		
-		function buttonPressed(element) {
-			if (element.dataset.mode === "toggle") {
-				if (!element.classList.contains("active")) {
-					buttonActivated(element)
-				}
-			} else {
-				buttonActivated(element)
-			}
-			element.dataset.pressed = true
-			element.classList.add("pressed")
-			console.log("pressed ", element.id)
-		}
-		
-		function buttonReleased(element) {
-			if (element.dataset.mode === "toggle") {
-				element.classList.toggle("active")
-				if (!element.classList.contains("active"))
-					buttonDeactivated(element)
-			} else {
-				buttonDeactivated(element)
-			}
-			delete element.dataset.pressed
-			element.classList.remove("pressed")
-			console.log("released", element.id)
-		}
-		
-		// let activeElement
-		
-		function mousedown(e) {
-			buttonPressed(e.currentTarget)
-			// activeElement = e.currentTarget
-		}
-		function mouseup(e) {
-			buttonReleased(e.currentTarget)
-		}
-		function mouseout(e) {
-			if (e.currentTarget.dataset.pressed) {
-				buttonReleased(e.currentTarget)
-			}
-		}
-		function touchstart(e) {
-			// e.preventDefault()
-			buttonPressed(e.currentTarget)
-			// activeElement = e.currentTarget
-		}
-		function touchend(e) {
-			e.preventDefault()
-			buttonReleased(e.currentTarget)
-		}
 		
 		let n = 0
 		
@@ -322,6 +343,7 @@ function loadPanel(panelName) {
 			} else {
 				element.textContent = control.text
 			}
+			element.classList.add("default")
 			applyStyle(createStyleRule(`#${element.id}`), control)
 			if (control.active) {
 				let style = createStyleRule(`#${element.id}.pressed, #${element.id}.active`)
@@ -352,6 +374,7 @@ function loadPanel(panelName) {
 			element.addEventListener('mouseout', mouseout)
 			element.addEventListener('touchstart', touchstart)
 			element.addEventListener('touchend', touchend)
+			element.addEventListener('input', input)
 			
 			let label = cell.appendChild(document.createElement("span"))
 			// label.textContent = "Num " +control.position.x

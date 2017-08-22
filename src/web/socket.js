@@ -2,7 +2,7 @@ const net = require('net')
 
 const client = net.createConnection(8098, "192.168.0.202", () => {
 	//'connect' listener
-	console.log('connected to server!')
+	console.log('connected to Relay server!')
 })
 
 client.on('data', (data) => {
@@ -10,8 +10,17 @@ client.on('data', (data) => {
 	client.end()
 })
 
+client.on('error', (err) => {
+	if (err.code === "ECONNREFUSED") console.log("Unable to connect to Relay server")
+	console.dir(err)
+})
+
+client.on('close', () => {
+	console.log('connection to Relay server closed')
+})
+
 client.on('end', () => {
-	console.log('disconnected from server')
+	console.log('disconnected from Relay server')
 })
 
 var RelaySocket = {}
