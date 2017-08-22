@@ -212,68 +212,6 @@ let rules = [
 ]
 
 
-function buttonActivated(element) {
-	if (element.dataset.button) RelaySocket.send(element.dataset.button, 1)
-	console.log("activated  ", element.id)
-}
-
-function buttonDeactivated(element) {
-	if (element.dataset.button) RelaySocket.send(element.dataset.button, 0)
-	console.log("deactivated", element.id)
-}
-
-function buttonPressed(element) {
-	if (element.dataset.mode === "toggle") {
-		if (!element.classList.contains("active")) {
-			buttonActivated(element)
-		}
-	} else {
-		buttonActivated(element)
-	}
-	element.dataset.pressed = true
-	element.classList.add("pressed")
-	console.log("pressed ", element.id)
-}
-
-function buttonReleased(element) {
-	if (element.dataset.mode === "toggle") {
-		element.classList.toggle("active")
-		if (!element.classList.contains("active"))
-			buttonDeactivated(element)
-	} else {
-		buttonDeactivated(element)
-	}
-	delete element.dataset.pressed
-	element.classList.remove("pressed")
-	console.log("released", element.id)
-}
-
-function mousedown(e) {
-	buttonPressed(e.currentTarget)
-}
-function mouseup(e) {
-	buttonReleased(e.currentTarget)
-}
-function mouseout(e) {
-	if (e.currentTarget.dataset.pressed) {
-		buttonReleased(e.currentTarget)
-	}
-}
-function touchstart(e) {
-	// e.preventDefault()
-	buttonPressed(e.currentTarget)
-}
-function touchend(e) {
-	e.preventDefault()
-	buttonReleased(e.currentTarget)
-}
-function input(e) {
-	// console.dir(e)
-	// console.log(e.currentTarget.value)
-	// buttonReleased(e.currentTarget)
-	if (element.dataset.axis) RelaySocket.send(element.dataset.button, 1)
-}
-
 let domparser = new DOMParser()
 
 function loadPanel(panelName) {
@@ -334,8 +272,14 @@ function loadPanel(panelName) {
 			if (control.square) cell.classList.add("square")
 			if (control.circle) cell.classList.add("circle")
 			
-			let element = createControl(control.tag)
-			element.id = "control" + n
+			let controlType = ControlTypes[control.tag]
+			let element = document.createElement(controlType.tag)
+			if (controlType.attributes) {
+				for (let [attribute, value] of Object.entries(controlType.attributes)) {
+					element[attribute] = value
+				}
+			}
+			element.id = "control" + n++
 			if (control.icon) {
 				let icon = document.createElement("i")
 				icon.classList.add("fa", "fa-fw", "fa-2x", "fa-" + control.icon)
@@ -369,16 +313,11 @@ function loadPanel(panelName) {
 			let container = cell.appendChild(document.createElement("div"))
 			container.appendChild(element)
 			
-			element.addEventListener('mousedown', mousedown)
-			element.addEventListener('mouseup', mouseup)
-			element.addEventListener('mouseout', mouseout)
-			element.addEventListener('touchstart', touchstart)
-			element.addEventListener('touchend', touchend)
-			element.addEventListener('input', input)
-			
-			let label = cell.appendChild(document.createElement("span"))
-			// label.textContent = "Num " +control.position.x
-			n++
+			if (controlType.events) {
+				for (let [event, callback] of Object.entries(controlType.events)) {
+					element.addEventListener(event, callback)
+				}
+			}
 		}
 	})
 }

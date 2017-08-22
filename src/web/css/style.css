@@ -14,6 +14,25 @@ dialog::backdrop {
 	background: rgba(255, 255, 255, 0.5);
 }
 
+dialog p {
+	font-size: 20px;
+}
+
+dialog input {
+	font-size: 20px;
+}
+
+dialog input[name=port] {
+	width: 80px;
+}
+
+dialog button {
+	font-size: 20px;
+	padding: 8px;
+	border: none;
+	outline: none;
+}
+
 #panel {
 	display: grid;
 	height: 100%;

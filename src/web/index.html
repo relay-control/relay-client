@@ -3,6 +3,7 @@
 <head>
 	<meta charset="utf-8"/>
 	<link rel="stylesheet" href="css/style.css">
+	<script src="controls.js"></script>
 	<script src="socket.js"></script>
 	<script src="colors.js"></script>
 	<script src="index.js"></script>
@@ -12,9 +13,16 @@
 <body>
 <div id="panel">
 </div>
-<dialog id="connectionStatus">
-Failed to connect to Relay server
+
+<dialog id="connectDialog">
+	<p>Connect to Relay server</p>
+	<form id="connectForm">
+	<input type="number" name="address">
+	<input type="number" name="port">
+	<button type="submit">Connect</button>
+	</form>
 </dialog>
+
 </body>
 
 </html>
