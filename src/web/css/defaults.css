@@ -1,0 +1,50 @@
+@font-face {
+	font-family: 'PT Sans';
+	src: url("../fonts/PT_Sans-Web-Regular.ttf");
+}
+
+body {
+	font-family: Calibri;
+	font-size: 28px;
+}
+
+#panel {
+	background: #ccc;
+}
+
+.cell {
+	padding: 10px;
+}
+
+.cell button {
+	font-family: 'PT Sans';
+	font-size: 36px;
+	background: #fff;
+	border: none;
+}
+
+.cell > div > span {
+	text-align: center;
+}
+
+.cell .label,
+.cell .value {
+}
+
+input[type=range] {
+	width: 100%;
+	/*height: 100%;*/
+}
+
+input[type=range]::-webkit-slider-thumb {
+	background: #fff;
+	width: 30px;
+	height: 40px;
+	/* this needs to be set manually to center the thumb vertically */
+	margin-top: calc(-40px / 2 + 20px / 2);
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+	background: #aaa;
+	height: 20px;
+}

@@ -85,6 +85,8 @@
 		</Text>
 		<Slider width="2">
 			<Position x="5" y="4"/>
+			<Label text="Sensor zoom" position="top left"/>
+			<Value unit="%" position="bottom right"/>
 			<Action axis="1"/>
 			<Track height="28px">
 				<Background color="#222"/>

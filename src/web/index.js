@@ -1,6 +1,7 @@
 // const fs = require("fs")
 
 const collections = [
+	"Templates",
 	"Controls",
 	"Shadows",
 	"Gradient",
@@ -138,179 +139,171 @@ function createControl(type) {
 	return element
 }
 
-function createStyleRule(selector) {
-	let css = document.styleSheets[2]
-	let index = 0
-	css.insertRule(`${selector} {}`, index)
-	return css.rules[index].style
+let stylesheet
+
+let rules = {}
+
+function getStyleRule(selector) {
+	let rule = rules[selector]
+	if (!rule) {
+		let index = stylesheet.rules.length
+		stylesheet.insertRule(`${selector} {}`, index)
+		rule = stylesheet.rules[index].style
+		rules[selector] = rule
+	}
+	return rule
 }
 
-function applyStyle(element, data) {
-	let style = element
-	style.width = data.width
-	style.height = data.height
-	if (data.text) {
-		style.color = data.text.color
+function applyStyle(selector, control, element, mainControl) {
+	let style = getStyleRule(selector)
+	let data = control
+	if (data.width) style.width = data.width
+	if (data.height) style.height = data.height
+	for (let [property, handler] of Styles.global) {
+		if (property in data) handler(style, data[property], element, control)
 	}
-	if (data.background) {
-		style.backgroundColor = data.background.color
-		style.backgroundImage = data.background.image || "initial"
-		if (data.background.gradient) {
-			let gradient = []
-			for (point of data.background.gradient) {
-				let colorStop = point.color
-				if (point.stop) colorStop += ' ' +point.stop
-				gradient.push(colorStop)
-			}
-			gradient = gradient.join(", ")
-			if (data.background.gradient.type === "radial") {
-				if (data.background.gradient.position) gradient = data.background.gradient.position + ', ' + gradient
-				style.backgroundImage = `-webkit-radial-gradient(${gradient})`
-			} else {
-				let direction = data.background.gradient.direction
-				if (direction && !direction.match(/\d+deg/)) direction = "to " + direction
-				if (direction) gradient = data.background.gradient.direction + ', ' + gradient
-				style.backgroundImage = `-webkit-linear-gradient(${gradient})`
+	if (Styles.controls[control.tag]) {
+		// for (let [property, handler] of Styles.global) {
+			// if (property in data) handler(style, data[property])
+		// }
+		if (Styles.controls[control.tag].children) {
+			for (let [child, selector2, handler] of Styles.controls[control.tag].children) {
+				if (child in control) {
+					applyStyle(selector + selector2, control[child], element, control)
+					if (handler) handler(style, control[child], element, control)
+				}
 			}
 		}
-	}
-	if (data.border) {
-		style.borderStyle = data.border.style || "solid"
-		style.borderWidth = data.border.width
-		style.borderColor = data.border.color
-		style.borderRadius = data.border.radius
-	}
-	if (data.shadows) {
-		let boxShadows = []
-		for (shadow of data.shadows) {
-			let boxShadow = []
-			if (shadow.inset) boxShadow.push("inset")
-			boxShadow.push(shadow.offsetX, shadow.offsetY)
-			if (typeof shadow.blurRadius !== 'undefined') boxShadow.push(shadow.blurRadius)
-			if (typeof shadow.spreadRadius !== 'undefined') boxShadow.push(shadow.spreadRadius)
-			if (shadow.color) boxShadow.push(parseColor(shadow.color, shadow.alpha))
-			boxShadows.push(boxShadow.join(" "))
-		}
-		style.boxShadow = boxShadows.join(", ")
 	}
 }
-
-let rules = [
-	['shadows', (style, data) => {
-		let boxShadows = []
-		for (shadow of data.shadows) {
-			let boxShadow = []
-			if (shadow.inset) boxShadow.push("inset")
-			boxShadow.push(shadow.offsetX, shadow.offsetY)
-			if (typeof shadow.blurRadius !== 'undefined') boxShadow.push(shadow.blurRadius)
-			if (typeof shadow.spreadRadius !== 'undefined') boxShadow.push(shadow.spreadRadius)
-			if (shadow.color) boxShadow.push(parseColor(shadow.color, shadow.alpha))
-			boxShadows.push(boxShadow.join(" "))
-		}
-		style.boxShadow = boxShadows.join(", ")
-	}],
-]
 
 
 let domparser = new DOMParser()
 
 function loadPanel(panelName) {
-	// fs.readFile(__dirname + `/${panelName}.xml`, function(err, data) {
-	
 	let xhr = new XMLHttpRequest()
 	xhr.open("GET", `${panelName}.xml`)
 	xhr.send()
-	xhr.onload = (function() {
-		data = this.responseText
+	xhr.onload = function() {
+		let data = this.responseText
 		
 		let panel = parse(domparser.parseFromString(data, "text/xml")).panel
 		console.log(panel)
 		
 		let link = document.createElement('style')
-		
-		// link.type = 'text/css'
-		// link.rel = 'stylesheet'
-		// link.href = fileName
-		// link.appendChild(document.createTextNode(""))
-		
 		document.head.appendChild(link)
+		stylesheet = link.sheet
 		
-		// console.dir(link.sheet)
-		// console.dir(document.styleSheets[2])
-		// console.log(link.sheet === document.styleSheets[2])
-		
-		document.body.style.fontFamily = panel.text.font
-		document.body.style.fontSize = panel.text.size
-		document.body.style.color = panel.text.color
-		
-		let panelElement = document.getElementById("panel")
-		panelElement.style.backgroundColor = panel.background.color
-		panelElement.style.backgroundImage = panel.background.image
+		let panelElement = document.getElementById('panel')
+		if (panel.background) {
+			panelElement.style.backgroundColor = panel.background.color
+			panelElement.style.backgroundImage = panel.background.image
+		}
 		panelElement.style.gridTemplateColumns = `repeat(${panel.grid.columns}, 1fr)`
 		panelElement.style.gridTemplateRows = `repeat(${panel.grid.rows}, 1fr)`
 		
-		let style0 = createStyleRule(".cell > div")
-		style0.padding = `${panel.templates.default.padding.x} ${panel.templates.default.padding.x}`
+		if (panel.templates) {
+			for (let template of panel.templates) {
+				// map each template to a CSS class
+				let selector = '.' + template.name
+				if (template.tag.toLowerCase() !== 'control') selector += '.' + template.tag.toLowerCase()
+				if (template.padding) {
+					let style = getStyleRule(selector)
+					style.padding = `${template.padding.y} ${template.padding.x}`
+				}
+				selector += ' .control'
+				applyStyle(selector, template)
+			}
+		}
 		
-		let style = createStyleRule("button.default")
-		applyStyle(style, panel.templates.default)
-		
-		style.fontFamily = panel.text.font
-		style.fontSize = panel.text.size
-		style.color = panel.text.color
-		
-		let n = 0
+		let n = 1
 		
 		for (let control of panel.controls) {
 			let cell = document.createElement("div")
+			panelElement.appendChild(cell)
 			cell.style.gridColumnStart = control.position.x
 			cell.style.gridColumnEnd = control.position.x + (control.width || 1)
 			cell.style.gridRowStart = control.position.y
 			cell.style.gridRowEnd = control.position.y + (control.height || 1)
-			panelElement.appendChild(cell)
-			cell.classList.add("cell")
-			if (control.square) cell.classList.add("square")
-			if (control.circle) cell.classList.add("circle")
+			cell.id = 'control' + n++
+			cell.classList.add(control.tag.toLowerCase())
+			cell.classList.add('cell')
+			if (control.square) cell.classList.add('square')
+			if (control.circle) cell.classList.add('circle')
 			
 			let controlType = ControlTypes[control.tag]
 			let element = document.createElement(controlType.tag)
+			// assign a dynamic ID that we can use as a selector to apply individual styling
+			element.classList.add('control')
+			if ('inherits' in control)
+				cell.classList.add(control.inherits)
+			else
+				cell.classList.add('default')
 			if (controlType.attributes) {
 				for (let [attribute, value] of Object.entries(controlType.attributes)) {
 					element[attribute] = value
 				}
 			}
-			element.id = "control" + n++
-			if (control.icon) {
-				let icon = document.createElement("i")
-				icon.classList.add("fa", "fa-fw", "fa-2x", "fa-" + control.icon)
-				element.appendChild(icon)
-			} else {
-				element.textContent = control.text
+			applyStyle(`#${cell.id}`, control, element)
+			controlType.onCreate(element, control)
+			
+			const flexPositions = {
+				top: 'flex-start',
+				left: 'flex-start',
+				bottom: 'flex-end',
+				right: 'flex-end',
 			}
-			element.classList.add("default")
-			applyStyle(createStyleRule(`#${element.id}`), control)
+			// if (control.label) {
+				// let labelContainer = cell.appendChild(document.createElement("div"))
+				// labelContainer.classList.add("label")
+				// if (control.label.position) {
+					// let [vertical, horizontal] = control.label.position.split(/\s+/)
+					// if (vertical && horizontal) {
+						// labelContainer.style.alignItems = flexPositions[vertical]
+						// labelContainer.style.justifyContent = flexPositions[horizontal]
+					// } else if (control.label.position === 'center') {
+					// } else {
+						// switch (control.label.position) {
+							// case 'top' || 'bottom':
+								// labelContainer.style.alignItems = flexPositions[control.label.position]
+								// break
+							// case 'left' || 'right':
+								// labelContainer.style.justifyContent = flexPositions[control.label.position]
+								// break
+						// }
+					// }
+				// }
+				// let label = labelContainer.appendChild(document.createElement("span"))
+				// label.textContent = control.label.text
+			// }
+			if (control.value) {
+				let valueContainer = cell.appendChild(document.createElement("div"))
+				valueContainer.classList.add("value")
+				valueContainer.style.justifyContent = "flex-end"
+				valueContainer.style.alignItems = "flex-end"
+				let value = valueContainer.appendChild(document.createElement("span"))
+				value.textContent = "50%"
+			}
 			if (control.active) {
-				let style = createStyleRule(`#${element.id}.pressed, #${element.id}.active`)
-				applyStyle(style, control.active)
+				applyStyle(`#${element.id}.pressed, #${element.id}.active`, control.active, element)
 			}
 			if (control.action && control.action.type === "joy") {
 				element.dataset.button = parseInt(control.action.btn)
 			}
-			element.dataset.mode = control.mode
 			if (control.tag === "Slider") {
-				element.setAttribute("list", "datalist" + n)
+				element.setAttribute("list", "datalist" + element.id)
 				let datalist = cell.appendChild(document.createElement("datalist"))
-				datalist.id = "datalist" + n
+				datalist.id = "datalist" + element.id
 				let option = datalist.appendChild(document.createElement("option"))
 				option.value = 50
-				let trackStyle = createStyleRule(`#${element.id}::-webkit-slider-runnable-track`)
-				applyStyle(trackStyle, control.track)
-				let thumbStyle = createStyleRule(`#${element.id}::-webkit-slider-thumb`)
-				applyStyle(thumbStyle, control.thumb)
-				thumbStyle.marginTop = `${-parseInt(control.thumb.height) / 2 + parseInt(control.track.height) / 2 - 1}px`
 			}
-			if (control.background) createStyleRule(`#${element.id}`).background = control.background.color
 			let container = cell.appendChild(document.createElement("div"))
+			
+			if (control.square || control.circle) {
+				let img = container.appendChild(document.createElement("img"))
+				img.src = "square.png"
+			}
+			
 			container.appendChild(element)
 			
 			if (controlType.events) {
@@ -319,7 +312,7 @@ function loadPanel(panelName) {
 				}
 			}
 		}
-	})
+	}
 }
 
-loadPanel("Elite")
+loadPanel("Basic2")
