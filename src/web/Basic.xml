@@ -1,0 +1,36 @@
+<Panel>
+	<Grid rows="3" columns="4"/>
+	<Templates>
+		<Default>
+		</Default>
+	</Templates>
+	<Controls>
+		<Button text="Button 1" height="2">
+			<Position x="1" y="1"/>
+		</Button>
+		<Button text="Button 2">
+			<Position x="2" y="1"/>
+		</Button>
+		<Button text="Button 3">
+			<Position x="2" y="2"/>
+		</Button>
+		<Button text="Button 4" width="2">
+			<Position x="1" y="3"/>
+		</Button>
+		<Button text="Button 5" circle="true">
+			<Position x="3" y="1"/>
+		</Button>
+		<Button text="Button 6" circle="true">
+			<Position x="4" y="1"/>
+		</Button>
+		<Button text="Button 7" square="true">
+			<Position x="3" y="2"/>
+		</Button>
+		<Button text="Button 8" square="true">
+			<Position x="4" y="2"/>
+		</Button>
+		<Slider width="2">
+			<Position x="3" y="3"/>
+		</Slider>
+	</Controls>
+</Panel>
