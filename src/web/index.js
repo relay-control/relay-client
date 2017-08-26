@@ -154,6 +154,35 @@ function getStyleRule(selector) {
 	return rule
 }
 
+const flexPositions = {
+	top: 'flex-start',
+	left: 'flex-start',
+	bottom: 'flex-end',
+	right: 'flex-end',
+}
+
+function setFlexPosition(style, position) {
+	let [vertical, horizontal] = position.split(/\s+/)
+	if (vertical && horizontal) {
+		style.alignItems = flexPositions[vertical]
+		style.justifyContent = flexPositions[horizontal]
+	} else if (position === 'center') {
+		style.alignItems = 'center'
+		style.justifyContent = 'center'
+	} else {
+		switch (position) {
+			case 'top':
+			case 'bottom':
+				style.alignItems = flexPositions[position]
+				break
+			case 'left':
+			case 'right':
+				style.justifyContent = flexPositions[position]
+				break
+		}
+	}
+}
+
 function applyStyle(selector, control, element, mainControl) {
 	let style = getStyleRule(selector)
 	let data = control
@@ -190,6 +219,7 @@ function loadPanel(panelName) {
 		let panel = parse(domparser.parseFromString(data, "text/xml")).panel
 		console.log(panel)
 		
+		// create a separate stylesheet for dynamic style rules
 		let link = document.createElement('style')
 		document.head.appendChild(link)
 		stylesheet = link.sheet
@@ -202,17 +232,26 @@ function loadPanel(panelName) {
 		panelElement.style.gridTemplateColumns = `repeat(${panel.grid.columns}, 1fr)`
 		panelElement.style.gridTemplateRows = `repeat(${panel.grid.rows}, 1fr)`
 		
+		/* validate grid size and control placement */
+		
 		if (panel.templates) {
 			for (let template of panel.templates) {
 				// map each template to a CSS class
 				let selector = '.' + template.name
-				if (template.tag.toLowerCase() !== 'control') selector += '.' + template.tag.toLowerCase()
+				if (template.tag !== 'Control') selector += '.' + template.tag.toLowerCase()
 				if (template.padding) {
 					let style = getStyleRule(selector)
 					style.padding = `${template.padding.y} ${template.padding.x}`
 				}
-				selector += ' .control'
-				applyStyle(selector, template)
+				if (template.label) {
+					let style = getStyleRule(selector + ' .label')
+					style.color = template.label.color
+					// applyStyle(selector + ' .label', template.label)
+				}
+				if (template.active) {
+					applyStyle(selector + ' .control.pressed,' + selector + ' .control.active', template.active)
+				}
+				applyStyle(selector + ' .control', template)
 			}
 		}
 		
@@ -247,35 +286,137 @@ function loadPanel(panelName) {
 			applyStyle(`#${cell.id}`, control, element)
 			controlType.onCreate(element, control)
 			
-			const flexPositions = {
-				top: 'flex-start',
-				left: 'flex-start',
-				bottom: 'flex-end',
-				right: 'flex-end',
+			let container = cell.appendChild(document.createElement('div'))
+			container.classList.add('container')
+			
+			if (control.heightw) {
+				let style = getStyleRule(`#${cell.id} .container`)
+				style.height = control.heightw
 			}
-			// if (control.label) {
-				// let labelContainer = cell.appendChild(document.createElement("div"))
-				// labelContainer.classList.add("label")
-				// if (control.label.position) {
-					// let [vertical, horizontal] = control.label.position.split(/\s+/)
-					// if (vertical && horizontal) {
-						// labelContainer.style.alignItems = flexPositions[vertical]
-						// labelContainer.style.justifyContent = flexPositions[horizontal]
-					// } else if (control.label.position === 'center') {
-					// } else {
-						// switch (control.label.position) {
-							// case 'top' || 'bottom':
-								// labelContainer.style.alignItems = flexPositions[control.label.position]
-								// break
-							// case 'left' || 'right':
-								// labelContainer.style.justifyContent = flexPositions[control.label.position]
-								// break
-						// }
-					// }
-				// }
-				// let label = labelContainer.appendChild(document.createElement("span"))
+			if (control.label) {
 				// label.textContent = control.label.text
-			// }
+				
+				if ('text' in control.label && 'icon' in control.label) {
+					if (control.label['text-anchor'] === control.label['icon-anchor']) {
+						let label = document.createElement('div')
+						label.classList.add('label')
+						
+						let textLabel = document.createElement('div')
+						textLabel.classList.add('text')
+						textLabel.textContent = control.label.text
+						label.appendChild(textLabel)
+						
+						let iconLabel = document.createElement('div')
+						iconLabel.classList.add('icon')
+						let icon = document.createElement('i')
+						icon.classList.add('fa', 'fa-fw', 'fa-2x', 'fa-' + control.label.icon)
+						iconLabel.appendChild(icon)
+						label.appendChild(iconLabel)
+						
+						if (control.label.anchor === 'container') {
+							cell.appendChild(label)
+						} else {
+							element.appendChild(label)
+						}
+						
+						if (control.label.position) {
+							setFlexPosition(label.style, control.label.position)
+						}
+						if (control.label['text-position']) {
+							setFlexPosition(textLabel.style, control.label['text-position'])
+						}
+						if (control.label['icon-position']) {
+							setFlexPosition(iconLabel.style, control.label['icon-position'])
+						}
+					} else {
+						let textLabel = document.createElement('div')
+						textLabel.classList.add('label', 'text')
+						textLabel.textContent = control.label.text
+						
+						if (control.label['text-anchor'] === 'container') {
+							cell.appendChild(textLabel)
+						} else {
+							element.appendChild(textLabel)
+						}
+						
+						let iconLabel = document.createElement('div')
+						iconLabel.classList.add('label', 'icon')
+						let icon = document.createElement('i')
+						icon.classList.add('fa', 'fa-fw', 'fa-2x', 'fa-' + control.label.icon)
+						iconLabel.appendChild(icon)
+						
+						if (control.label['icon-anchor'] === 'container') {
+							cell.appendChild(iconLabel)
+						} else {
+							element.appendChild(iconLabel)
+						}
+						
+						if (control.label.position) {
+							setFlexPosition(label.style, control.label.position)
+						}
+						if (control.label['text-position']) {
+							setFlexPosition(textLabel.style, control.label['text-position'])
+						}
+						if (control.label['icon-position']) {
+							setFlexPosition(iconLabel.style, control.label['icon-position'])
+						}
+					}
+				} else if (control.label.text) {
+					let textLabel = document.createElement('div')
+					textLabel.classList.add('label', 'text')
+					textLabel.textContent = control.label.text
+					
+					if (control.label['text-anchor'] === 'container') {
+						cell.appendChild(textLabel)
+					} else {
+						element.appendChild(textLabel)
+					}
+					
+					if (control.label.position) {
+						setFlexPosition(label.style, control.label.position)
+					}
+					if (control.label['text-position']) {
+						setFlexPosition(textLabel.style, control.label['text-position'])
+					}
+				} else if (control.label.icon) {
+					let iconLabel = document.createElement('div')
+					iconLabel.classList.add('label', 'icon')
+					let icon = document.createElement('i')
+					icon.classList.add('fa', 'fa-fw', 'fa-2x', 'fa-' + control.label.icon)
+					iconLabel.appendChild(icon)
+					
+					if (control.label['icon-anchor'] === 'container') {
+						cell.appendChild(iconLabel)
+					} else {
+						element.appendChild(iconLabel)
+					}
+					
+					if (control.label.position) {
+						setFlexPosition(label.style, control.label.position)
+					}
+					if (control.label['icon-position']) {
+						setFlexPosition(iconLabel.style, control.label['icon-position'])
+					}
+				}
+				
+				// if (control.label.icon) {
+					// let icon = document.createElement('i')
+					// icon.classList.add('fa', 'fa-fw', 'fa-2x', 'fa-' + control.label.icon)
+					// label.appendChild(icon)
+				// }
+				if (control.label.anchor === 'container') {
+					// cell.appendChild(label)
+					// let labelContainer = container.appendChild(label)
+					// labelContainer.classList.add('label')
+					// let label = labelContainer.appendChild(document.createElement('span'))
+					// label.textContent = control.label.text
+				} else {
+					// element.appendChild(label)
+				}
+				if (control.label.position) {
+					// setFlexPosition(label.style, control.label.position)
+				}
+			}
 			if (control.value) {
 				let valueContainer = cell.appendChild(document.createElement("div"))
 				valueContainer.classList.add("value")
@@ -285,23 +426,22 @@ function loadPanel(panelName) {
 				value.textContent = "50%"
 			}
 			if (control.active) {
-				applyStyle(`#${element.id}.pressed, #${element.id}.active`, control.active, element)
+				applyStyle(`#${cell.id} .control.pressed, #${cell.id} .control.active`, control.active, element)
 			}
-			if (control.action && control.action.type === "joy") {
+			if (control.action) {
 				element.dataset.button = parseInt(control.action.btn)
 			}
-			if (control.tag === "Slider") {
-				element.setAttribute("list", "datalist" + element.id)
-				let datalist = cell.appendChild(document.createElement("datalist"))
-				datalist.id = "datalist" + element.id
-				let option = datalist.appendChild(document.createElement("option"))
-				option.value = 50
-			}
-			let container = cell.appendChild(document.createElement("div"))
-			
 			if (control.square || control.circle) {
-				let img = container.appendChild(document.createElement("img"))
+				cell.classList.add('adjust-' + (control.adjustSize || 'height'))
+				let img = container.appendChild(document.createElement('img'))
 				img.src = "square.png"
+			}
+			if (control.tag === 'Slider') {
+				element.setAttribute('list', 'datalist-' + cell.id)
+				let datalist = container.appendChild(document.createElement('datalist'))
+				datalist.id = 'datalist-' + cell.id
+				let option = datalist.appendChild(document.createElement('option'))
+				option.value = 50
 			}
 			
 			container.appendChild(element)
@@ -315,4 +455,4 @@ function loadPanel(panelName) {
 	}
 }
 
-loadPanel("Basic2")
+loadPanel("Labels")

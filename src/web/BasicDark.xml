@@ -4,7 +4,6 @@
 	<Templates>
 		<Control name="default">
 			<Label color="#eee"/>
-			<Padding x="20px" y="20px"/>
 		</Control>
 		<Button name="default">
 			<Background color="#333"/>

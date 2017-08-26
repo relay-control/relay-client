@@ -2,13 +2,13 @@ var Styles = {
 	global: [
 		['label', (style, data, element) => {
 			style.color = data.color
-			if (data.icon) {
-				let icon = document.createElement('i')
-				icon.classList.add('fa', 'fa-fw', 'fa-2x', 'fa-' + data.icon)
-				element.appendChild(icon)
-			} else if (data.text) {
-				element.textContent = data.text
-			}
+			// if (data.icon) {
+				// let icon = document.createElement('i')
+				// icon.classList.add('fa', 'fa-fw', 'fa-2x', 'fa-' + data.icon)
+				// element.appendChild(icon)
+			// } else if (data.text) {
+				// element.textContent = data.text
+			// }
 		}],
 		// ['padding', (style, data, element, control) => {
 			// style.padding = `${data.y} ${data.x}`

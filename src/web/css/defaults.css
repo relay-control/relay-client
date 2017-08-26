@@ -3,13 +3,13 @@
 	src: url("../fonts/PT_Sans-Web-Regular.ttf");
 }
 
-body {
-	font-family: Calibri;
-	font-size: 28px;
-}
-
 #panel {
 	background: #ccc;
+}
+
+.cell button, .label, .text, .icon {
+	font-family: 'PT Sans';
+	font-size: 36px;
 }
 
 .cell {
@@ -17,8 +17,6 @@ body {
 }
 
 .cell button {
-	font-family: 'PT Sans';
-	font-size: 36px;
 	background: #fff;
 	border: none;
 }
@@ -29,6 +27,14 @@ body {
 
 .cell .label,
 .cell .value {
+	justify-content: center;
+	align-items: center;
+}
+
+.text,
+.icon {
+	justify-content: center;
+	align-items: center;
 }
 
 input[type=range] {

@@ -77,7 +77,7 @@ ControlTypes['Button'] = {
 ControlTypes['Slider'] = {
 	tag: 'input',
 	attributes: {
-		type: "range",
+		type: 'range',
 	},
 	events: {
 		input: e => {
