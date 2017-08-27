@@ -16,6 +16,10 @@
 	padding: 10px;
 }
 
+.text, .icon {
+	padding: 10px;
+}
+
 .cell button {
 	background: #fff;
 	border: none;

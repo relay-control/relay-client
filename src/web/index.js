@@ -298,25 +298,31 @@ function loadPanel(panelName) {
 				
 				if ('text' in control.label && 'icon' in control.label) {
 					if (control.label['text-anchor'] === control.label['icon-anchor']) {
-						let label = document.createElement('div')
-						label.classList.add('label')
+						// let label = document.createElement('div')
+						// label.classList.add('label')
+						
+						let label = element
 						
 						let textLabel = document.createElement('div')
-						textLabel.classList.add('text')
+						textLabel.classList.add('label', 'text')
 						textLabel.textContent = control.label.text
 						label.appendChild(textLabel)
 						
 						let iconLabel = document.createElement('div')
-						iconLabel.classList.add('icon')
+						iconLabel.classList.add('label', 'icon')
 						let icon = document.createElement('i')
 						icon.classList.add('fa', 'fa-fw', 'fa-2x', 'fa-' + control.label.icon)
 						iconLabel.appendChild(icon)
 						label.appendChild(iconLabel)
 						
 						if (control.label.anchor === 'container') {
-							cell.appendChild(label)
+							// cell.appendChild(label)
+							cell.appendChild(textLabel)
+							cell.appendChild(iconLabel)
 						} else {
-							element.appendChild(label)
+							// element.appendChild(label)
+							element.appendChild(textLabel)
+							element.appendChild(iconLabel)
 						}
 						
 						if (control.label.position) {
