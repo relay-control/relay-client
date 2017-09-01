@@ -5,7 +5,7 @@ function buttonActivated(element) {
 		RelaySocket.sendInput({
 			type2: 'button',
 			button: element.dataset.button,
-			state: 1,
+			state: true,
 		})
 	console.log("activated  ", element.id)
 }
@@ -15,7 +15,7 @@ function buttonDeactivated(element) {
 		RelaySocket.sendInput({
 			type2: 'button',
 			button: element.dataset.button,
-			state: 0,
+			state: false,
 		})
 	console.log("deactivated", element.id)
 }
@@ -84,6 +84,7 @@ ControlTypes['Slider'] = {
 			// console.dir(e)
 			// console.log(e.currentTarget.value)
 			// buttonReleased(e.currentTarget)
+			e.currentTarget.valueLabel.textContent = e.currentTarget.value + '%'
 			if (e.currentTarget.dataset.axis)
 				RelaySocket.sendInput({
 					type2: 'axis',

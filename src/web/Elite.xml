@@ -1,19 +1,25 @@
 <Panel>
 	<Background color="#333"/>
-	<Text font="Calibri" size="28px" color="#ccc"/>
 	<Grid rows="5" columns="7"/>
 	<Templates>
-		<Default>
+		<Control name="default">
+			<Label font="Calibri" size="28px" color="#ccc"/>
 			<Background color="#444"/>
 			<Padding x="10px" y="10px"/>
 			<Border radius="8px" width="2px" color="#ffc000"/>
-		</Default>
+			<Active>
+				<Text color="white"/>
+				<Background color="#404040"/>
+				<Border radius="8px" width="2px" color="white"/>
+			</Active>
+		</Control>
 	</Templates>
 	<Controls>
 		<Button height="2">
 			<Position x="1" y="1"/>
 		</Button>
-		<Button text="Cargo scoop" width="2" mode="toggle">
+		<Button width="2" mode="toggle">
+			<Label text="Cargo scoop"/>
 			<Position x="2" y="1"/>
 			<Action type="joy" btn="2"/>
 			<Active>
@@ -22,7 +28,9 @@
 				<Border radius="8px" width="2px" color="white"/>
 			</Active>
 		</Button>
-		<Button icon="globe">
+		<Button>
+			<Action type="joy" btn="4"/>
+			<Label icon="globe"/>
 			<Position x="3" y="2"/>
 			<Active>
 				<Text color="white"/>
@@ -30,11 +38,13 @@
 				<Border radius="8px" width="2px" color="white"/>
 			</Active>
 		</Button>
-		<Button text="FSD" square="true">
+		<Button square="true">
+			<Label text="FSD"/>
 			<Position x="3" y="4"/>
 			<Action type="joy" btn="1"/>
 		</Button>
-		<Button text="FSD" circle="true">
+		<Button circle="true">
+			<Label text="FSD"/>
 			<Position x="3" y="3"/>
 			<Action type="key" key="J"/>
 		</Button>
@@ -80,12 +90,9 @@
 				</Shadows>
 			</Active>
 		</Button>
-		<Text text="Hahn Gateway">
-			<Position x="5" y="2"/>
-		</Text>
 		<Slider width="2">
 			<Position x="5" y="4"/>
-			<Label text="Sensor zoom" position="top left"/>
+			<Label text="Sensor zoom" text-anchor="container" position="top left"/>
 			<Value unit="%" position="bottom right"/>
 			<Action axis="1"/>
 			<Track height="28px">
@@ -105,5 +112,8 @@
 				</Shadows>
 			</Thumb>
 		</Slider>
+		<Textw text="Hahn Gateway">
+			<Position x="5" y="2"/>
+		</Text>
 	</Controls>
 </Panel>

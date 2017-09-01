@@ -206,6 +206,11 @@ function applyStyle(selector, control, element, mainControl) {
 	}
 }
 
+function getPanels() {
+	fetch("http://192.168.0.202:57882/web.json")
+	 .then(response => response.json())
+	 .then(e => console.log(e))
+}
 
 let domparser = new DOMParser()
 
@@ -283,7 +288,7 @@ function loadPanel(panelName) {
 					element[attribute] = value
 				}
 			}
-			applyStyle(`#${cell.id}`, control, element)
+			applyStyle(`#${cell.id} .control`, control, element)
 			controlType.onCreate(element, control)
 			
 			let container = cell.appendChild(document.createElement('div'))
@@ -379,7 +384,7 @@ function loadPanel(panelName) {
 					}
 					
 					if (control.label.position) {
-						setFlexPosition(label.style, control.label.position)
+						setFlexPosition(textLabel.style, control.label.position)
 					}
 					if (control.label['text-position']) {
 						setFlexPosition(textLabel.style, control.label['text-position'])
@@ -398,49 +403,37 @@ function loadPanel(panelName) {
 					}
 					
 					if (control.label.position) {
-						setFlexPosition(label.style, control.label.position)
+						setFlexPosition(iconLabel.style, control.label.position)
 					}
 					if (control.label['icon-position']) {
 						setFlexPosition(iconLabel.style, control.label['icon-position'])
 					}
 				}
-				
-				// if (control.label.icon) {
-					// let icon = document.createElement('i')
-					// icon.classList.add('fa', 'fa-fw', 'fa-2x', 'fa-' + control.label.icon)
-					// label.appendChild(icon)
-				// }
-				if (control.label.anchor === 'container') {
-					// cell.appendChild(label)
-					// let labelContainer = container.appendChild(label)
-					// labelContainer.classList.add('label')
-					// let label = labelContainer.appendChild(document.createElement('span'))
-					// label.textContent = control.label.text
-				} else {
-					// element.appendChild(label)
-				}
-				if (control.label.position) {
-					// setFlexPosition(label.style, control.label.position)
-				}
 			}
 			if (control.value) {
-				let valueContainer = cell.appendChild(document.createElement("div"))
-				valueContainer.classList.add("value")
-				valueContainer.style.justifyContent = "flex-end"
-				valueContainer.style.alignItems = "flex-end"
-				let value = valueContainer.appendChild(document.createElement("span"))
+				let valueContainer = cell.appendChild(document.createElement('div'))
+				valueContainer.classList.add('label', 'value')
+				// let value = valueContainer.appendChild(document.createElement("span"))
+				value = valueContainer
 				value.textContent = "50%"
+				element.valueLabel = value
+				// element.step = 0.1
+				if (control.value.position) {
+					setFlexPosition(valueContainer.style, control.value.position)
+				}
 			}
 			if (control.active) {
 				applyStyle(`#${cell.id} .control.pressed, #${cell.id} .control.active`, control.active, element)
 			}
 			if (control.action) {
+				if (control.action.type === 'joy')
 				element.dataset.button = parseInt(control.action.btn)
 			}
 			if (control.square || control.circle) {
 				cell.classList.add('adjust-' + (control.adjustSize || 'height'))
 				let img = container.appendChild(document.createElement('img'))
-				img.src = "square.png"
+				// img.src = "square.png"
+				img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="
 			}
 			if (control.tag === 'Slider') {
 				element.setAttribute('list', 'datalist-' + cell.id)
@@ -457,8 +450,16 @@ function loadPanel(panelName) {
 					element.addEventListener(event, callback)
 				}
 			}
+			
+			// PNG - data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=
+			// PNG - data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABBJREFUeNpi+P//PwNAgAEACPwC/tuiTRYAAAAASUVORK5CYII=
+			// GIF - data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==
+			// GIF - data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=
+			
+			// redraw??
+			// sel.style.display = 'run-in'; setTimeout(function () { sel.style.display = 'block'; }, 0);
 		}
 	}
 }
 
-loadPanel("Labels")
+loadPanel("Elite")

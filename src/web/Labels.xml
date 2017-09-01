@@ -21,7 +21,7 @@
 		</Slider>
 	</Templates>
 	<Controls>
-		<Button height="2">
+		<Button square="true" height="2" adjustSize="width">
 			<Position x="1" y="1"/>
 			<Label text="Button 1"/>
 		</Button>
@@ -30,9 +30,9 @@
 			<Padding x="40px" y="40px"/>
 			<Label text="Button 2" icon="globe" text-anchor="container" text-position="top" icon-position="right"/>
 		</Button>
-		<Button>
+		<Button heightw="150px">
 			<Position x="2" y="2"/>
-			<Label text="Button 3" icon="bars" text-position="bottom"/>
+			<Label text="Button 3" position="bottom"/>
 		</Button>
 		<Button width="2">
 			<Position x="1" y="3"/>
@@ -48,7 +48,7 @@
 		</Button>
 		<Button square="true">
 			<Position x="3" y="2"/>
-			<Label text="Button 7"/>
+			<Label text="Button 7" icon="bars" text-position="bottom"/>
 		</Button>
 		<Button square="true">
 			<Position x="4" y="2"/>
@@ -56,7 +56,8 @@
 		</Button>
 		<Slider width="2">
 			<Position x="3" y="3"/>
-			<Label text="Slider 1" text-anchor="container" text-position="top left"/>
+			<Label text="Slider 1" text-anchor="container" text-position="top"/>
+			<Value text="Slider 1" position="bottom"/>
 		</Slider>
 	</Controls>
 </Panel>

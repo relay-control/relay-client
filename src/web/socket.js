@@ -55,6 +55,17 @@ document.addEventListener("DOMContentLoaded", () => {
 	connectForm.elements.port.value = "8098"
 })
 
+var host = "192.168.0.202:57882"
+var ws = new WebSocket('ws://' + host)
+
+ws.onopen = function() {
+	console.log('The websocket is now open.')
+}
+
+ws.onmessage = function(event) {
+	console.log(event.data)
+}
+
 var RelaySocket = {}
 
 RelaySocket.sendInput = function(input) {
@@ -77,5 +88,5 @@ RelaySocket.sendInput = function(input) {
 			// input.body
 			break
 	}
-	client.write(Buffer.from([button | (state << 7)]))
+	ws.send(JSON.stringify(input))
 }
