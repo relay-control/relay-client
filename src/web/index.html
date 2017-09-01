@@ -4,23 +4,33 @@
 	<meta charset="utf-8"/>
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="stylesheet" href="css/defaults.css">
+	<link rel="stylesheet" href="css/font-awesome.min.css">
 	<script src="styles.js"></script>
 	<script src="controls.js"></script>
 	<script src="socket.js"></script>
 	<script src="colors.js"></script>
 	<script src="index.js"></script>
-	<link rel="stylesheet" href="css/font-awesome.min.css">
 </head>
 
 <body>
-<div id="panel">
+<div id="menu">
+<h1 id="connection-status">Connected to 192.168.0.202</h1>
+<button id="menu-connect">Connect</button>
+<h3 id="connection-status">Available panels</h3>
+<button id="menu-refresh">Refresh</button>
+<ul id="panel-list"></ul>
 </div>
+
+<div id="panel" style="display: none"></div>
 
 <dialog id="connectDialog">
 	<p>Connect to Relay server</p>
 	<form id="connectForm">
-	<input name="address">
-	<input required pattern="\d+" name="port">
+	<label for="connect-address">IP address</label>
+	<input name="address" id="connect-address" required pattern="[\d.]+">
+	<label for="connect-port">Port</label>
+	<input name="port" id="connect-port" required pattern="\d+">
+	<button type="button" id="connect-cancel">Cancel</button>
 	<button type="submit">Connect</button>
 	</form>
 </dialog>

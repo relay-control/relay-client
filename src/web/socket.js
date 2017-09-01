@@ -9,31 +9,52 @@ modal.show = function(text) {
 }
 
 
-const client = new net.Socket()
+var host = "192.168.0.202:57882"
 
-client.on('connect', () => {
-	//'connect' listener
-	console.log('connected to Relay server!')
-})
+class socket {
+	connect(address, port) {
+		let ws = new WebSocket('ws://' + address + ':' + port)
+		ws.onopen = (e) => this.onopen(e)
+		ws.onclose = (e) => this.onclose(e)
+		ws.onmessage = (e) => this.onmessage(e)
+		ws.onerror = (e) => this.onerror(e)
+		this.ws = ws
+		this.address = address
+		this.port = port
+	}
+	
+	send(data) {
+		this.ws.send(data)
+	}
+	
+	isConnected() {
+		return this.ws && this.ws.readyState === WebSocket.OPEN
+	}
+	
+	onopen(e) {
+		console.log('connected to Relay server!')
+		console.log(this.isConnected())
+		let status = document.getElementById('connection-status')
+		status.textContent = "Connected to " + this.address
+	}
+	
+	onclose() {
+		console.log('connection to Relay server closed')
+	}
+	
+	onmessage(e) {
+		console.log(e.data)
+	}
+	
+	onerror(err) {
+		// if (err.code === "ECONNREFUSED") console.log("Unable to connect to Relay server")
+		if (err.code === "ECONNREFUSED") modal.show("Unable to connect to Relay server")
+		console.dir(err)
+	}
+}
 
-client.on('data', (data) => {
-	console.log(data.toString())
-	client.end()
-})
+let ws = new socket()
 
-client.on('error', (err) => {
-	// if (err.code === "ECONNREFUSED") console.log("Unable to connect to Relay server")
-	if (err.code === "ECONNREFUSED") modal.show("Unable to connect to Relay server")
-	console.dir(err)
-})
-
-client.on('close', () => {
-	console.log('connection to Relay server closed')
-})
-
-client.on('end', () => {
-	console.log('disconnected from Relay server')
-})
 
 document.addEventListener("DOMContentLoaded", () => {
 	modal.dialog = document.body.appendChild(document.createElement("dialog"))
@@ -42,29 +63,20 @@ document.addEventListener("DOMContentLoaded", () => {
 	modal.button1.addEventListener("click", () => modal.dialog.close())
 	
 	let connectDialog = document.getElementById("connectDialog")
-	// connectDialog.showModal()
 	
 	let connectForm = document.getElementById("connectForm")
 	connectForm.addEventListener("submit", e => {
 		e.preventDefault()
-		console.log(e.target.elements.address.value, e.target.elements.port.value)
-		client.connect(e.target.elements.port.value, e.target.elements.address.value)
+		ws.connect(e.target.elements.address.value, e.target.elements.port.value)
+		connectDialog.close()
+	})
+	let cancel = document.getElementById("connect-cancel")
+	cancel.addEventListener('click', e => {
 		connectDialog.close()
 	})
 	connectForm.elements.address.value = "192.168.0.202"
-	connectForm.elements.port.value = "8098"
+	connectForm.elements.port.value = "57882"
 })
-
-var host = "192.168.0.202:57882"
-var ws = new WebSocket('ws://' + host)
-
-ws.onopen = function() {
-	console.log('The websocket is now open.')
-}
-
-ws.onmessage = function(event) {
-	console.log(event.data)
-}
 
 var RelaySocket = {}
 

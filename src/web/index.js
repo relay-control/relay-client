@@ -207,14 +207,42 @@ function applyStyle(selector, control, element, mainControl) {
 }
 
 function getPanels() {
-	fetch("http://192.168.0.202:57882/web.json")
+	return fetch("http://192.168.0.202:57882/web.json")
 	 .then(response => response.json())
-	 .then(e => console.log(e))
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+	// getPanels().then(console.log)
+	
+	let panels = [
+		"Advanced",
+		"Elite"
+	]
+	
+	let panelList = document.getElementById('panel-list')
+	for (panel of panels) {
+		let item = document.createElement('li')
+		let button = document.createElement('li')
+		item.textContent = panel
+		item.addEventListener('click', e => loadPanel(panel))
+		panelList.appendChild(item)
+	}
+	
+	let connect = document.getElementById('menu-connect')
+	connect.addEventListener('click', e => {
+		let connectDialog = document.getElementById("connectDialog")
+		connectDialog.showModal()
+	})
+})
 
 let domparser = new DOMParser()
 
 function loadPanel(panelName) {
+	let panel = document.getElementById('panel')
+	let menu = document.getElementById('menu')
+	menu.style.display = 'none'
+	panel.style.display = 'grid'
+	
 	let xhr = new XMLHttpRequest()
 	xhr.open("GET", `${panelName}.xml`)
 	xhr.send()
@@ -222,7 +250,6 @@ function loadPanel(panelName) {
 		let data = this.responseText
 		
 		let panel = parse(domparser.parseFromString(data, "text/xml")).panel
-		console.log(panel)
 		
 		// create a separate stylesheet for dynamic style rules
 		let link = document.createElement('style')
@@ -461,5 +488,3 @@ function loadPanel(panelName) {
 		}
 	}
 }
-
-loadPanel("Elite")
