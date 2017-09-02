@@ -30,7 +30,7 @@ function buttonPressed(element) {
 	}
 	element.dataset.pressed = true
 	element.classList.add("pressed")
-	console.log("pressed ", element.id)
+	// console.log("pressed ", element.id)
 }
 
 function buttonReleased(element) {
@@ -43,7 +43,7 @@ function buttonReleased(element) {
 	}
 	delete element.dataset.pressed
 	element.classList.remove("pressed")
-	console.log("released", element.id)
+	// console.log("released", element.id)
 }
 
 ControlTypes['Button'] = {

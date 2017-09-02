@@ -121,22 +121,6 @@ function parseColor(color, alpha) {
 	return color
 }
 
-function createControl(type) {
-	switch (type) {
-		case "Button":
-			var element = document.createElement("button")
-			break
-		case "Slider":
-			var element = document.createElement("input")
-			element.type = "range"
-			break
-		case "Text":
-			var element = document.createElement("span")
-			break
-	}
-	return element
-}
-
 let stylesheet
 
 let rules = {}
@@ -209,6 +193,45 @@ let currentPanel
 
 function getAssetPath(file) {
 	return `${ws.server}/${currentPanel}/${file}`
+}
+
+class Label {
+	constructor() {
+	}
+	
+	setPosition(position) {
+		if (position) setFlexPosition(this.element.style, position)
+	}
+}
+
+class TextLabel extends Label {
+	constructor() {
+		super()
+		let textLabel = document.createElement('div')
+		textLabel.classList.add('label', 'text')
+		this.element = textLabel
+	}
+	
+	setText(text) {
+		this.element.textContent = text
+	}
+}
+
+class IconLabel extends Label {
+	constructor() {
+		super()
+		let iconLabel = document.createElement('div')
+		iconLabel.classList.add('label', 'icon')
+		let icon = document.createElement('i')
+		icon.classList.add('fa', 'fa-fw', 'fa-2x')
+		iconLabel.appendChild(icon)
+		this.element = iconLabel
+		this.icon = icon
+	}
+	
+	setIcon(icon) {
+		this.icon.classList.add('fa-' + icon)
+	}
 }
 
 let domparser = new DOMParser()
@@ -306,114 +329,63 @@ function loadPanel(panelName) {
 				style.height = control.heightw
 			}
 			if (control.label) {
-				// label.textContent = control.label.text
-				
 				if ('text' in control.label && 'icon' in control.label) {
 					if (control.label['text-anchor'] === control.label['icon-anchor']) {
-						// let label = document.createElement('div')
-						// label.classList.add('label')
+						let textLabel = new TextLabel()
+						textLabel.setText(control.label.text)
+						textLabel.setPosition(control.label['text-position'] || control.label.position)
 						
-						let label = element
-						
-						let textLabel = document.createElement('div')
-						textLabel.classList.add('label', 'text')
-						textLabel.textContent = control.label.text
-						label.appendChild(textLabel)
-						
-						let iconLabel = document.createElement('div')
-						iconLabel.classList.add('label', 'icon')
-						let icon = document.createElement('i')
-						icon.classList.add('fa', 'fa-fw', 'fa-2x', 'fa-' + control.label.icon)
-						iconLabel.appendChild(icon)
-						label.appendChild(iconLabel)
+						let iconLabel = new IconLabel()
+						iconLabel.setIcon(control.label.icon)
+						iconLabel.setPosition(control.label['icon-position'] || control.label.position)
 						
 						if (control.label.anchor === 'container') {
-							// cell.appendChild(label)
-							cell.appendChild(textLabel)
-							cell.appendChild(iconLabel)
+							cell.appendChild(textLabel.element)
+							cell.appendChild(iconLabel.element)
 						} else {
-							// element.appendChild(label)
-							element.appendChild(textLabel)
-							element.appendChild(iconLabel)
-						}
-						
-						if (control.label.position) {
-							setFlexPosition(label.style, control.label.position)
-						}
-						if (control.label['text-position']) {
-							setFlexPosition(textLabel.style, control.label['text-position'])
-						}
-						if (control.label['icon-position']) {
-							setFlexPosition(iconLabel.style, control.label['icon-position'])
+							element.appendChild(textLabel.element)
+							element.appendChild(iconLabel.element)
 						}
 					} else {
-						let textLabel = document.createElement('div')
-						textLabel.classList.add('label', 'text')
-						textLabel.textContent = control.label.text
+						let textLabel = new TextLabel()
+						textLabel.setText(control.label.text)
+						textLabel.setPosition(control.label['text-position'] || control.label.position)
 						
 						if (control.label['text-anchor'] === 'container') {
-							cell.appendChild(textLabel)
+							cell.appendChild(textLabel.element)
 						} else {
-							element.appendChild(textLabel)
+							element.appendChild(textLabel.element)
 						}
 						
-						let iconLabel = document.createElement('div')
-						iconLabel.classList.add('label', 'icon')
-						let icon = document.createElement('i')
-						icon.classList.add('fa', 'fa-fw', 'fa-2x', 'fa-' + control.label.icon)
-						iconLabel.appendChild(icon)
+						let iconLabel = new IconLabel()
+						iconLabel.setIcon(control.label.icon)
+						iconLabel.setPosition(control.label['icon-position'] || control.label.position)
 						
 						if (control.label['icon-anchor'] === 'container') {
-							cell.appendChild(iconLabel)
+							cell.appendChild(iconLabel.element)
 						} else {
-							element.appendChild(iconLabel)
-						}
-						
-						if (control.label.position) {
-							setFlexPosition(label.style, control.label.position)
-						}
-						if (control.label['text-position']) {
-							setFlexPosition(textLabel.style, control.label['text-position'])
-						}
-						if (control.label['icon-position']) {
-							setFlexPosition(iconLabel.style, control.label['icon-position'])
+							element.appendChild(iconLabel.element)
 						}
 					}
 				} else if (control.label.text) {
-					let textLabel = document.createElement('div')
-					textLabel.classList.add('label', 'text')
-					textLabel.textContent = control.label.text
+					let textLabel = new TextLabel()
+					textLabel.setText(control.label.text)
+					textLabel.setPosition(control.label['text-position'] || control.label.position)
 					
 					if (control.label['text-anchor'] === 'container') {
-						cell.appendChild(textLabel)
+						cell.appendChild(textLabel.element)
 					} else {
-						element.appendChild(textLabel)
-					}
-					
-					if (control.label.position) {
-						setFlexPosition(textLabel.style, control.label.position)
-					}
-					if (control.label['text-position']) {
-						setFlexPosition(textLabel.style, control.label['text-position'])
+						element.appendChild(textLabel.element)
 					}
 				} else if (control.label.icon) {
-					let iconLabel = document.createElement('div')
-					iconLabel.classList.add('label', 'icon')
-					let icon = document.createElement('i')
-					icon.classList.add('fa', 'fa-fw', 'fa-2x', 'fa-' + control.label.icon)
-					iconLabel.appendChild(icon)
+					let iconLabel = new IconLabel()
+					iconLabel.setIcon(control.label.icon)
+					iconLabel.setPosition(control.label['icon-position'] || control.label.position)
 					
 					if (control.label['icon-anchor'] === 'container') {
-						cell.appendChild(iconLabel)
+						cell.appendChild(iconLabel.element)
 					} else {
-						element.appendChild(iconLabel)
-					}
-					
-					if (control.label.position) {
-						setFlexPosition(iconLabel.style, control.label.position)
-					}
-					if (control.label['icon-position']) {
-						setFlexPosition(iconLabel.style, control.label['icon-position'])
+						element.appendChild(iconLabel.element)
 					}
 				}
 			}
