@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	
 	connectForm.elements.address.value = '192.168.0.202'
 	connectForm.elements.port.value = '57882'
-	ws.connect(connectForm.elements.address.value, connectForm.elements.port.value)
+	// ws.connect(connectForm.elements.address.value, connectForm.elements.port.value)
 })
 
 var RelaySocket = {}

@@ -1,7 +1,7 @@
 class socket {
 	connect(address, port) {
 		if (this.isConnected())
-			this.ws.close()
+			this.ws.close(4001)
 		let url = new URL(`http://${address}:${port}`)
 		let ws = new WebSocket('ws://' + address + ':' + port)
 		ws.onmessage = (e) => this.onmessage(e)
@@ -16,6 +16,10 @@ class socket {
 	
 	sendInput(data) {
 		this.ws.send(data)
+	}
+	
+	close(code, reason) {
+		this.ws.close(code, reason)
 	}
 	
 	isConnected() {
@@ -39,11 +43,13 @@ class socket {
 		document.getElementById('connectDialog').close()
 	}
 	
-	onclose() {
+	onclose(e) {
 		let status = document.getElementById('connection-status')
 		status.textContent = "Not connected"
 		document.getElementById('loading').style.visibility = 'hidden'
-		document.getElementById('connectDialog').close()
+		if (e.code !== 4001)
+			document.getElementById('connectDialog').close()
+		console.log(e)
 		console.log('connection to Relay server closed')
 	}
 	
