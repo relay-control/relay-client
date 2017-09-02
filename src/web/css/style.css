@@ -149,15 +149,41 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 #menu {
-	displayw: flex;
+	width: 400px;
+	margin: auto;
+	/*
+	display: flex;
+	*/
 	justify-content: center;
+	flex-direction: column;
 }
 
 #menu button {
 	font-family: inherit;
+	/*
+	background: #eee;
+	border: 1px solid #888;
+	border-radius: 5px;
+	*/
+}
+
+#panel-list {
+	list-style-type: none;
+	padding: 0;
+}
+
+h3 {
+		vertical-align: middle;
+}
+
+#panel-list li {
+	background: #eee;
+	padding: 4px;
+	margin: 2px;
 }
 
 dialog {
+	font-family: 'PT Sans';
 	border: none;
 }
 
@@ -169,7 +195,17 @@ dialog p {
 	font-size: 20px;
 }
 
+dialog div.input {
+	display: inline-block;
+}
+
+dialog label {
+	display: block;
+	font-weight: bold;
+}
+
 dialog input {
+	font-family: inherit;
 	font-size: 20px;
 }
 
@@ -178,6 +214,7 @@ dialog input[name=port] {
 }
 
 dialog button {
+	font-family: inherit;
 	font-size: 20px;
 	padding: 8px;
 	border: none;

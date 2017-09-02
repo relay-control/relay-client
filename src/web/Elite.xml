@@ -112,8 +112,5 @@
 				</Shadows>
 			</Thumb>
 		</Slider>
-		<Textw text="Hahn Gateway">
-			<Position x="5" y="2"/>
-		</Text>
 	</Controls>
 </Panel>

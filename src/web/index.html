@@ -14,11 +14,13 @@
 
 <body>
 <div id="menu">
-<h1 id="connection-status">Connected to 192.168.0.202</h1>
+<h1 id="connection-status">Not connected</h1>
 <button id="menu-connect">Connect</button>
-<h3 id="connection-status">Available panels</h3>
-<button id="menu-refresh">Refresh</button>
-<ul id="panel-list"></ul>
+<div id="panel-list2" style="visibility: hidden">
+	<h3>Available panels<button id="menu-refresh"><i class="fa fa-refresh fa-fw fa-2x"></i></button></h3>
+	
+	<ul id="panel-list"></ul>
+</div>
 </div>
 
 <div id="panel" style="display: none"></div>
@@ -26,10 +28,17 @@
 <dialog id="connectDialog">
 	<p>Connect to Relay server</p>
 	<form id="connectForm">
-	<label for="connect-address">IP address</label>
-	<input name="address" id="connect-address" required pattern="[\d.]+">
-	<label for="connect-port">Port</label>
-	<input name="port" id="connect-port" required pattern="\d+">
+	<div>
+		<div class="input">
+			<label for="connect-address">IP address</label>
+			<input name="address" id="connect-address" required pattern="[\d.]+">
+		</div>
+		<div class="input">
+			<label for="connect-port">Port</label>
+			<input name="port" id="connect-port" required pattern="\d+">
+		</div>
+		<i id="loading" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw" style="visibility: hidden"></i>
+	</div>
 	<button type="button" id="connect-cancel">Cancel</button>
 	<button type="submit">Connect</button>
 	</form>

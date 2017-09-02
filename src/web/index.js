@@ -206,8 +206,57 @@ function applyStyle(selector, control, element, mainControl) {
 	}
 }
 
+let ws = new socket()
+
+
+var modal = {}
+
+modal.show = function(text) {
+	this.text.textContent = text
+	this.button1.textContent = "OK"
+	this.dialog.showModal()
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+	modal.dialog = document.body.appendChild(document.createElement('dialog'))
+	modal.text = modal.dialog.appendChild(document.createElement('p'))
+	modal.button1 = modal.dialog.appendChild(document.createElement('button'))
+	modal.button1.addEventListener('click', () => modal.dialog.close())
+	
+	let connectDialog = document.getElementById('connectDialog')
+	
+	let connectForm = document.getElementById('connectForm')
+	connectForm.addEventListener('submit', e => {
+		e.preventDefault()
+		ws.connect(e.target.elements.address.value, e.target.elements.port.value)
+		document.getElementById('loading').style.visibility = 'visible'
+	})
+	let cancel = document.getElementById('connect-cancel')
+	cancel.addEventListener('click', e => {
+		connectDialog.close()
+	})
+	connectDialog.showModal()
+	
+	connectForm.elements.address.value = '192.168.0.202'
+	connectForm.elements.port.value = '57882'
+	ws.connect(connectForm.elements.address.value, connectForm.elements.port.value)
+})
+
+var RelaySocket = {}
+
+RelaySocket.sendInput = function(input) {
+	ws.sendInput(JSON.stringify(input))
+}
+
+let currentPanel
+
+function getAssetPath(file) {
+	return `${ws.server}/${currentPanel}/${file}`
+}
+
 function getPanels() {
-	return fetch("http://192.168.0.202:57882/web.json", {cache: 'no-store'})
+	return fetch(`${ws.server}/web.json`, {cache: 'no-store'})
 	 .then(response => response.json())
 }
 
@@ -226,11 +275,6 @@ function updatePanels() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-	let panels = [
-		"Advanced",
-		"Elite"
-	]
-	
 	let connect = document.getElementById('menu-connect')
 	connect.addEventListener('click', e => {
 		let connectDialog = document.getElementById("connectDialog")
@@ -251,13 +295,13 @@ function loadPanel(panelName) {
 	menu.style.display = 'none'
 	panel.style.display = 'grid'
 	
+	currentPanel = panelName
+	
 	let xhr = new XMLHttpRequest()
-	xhr.open("GET", `${panelName}.xml`)
+	xhr.open("GET", `${ws.server}/${panelName}.xml`)
 	xhr.send()
 	xhr.onload = function() {
-		let data = this.responseText
-		
-		let panel = parse(domparser.parseFromString(data, "text/xml")).panel
+		let {panel} = parse(domparser.parseFromString(this.responseText, "text/xml"))
 		
 		// create a separate stylesheet for dynamic style rules
 		let link = document.createElement('style')
@@ -267,7 +311,11 @@ function loadPanel(panelName) {
 		let panelElement = document.getElementById('panel')
 		if (panel.background) {
 			panelElement.style.backgroundColor = panel.background.color
-			panelElement.style.backgroundImage = panel.background.image
+			if (panel.background.image) {
+				panelElement.style.backgroundImage = `url(${getAssetPath(panel.background.image)})`
+				panelElement.style.backgroundSize = 'cover'
+				panelElement.style.backgroundPosition = 'center'
+			}
 		}
 		panelElement.style.gridTemplateColumns = `repeat(${panel.grid.columns}, 1fr)`
 		panelElement.style.gridTemplateRows = `repeat(${panel.grid.rows}, 1fr)`
@@ -493,6 +541,12 @@ function loadPanel(panelName) {
 			
 			// redraw??
 			// sel.style.display = 'run-in'; setTimeout(function () { sel.style.display = 'block'; }, 0);
+		}
+		// force a redraw of square elements since they get borked if dialog was shown prior to loading a panel
+		let squares = document.querySelectorAll('.cell.square > .container, .cell.circle > .container')
+		for (let square of squares) {
+			square.style.display = 'none'
+			setTimeout(() => {square.style.display = 'inline-block'}, 0)
 		}
 	}
 }
