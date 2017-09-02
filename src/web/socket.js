@@ -14,10 +14,10 @@ var host = "192.168.0.202:57882"
 class socket {
 	connect(address, port) {
 		let ws = new WebSocket('ws://' + address + ':' + port)
+		ws.onmessage = (e) => this.onmessage(e)
 		ws.onopen = (e) => this.onopen(e)
 		ws.onclose = (e) => this.onclose(e)
-		ws.onmessage = (e) => this.onmessage(e)
-		ws.onerror = (e) => this.onerror(e)
+		ws.onerror = (err) => this.onerror(err)
 		this.ws = ws
 		this.address = address
 		this.port = port
@@ -31,19 +31,22 @@ class socket {
 		return this.ws && this.ws.readyState === WebSocket.OPEN
 	}
 	
+	onmessage(e) {
+		console.log(e.data)
+	}
+	
 	onopen(e) {
 		console.log('connected to Relay server!')
 		console.log(this.isConnected())
+		
+		updatePanels()
+		
 		let status = document.getElementById('connection-status')
 		status.textContent = "Connected to " + this.address
 	}
 	
 	onclose() {
 		console.log('connection to Relay server closed')
-	}
-	
-	onmessage(e) {
-		console.log(e.data)
 	}
 	
 	onerror(err) {

@@ -207,31 +207,39 @@ function applyStyle(selector, control, element, mainControl) {
 }
 
 function getPanels() {
-	return fetch("http://192.168.0.202:57882/web.json")
+	return fetch("http://192.168.0.202:57882/web.json", {cache: 'no-store'})
 	 .then(response => response.json())
 }
 
+function updatePanels() {
+	getPanels().then(panels => {
+		let panelList = document.getElementById('panel-list')
+		panelList.innerHTML = ''
+		for (let panel of panels) {
+			let item = document.createElement('li')
+			let button = document.createElement('li')
+			item.textContent = panel
+			item.addEventListener('click', e => loadPanel(panel))
+			panelList.appendChild(item)
+		}
+	})
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-	// getPanels().then(console.log)
-	
 	let panels = [
 		"Advanced",
 		"Elite"
 	]
 	
-	let panelList = document.getElementById('panel-list')
-	for (panel of panels) {
-		let item = document.createElement('li')
-		let button = document.createElement('li')
-		item.textContent = panel
-		item.addEventListener('click', e => loadPanel(panel))
-		panelList.appendChild(item)
-	}
-	
 	let connect = document.getElementById('menu-connect')
 	connect.addEventListener('click', e => {
 		let connectDialog = document.getElementById("connectDialog")
 		connectDialog.showModal()
+	})
+	
+	let refresh = document.getElementById('menu-refresh')
+	refresh.addEventListener('click', e => {
+		updatePanels()
 	})
 })
 
