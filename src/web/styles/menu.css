@@ -1,0 +1,97 @@
+#menu {
+	background: #eee;
+}
+
+#menu header {
+	height: 100px;
+	background: #333;
+}
+
+#menu header h1 {
+	/*height: 30px;*/
+	color: white;
+	background: #111;
+	text-align: center;
+}
+
+#menu {
+	font-family: 'PT Sans';
+}
+
+#menu section {
+	background: white;
+	width: 500px;
+	padding: 50px;
+	margin: auto;
+	/*
+	display: flex;
+	*/
+	justify-content: center;
+	flex-direction: column;
+}
+
+#menu button {
+	font-family: inherit;
+	/*
+	background: #eee;
+	border: 1px solid #888;
+	border-radius: 5px;
+	*/
+}
+
+#panel-list {
+	list-style-type: none;
+	padding: 0;
+}
+
+h3 {
+		vertical-align: middle;
+}
+
+#panel-list li {
+	background: #ddd;
+	padding: 8px;
+	margin: 2px;
+	font-size: 20px;
+	font-weight: bold;
+}
+
+dialog {
+	text-align: center;
+	font-family: 'PT Sans';
+	border: none;
+}
+
+dialog::backdrop {
+	background: rgba(0, 0, 0, 0.5);
+}
+
+dialog p {
+	font-size: 20px;
+}
+
+dialog div.input {
+	display: inline-block;
+}
+
+dialog label {
+	display: block;
+	font-weight: bold;
+}
+
+dialog input {
+	font-family: inherit;
+	font-size: 20px;
+}
+
+dialog input[name=port] {
+	width: 80px;
+}
+
+dialog button {
+	font-family: inherit;
+	font-size: 20px;
+	padding: 8px;
+	border: none;
+	outline: none;
+}
