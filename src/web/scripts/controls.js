@@ -1,23 +1,124 @@
-var ControlTypes = {}
-
 class Control {
-	constructor() {
+	constructor(panel) {
+		this.id = panel.getNextID()
+		
 		this.area = document.createElement('div')
 		this.area.classList.add('cell')
+		this.area.id = this.id
+		panel.addControl(this)
 		
 		this.container = document.createElement('div')
 		this.container.classList.add('container')
 		this.area.appendChild(this.container)
 	}
 	
+	addClass(className) {
+		this.area.classList.add(className)
+	}
+	
 	setRow(row) {
+		this.row = row
 		this.area.style.gridRowStart = row
 	}
 	
 	setColumn(column) {
+		this.column = column
 		this.area.style.gridColumnStart = column
 	}
+	
+	setRowSpan(span) {
+		this.area.style.gridRowEnd = this.row + span
+	}
+	
+	setColumnSpan(span) {
+		this.area.style.gridColumnEnd = this.column + span
+	}
 }
+
+class Button extends Control {
+	constructor(panel) {
+		super(panel)
+		this.control = document.createElement('button')
+	}
+}
+
+class Slider extends Control {
+	constructor(panel) {
+		super(panel)
+		this.control = document.createElement('input')
+		this.control.type = 'range'
+	}
+	
+	setSnapValue(value) {
+		let listID = 'datalist-' + this.id
+		this.control.setAttribute('list', listID)
+		let datalist = document.createElement('datalist')
+		datalist.id = listID
+		this.container.appendChild(datalist)
+		let option = document.createElement('option')
+		option.value = value
+		datalist.appendChild(option)
+	}
+}
+
+class Label {
+	constructor(parent) {
+		this.element = document.createElement('div')
+		this.element.classList.add('label')
+		this.parent = parent
+	}
+	
+	setPosition(position) {
+		if (position) setFlexPosition(this.element.style, position)
+	}
+	
+	setAnchor(anchor) {
+		if (anchor === 'container') {
+			this.parent.area.appendChild(this.element)
+		} else {
+			this.parent.control.appendChild(this.element)
+		}
+	}
+}
+
+class ValueLabel extends Label {
+	constructor(parent) {
+		super(parent)
+		this.element.classList.add('value')
+		parent.value = this
+	}
+	
+	setText(text) {
+		this.element.textContent = text
+	}
+}
+
+class TextLabel extends Label {
+	constructor(parent) {
+		super(parent)
+		this.element.classList.add('text')
+	}
+	
+	setText(text) {
+		this.element.textContent = text
+	}
+}
+
+class IconLabel extends Label {
+	constructor(parent) {
+		super(parent)
+		this.element.classList.add('icon')
+		this.icon = document.createElement('i')
+		this.icon.classList.add('fa', 'fa-fw', 'fa-2x')
+		this.element.appendChild(this.icon)
+	}
+	
+	setIcon(icon) {
+		this.icon.classList.add('fa-' + icon)
+	}
+}
+
+var ControlTypes = {}
 
 function buttonActivated(element) {
 	if (element.dataset.button)
@@ -65,21 +166,6 @@ function buttonReleased(element) {
 	// console.log("released", element.id)
 }
 
-class Button extends Control {
-	constructor() {
-		super()
-		this.control = document.createElement('button')
-	}
-}
-
-class Slider extends Control {
-	constructor() {
-		super()
-		this.control = document.createElement('input')
-		this.control.type = 'range'
-	}
-}
-
 ControlTypes['Button'] = {
 	tag: 'button',
 	events: {
@@ -103,9 +189,6 @@ ControlTypes['Button'] = {
 			buttonReleased(e.currentTarget)
 		},
 	},
-	onCreate: (element, control) => {
-		element.dataset.mode = control.mode
-	},
 }
 
 ControlTypes['Slider'] = {
@@ -115,7 +198,7 @@ ControlTypes['Slider'] = {
 			// console.dir(e)
 			// console.log(e.currentTarget.value)
 			// buttonReleased(e.currentTarget)
-			e.currentTarget.valueLabel.textContent = e.currentTarget.value + '%'
+			e.currentTarget.valueLabel.setText(e.currentTarget.value + '%')
 			if (e.currentTarget.dataset.axis)
 				RelaySocket.sendInput({
 					type2: 'axis',
@@ -141,6 +224,4 @@ ControlTypes['Slider'] = {
 ControlTypes['Text'] = {
 	tag: 'span',
 	events: {},
-	onCreate: (element) => {
-	},
 }

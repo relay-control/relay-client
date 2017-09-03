@@ -121,21 +121,6 @@ function parseColor(color, alpha) {
 	return color
 }
 
-let stylesheet
-
-let rules = {}
-
-function getStyleRule(selector) {
-	let rule = rules[selector]
-	if (!rule) {
-		let index = stylesheet.rules.length
-		stylesheet.insertRule(`${selector} {}`, index)
-		rule = stylesheet.rules[index].style
-		rules[selector] = rule
-	}
-	return rule
-}
-
 const flexPositions = {
 	top: 'flex-start',
 	left: 'flex-start',
@@ -163,6 +148,21 @@ function setFlexPosition(style, position) {
 				break
 		}
 	}
+}
+
+let stylesheet
+
+let rules = {}
+
+function getStyleRule(selector) {
+	let rule = rules[selector]
+	if (!rule) {
+		let index = stylesheet.rules.length
+		stylesheet.insertRule(`${selector} {}`, index)
+		rule = stylesheet.rules[index].style
+		rules[selector] = rule
+	}
+	return rule
 }
 
 function applyStyle(selector, control, element, mainControl) {
@@ -195,51 +195,18 @@ function getAssetPath(file) {
 	return `${ws.server}/${currentPanel}/${file}`
 }
 
-class Label {
-	constructor() {
-		let label = document.createElement('div')
-		label.classList.add('label')
-		this.element = label
-	}
-	
-	setPosition(position) {
-		if (position) setFlexPosition(this.element.style, position)
-	}
-}
-
-class TextLabel extends Label {
-	constructor() {
-		super()
-		this.element.classList.add('text')
-	}
-	
-	setText(text) {
-		this.element.textContent = text
-	}
-}
-
-class IconLabel extends Label {
-	constructor() {
-		super()
-		this.element.classList.add('icon')
-		let icon = document.createElement('i')
-		icon.classList.add('fa', 'fa-fw', 'fa-2x')
-		this.element.appendChild(icon)
-		this.icon = icon
-	}
-	
-	setIcon(icon) {
-		this.icon.classList.add('fa-' + icon)
-	}
-}
-
 class Panel {
 	constructor() {
 		this.element = document.getElementById('panel')
+		this.id = 1
 	}
 	
 	addControl(control) {
 		this.element.appendChild(control.area)
+	}
+	
+	getNextID() {
+		return 'control' + this.id++
 	}
 }
 
@@ -306,101 +273,84 @@ function loadPanel(panelName) {
 			let controlType = ControlTypes[control.tag]
 			switch (control.tag) {
 				case 'Button':
-					var c = new Button()
+					var c = new Button(p)
+					c.control.dataset.mode = control.mode
 					break
 				case 'Slider':
-					var c = new Slider()
+					var c = new Slider(p)
 					break
 			}
 			
-			let {area: cell, control: element, container} = c
+			let {area, container, control: element} = c
 			
 			element.classList.add('control')
 			
 			c.setColumn(control.position.x)
 			c.setRow(control.position.y)
-			cell.style.gridColumnEnd = control.position.x + (control.width || 1)
-			cell.style.gridRowEnd = control.position.y + (control.height || 1)
+			c.setColumnSpan(control.width || 1)
+			c.setRowSpan(control.height || 1)
 			
-			// assign a dynamic ID that we can use as a selector to apply individual styling
-			cell.id = 'control' + n++
+			c.addClass(control.tag.toLowerCase())
 			
-			cell.classList.add(control.tag.toLowerCase())
+			container.appendChild(element)
 			
-			if (control.square) cell.classList.add('square')
-			if (control.circle) cell.classList.add('circle')
+			if ('inherits' in control)
+				c.addClass(control.inherits)
+			else
+				c.addClass('default')
+			
+			if (control.square) c.addClass('square')
+			if (control.circle) c.addClass('circle')
 			if (control.square || control.circle) {
-				cell.classList.add('adjust-' + (control.adjustSize || 'height'))
+				c.addClass('adjust-' + (control.adjustSize || 'height'))
 				let img = container.appendChild(document.createElement('img'))
 				// img.src = "square.png"
 				img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="
 			}
 			
-			if ('inherits' in control)
-				cell.classList.add(control.inherits)
-			else
-				cell.classList.add('default')
+			applyStyle(`#${area.id} .control`, control, element)
 			
-			applyStyle(`#${cell.id} .control`, control, element)
 			if (control.active) {
-				applyStyle(`#${cell.id} .control.pressed, #${cell.id} .control.active`, control.active, element)
+				applyStyle(`#${area.id} .control.pressed, #${area.id} .control.active`, control.active, element)
 			}
-			controlType.onCreate(element, control)
 			
 			if (control.heightw) {
-				let style = getStyleRule(`#${cell.id} .container`)
+				let style = getStyleRule(`#${area.id} .container`)
 				style.height = control.heightw
 			}
-			if (control.label) {
-				if (control.label.text) {
-					let textLabel = new TextLabel()
-					textLabel.setText(control.label.text)
-					textLabel.setPosition(control.label['text-position'] || control.label.position)
-					
-					if ((control.label['text-anchor'] || control.label.anchor) === 'container') {
-						cell.appendChild(textLabel.element)
-					} else {
-						element.appendChild(textLabel.element)
-					}
+			
+			let label = control.label
+			if (label) {
+				if (label.text) {
+					let textLabel = new TextLabel(c)
+					textLabel.setText(label.text)
+					textLabel.setPosition(label['text-position'] || label.position)
+					textLabel.setAnchor(label['text-anchor'] || label.anchor)
 				}
-				if (control.label.icon) {
-					let iconLabel = new IconLabel()
-					iconLabel.setIcon(control.label.icon)
-					iconLabel.setPosition(control.label['icon-position'] || control.label.position)
-					
-					if ((control.label['icon-anchor'] || control.label.anchor) === 'container') {
-						cell.appendChild(iconLabel.element)
-					} else {
-						element.appendChild(iconLabel.element)
-					}
+				if (label.icon) {
+					let iconLabel = new IconLabel(c)
+					iconLabel.setIcon(label.icon)
+					iconLabel.setPosition(label['icon-position'] || label.position)
+					iconLabel.setAnchor(label['icon-anchor'] || label.anchor)
 				}
-			}
-			if (control.value) {
-				let valueContainer = cell.appendChild(document.createElement('div'))
-				valueContainer.classList.add('label', 'value')
-				// let value = valueContainer.appendChild(document.createElement("span"))
-				value = valueContainer
-				value.textContent = "50%"
-				element.valueLabel = value
-				// element.step = 0.1
-				if (control.value.position) {
-					setFlexPosition(valueContainer.style, control.value.position)
-				}
-			}
-			if (control.action) {
-				if (control.action.type === 'joy')
-				element.dataset.button = parseInt(control.action.btn)
-			}
-			if (control.tag === 'Slider') {
-				element.setAttribute('list', 'datalist-' + cell.id)
-				let datalist = container.appendChild(document.createElement('datalist'))
-				datalist.id = 'datalist-' + cell.id
-				let option = datalist.appendChild(document.createElement('option'))
-				option.value = 50
 			}
 			
-			container.appendChild(element)
-			p.addControl(c)
+			if (control.action) {
+				element.action = control.action
+			}
+			
+			if (control.tag === 'Slider') {
+				// c.setSnapValue(control.snap)
+				c.setSnapValue(50)
+				
+				if (control.value) {
+					let valueLabel = new ValueLabel(c)
+					valueLabel.setPosition(control.value.position)
+					valueLabel.setAnchor('container')
+					valueLabel.setText("50%")
+					element.valueLabel = valueLabel
+				}
+			}
 			
 			if (controlType.events) {
 				for (let [event, callback] of Object.entries(controlType.events)) {
@@ -409,7 +359,6 @@ function loadPanel(panelName) {
 			}
 			
 			// PNG - data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=
-			// PNG - data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABBJREFUeNpi+P//PwNAgAEACPwC/tuiTRYAAAAASUVORK5CYII=
 			// GIF - data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==
 			// GIF - data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=
 			
