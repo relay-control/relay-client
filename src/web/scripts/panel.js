@@ -197,6 +197,9 @@ function getAssetPath(file) {
 
 class Label {
 	constructor() {
+		let label = document.createElement('div')
+		label.classList.add('label')
+		this.element = label
 	}
 	
 	setPosition(position) {
@@ -207,9 +210,7 @@ class Label {
 class TextLabel extends Label {
 	constructor() {
 		super()
-		let textLabel = document.createElement('div')
-		textLabel.classList.add('label', 'text')
-		this.element = textLabel
+		this.element.classList.add('text')
 	}
 	
 	setText(text) {
@@ -220,17 +221,25 @@ class TextLabel extends Label {
 class IconLabel extends Label {
 	constructor() {
 		super()
-		let iconLabel = document.createElement('div')
-		iconLabel.classList.add('label', 'icon')
+		this.element.classList.add('icon')
 		let icon = document.createElement('i')
 		icon.classList.add('fa', 'fa-fw', 'fa-2x')
-		iconLabel.appendChild(icon)
-		this.element = iconLabel
+		this.element.appendChild(icon)
 		this.icon = icon
 	}
 	
 	setIcon(icon) {
 		this.icon.classList.add('fa-' + icon)
+	}
+}
+
+class Panel {
+	constructor() {
+		this.element = document.getElementById('panel')
+	}
+	
+	addControl(control) {
+		this.element.appendChild(control.area)
 	}
 }
 
@@ -255,7 +264,8 @@ function loadPanel(panelName) {
 		document.head.appendChild(link)
 		stylesheet = link.sheet
 		
-		let panelElement = document.getElementById('panel')
+		let p = new Panel()
+		let panelElement = p.element
 		if (panel.background) {
 			panelElement.style.backgroundColor = panel.background.color
 			if (panel.background.image) {
@@ -293,96 +303,72 @@ function loadPanel(panelName) {
 		let n = 1
 		
 		for (let control of panel.controls) {
-			let cell = document.createElement("div")
-			panelElement.appendChild(cell)
-			cell.style.gridColumnStart = control.position.x
+			let controlType = ControlTypes[control.tag]
+			switch (control.tag) {
+				case 'Button':
+					var c = new Button()
+					break
+				case 'Slider':
+					var c = new Slider()
+					break
+			}
+			
+			let {area: cell, control: element, container} = c
+			
+			element.classList.add('control')
+			
+			c.setColumn(control.position.x)
+			c.setRow(control.position.y)
 			cell.style.gridColumnEnd = control.position.x + (control.width || 1)
-			cell.style.gridRowStart = control.position.y
 			cell.style.gridRowEnd = control.position.y + (control.height || 1)
+			
+			// assign a dynamic ID that we can use as a selector to apply individual styling
 			cell.id = 'control' + n++
+			
 			cell.classList.add(control.tag.toLowerCase())
-			cell.classList.add('cell')
+			
 			if (control.square) cell.classList.add('square')
 			if (control.circle) cell.classList.add('circle')
+			if (control.square || control.circle) {
+				cell.classList.add('adjust-' + (control.adjustSize || 'height'))
+				let img = container.appendChild(document.createElement('img'))
+				// img.src = "square.png"
+				img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="
+			}
 			
-			let controlType = ControlTypes[control.tag]
-			let element = document.createElement(controlType.tag)
-			// assign a dynamic ID that we can use as a selector to apply individual styling
-			element.classList.add('control')
 			if ('inherits' in control)
 				cell.classList.add(control.inherits)
 			else
 				cell.classList.add('default')
-			if (controlType.attributes) {
-				for (let [attribute, value] of Object.entries(controlType.attributes)) {
-					element[attribute] = value
-				}
-			}
-			applyStyle(`#${cell.id} .control`, control, element)
-			controlType.onCreate(element, control)
 			
-			let container = cell.appendChild(document.createElement('div'))
-			container.classList.add('container')
+			applyStyle(`#${cell.id} .control`, control, element)
+			if (control.active) {
+				applyStyle(`#${cell.id} .control.pressed, #${cell.id} .control.active`, control.active, element)
+			}
+			controlType.onCreate(element, control)
 			
 			if (control.heightw) {
 				let style = getStyleRule(`#${cell.id} .container`)
 				style.height = control.heightw
 			}
 			if (control.label) {
-				if ('text' in control.label && 'icon' in control.label) {
-					if (control.label['text-anchor'] === control.label['icon-anchor']) {
-						let textLabel = new TextLabel()
-						textLabel.setText(control.label.text)
-						textLabel.setPosition(control.label['text-position'] || control.label.position)
-						
-						let iconLabel = new IconLabel()
-						iconLabel.setIcon(control.label.icon)
-						iconLabel.setPosition(control.label['icon-position'] || control.label.position)
-						
-						if (control.label.anchor === 'container') {
-							cell.appendChild(textLabel.element)
-							cell.appendChild(iconLabel.element)
-						} else {
-							element.appendChild(textLabel.element)
-							element.appendChild(iconLabel.element)
-						}
-					} else {
-						let textLabel = new TextLabel()
-						textLabel.setText(control.label.text)
-						textLabel.setPosition(control.label['text-position'] || control.label.position)
-						
-						if (control.label['text-anchor'] === 'container') {
-							cell.appendChild(textLabel.element)
-						} else {
-							element.appendChild(textLabel.element)
-						}
-						
-						let iconLabel = new IconLabel()
-						iconLabel.setIcon(control.label.icon)
-						iconLabel.setPosition(control.label['icon-position'] || control.label.position)
-						
-						if (control.label['icon-anchor'] === 'container') {
-							cell.appendChild(iconLabel.element)
-						} else {
-							element.appendChild(iconLabel.element)
-						}
-					}
-				} else if (control.label.text) {
+				if (control.label.text) {
 					let textLabel = new TextLabel()
 					textLabel.setText(control.label.text)
 					textLabel.setPosition(control.label['text-position'] || control.label.position)
 					
-					if (control.label['text-anchor'] === 'container') {
+					if ((control.label['text-anchor'] || control.label.anchor) === 'container') {
 						cell.appendChild(textLabel.element)
 					} else {
 						element.appendChild(textLabel.element)
 					}
-				} else if (control.label.icon) {
+				}
+				if (control.label.icon) {
 					let iconLabel = new IconLabel()
 					iconLabel.setIcon(control.label.icon)
 					iconLabel.setPosition(control.label['icon-position'] || control.label.position)
 					
-					if (control.label['icon-anchor'] === 'container') {
+					if ((control.label['icon-anchor'] || control.label.anchor) === 'container') {
 						cell.appendChild(iconLabel.element)
 					} else {
 						element.appendChild(iconLabel.element)
@@ -401,18 +387,9 @@ function loadPanel(panelName) {
 					setFlexPosition(valueContainer.style, control.value.position)
 				}
 			}
-			if (control.active) {
-				applyStyle(`#${cell.id} .control.pressed, #${cell.id} .control.active`, control.active, element)
-			}
 			if (control.action) {
 				if (control.action.type === 'joy')
 				element.dataset.button = parseInt(control.action.btn)
-			}
-			if (control.square || control.circle) {
-				cell.classList.add('adjust-' + (control.adjustSize || 'height'))
-				let img = container.appendChild(document.createElement('img'))
-				// img.src = "square.png"
-				img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="
 			}
 			if (control.tag === 'Slider') {
 				element.setAttribute('list', 'datalist-' + cell.id)
@@ -423,6 +400,7 @@ function loadPanel(panelName) {
 			}
 			
 			container.appendChild(element)
+			p.addControl(c)
 			
 			if (controlType.events) {
 				for (let [event, callback] of Object.entries(controlType.events)) {

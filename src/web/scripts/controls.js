@@ -1,5 +1,24 @@
 var ControlTypes = {}
 
+class Control {
+	constructor() {
+		this.area = document.createElement('div')
+		this.area.classList.add('cell')
+		
+		this.container = document.createElement('div')
+		this.container.classList.add('container')
+		this.area.appendChild(this.container)
+	}
+	
+	setRow(row) {
+		this.area.style.gridRowStart = row
+	}
+	
+	setColumn(column) {
+		this.area.style.gridColumnStart = column
+	}
+}
+
 function buttonActivated(element) {
 	if (element.dataset.button)
 		RelaySocket.sendInput({
@@ -46,6 +65,21 @@ function buttonReleased(element) {
 	// console.log("released", element.id)
 }
 
+class Button extends Control {
+	constructor() {
+		super()
+		this.control = document.createElement('button')
+	}
+}
+
+class Slider extends Control {
+	constructor() {
+		super()
+		this.control = document.createElement('input')
+		this.control.type = 'range'
+	}
+}
+
 ControlTypes['Button'] = {
 	tag: 'button',
 	events: {
@@ -76,9 +110,6 @@ ControlTypes['Button'] = {
 
 ControlTypes['Slider'] = {
 	tag: 'input',
-	attributes: {
-		type: 'range',
-	},
 	events: {
 		input: e => {
 			// console.dir(e)
