@@ -165,29 +165,6 @@ function getStyleRule(selector) {
 	return rule
 }
 
-function applyStyle(selector, control, element, mainControl) {
-	let style = getStyleRule(selector)
-	let data = control
-	if (data.width) style.width = data.width
-	if (data.height) style.height = data.height
-	for (let [property, handler] of Styles.global) {
-		if (property in data) handler(style, data[property], element, control)
-	}
-	if (Styles.controls[control.tag]) {
-		// for (let [property, handler] of Styles.global) {
-			// if (property in data) handler(style, data[property])
-		// }
-		if (Styles.controls[control.tag].children) {
-			for (let [child, selector2, handler] of Styles.controls[control.tag].children) {
-				if (child in control) {
-					applyStyle(selector + selector2, control[child], element, control)
-					if (handler) handler(style, control[child], element, control)
-				}
-			}
-		}
-	}
-}
-
 
 let currentPanel
 
@@ -249,25 +226,24 @@ function loadPanel(panelName) {
 		if (panel.templates) {
 			for (let template of panel.templates) {
 				// map each template to a CSS class
-				let selector = '.' + template.name
+				let selector = template.name
 				if (template.tag !== 'Control') selector += '.' + template.tag.toLowerCase()
 				if (template.padding) {
 					let style = getStyleRule(selector)
 					style.padding = `${template.padding.y} ${template.padding.x}`
 				}
+				let style = new TemplateStyle(selector)
+				style.apply(template)
 				if (template.label) {
-					let style = getStyleRule(selector + ' .label')
-					style.color = template.label.color
-					// applyStyle(selector + ' .label', template.label)
+					style.applyLabel(template.label)
 				}
 				if (template.active) {
-					applyStyle(selector + ' .control.pressed,' + selector + ' .control.active', template.active)
+					style.applyActive(template.active)
 				}
-				applyStyle(selector + ' .control', template)
 			}
 		}
 		
-		let n = 1
+		let devices = []
 		
 		for (let control of panel.controls) {
 			let controlType = ControlTypes[control.tag]
@@ -308,10 +284,13 @@ function loadPanel(panelName) {
 				img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="
 			}
 			
-			applyStyle(`#${area.id} .control`, control, element)
-			
+			let style = new ControlStyle(c)
+			style.apply(control)
+			if (control.label) {
+				style.applyLabel(control.label)
+			}
 			if (control.active) {
-				applyStyle(`#${area.id} .control.pressed, #${area.id} .control.active`, control.active, element)
+				style.applyActive(control.active)
 			}
 			
 			if (control.heightw) {
@@ -336,6 +315,7 @@ function loadPanel(panelName) {
 			}
 			
 			if (control.action) {
+				if (!devices.includes(control.action.device)) devices.push(control.action.device)
 				element.action = control.action
 			}
 			
@@ -366,10 +346,15 @@ function loadPanel(panelName) {
 			// sel.style.display = 'run-in'; setTimeout(function () { sel.style.display = 'block'; }, 0);
 		}
 		// force a redraw of square elements since they get borked if dialog was shown prior to loading a panel
-		let squares = document.querySelectorAll('.cell.square > .container, .cell.circle > .container')
+		let squares = document.querySelectorAll('.cell.square img, .cell.circle img')
 		for (let square of squares) {
-			square.style.display = 'none'
-			setTimeout(() => {square.style.display = 'inline-block'}, 0)
+			// square.style.display = 'none'
+			// setTimeout(() => {square.style.display = 'inline-block'}, 0)
+			
+			square.style.height = 'auto'
+			setTimeout(() => {square.style.height = '100%'}, 0)
 		}
+		
+		// request devices
 	}
 }

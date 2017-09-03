@@ -1,14 +1,62 @@
+function applyStyle(selector, control, element, mainControl) {
+	let style = getStyleRule(selector)
+	let data = control
+	style.color = data.color
+	if (data.width) style.width = data.width
+	if (data.height) style.height = data.height
+	for (let [property, handler] of Styles.global) {
+		if (property in data) handler(style, data[property], element, control)
+	}
+	if (Styles.controls[control.tag]) {
+		// for (let [property, handler] of Styles.global) {
+			// if (property in data) handler(style, data[property])
+		// }
+		if (Styles.controls[control.tag].children) {
+			for (let [child, selector2, handler] of Styles.controls[control.tag].children) {
+				if (child in control) {
+					applyStyle(selector + selector2, control[child], element, control)
+					if (handler) handler(style, control[child], element, control)
+				}
+			}
+		}
+	}
+}
+
+class Style {
+	constructor(selector) {
+		this.selector = selector
+	}
+	
+	apply(style) {
+		applyStyle(`${this.selector} .control`, style, this.control)
+	}
+	
+	applyLabel(style) {
+		applyStyle(`${this.selector} .label`, style, this.control)
+	}
+	
+	applyActive(style) {
+		applyStyle(`${this.selector} .control.pressed, ${this.selector} .control.active`, style, this.control)
+	}
+}
+
+class TemplateStyle extends Style {
+	constructor(template) {
+		super('.' + template)
+	}
+}
+
+class ControlStyle extends Style{
+	constructor(control) {
+		super('#' + control.id)
+		this.control = control.control
+	}
+}
+
 var Styles = {
 	global: [
 		['label', (style, data, element) => {
-			style.color = data.color
-			// if (data.icon) {
-				// let icon = document.createElement('i')
-				// icon.classList.add('fa', 'fa-fw', 'fa-2x', 'fa-' + data.icon)
-				// element.appendChild(icon)
-			// } else if (data.text) {
-				// element.textContent = data.text
-			// }
+			// style.color = data.color
 		}],
 		// ['padding', (style, data, element, control) => {
 			// style.padding = `${data.y} ${data.x}`
@@ -29,8 +77,8 @@ var Styles = {
 					if (point.stop) colorStop += ' ' +point.stop
 					gradient.push(colorStop)
 				}
-				gradient = gradient.join(", ")
-				if (data.gradient.type === "radial") {
+				gradient = gradient.join(', ')
+				if (data.gradient.type === 'radial') {
 					if (data.gradient.position) gradient = data.gradient.position + ', ' + gradient
 					style.backgroundImage = `-webkit-radial-gradient(${gradient})`
 				} else {
@@ -57,13 +105,6 @@ var Styles = {
 	],
 	controls: {
 		Slider: {
-			// ['datalist', (style, data) => {
-				// element.setAttribute("list", "datalist" + n)
-				// let datalist = cell.appendChild(document.createElement("datalist"))
-				// datalist.id = "datalist" + n
-				// let option = datalist.appendChild(document.createElement("option"))
-				// option.value = 50
-			// }],
 			children: [
 				['thumb', '::-webkit-slider-thumb', (style, data, element, control) => {
 					style.marginTop = `${-parseInt(data.height) / 2 + parseInt(control.track.height) / 2}px`
