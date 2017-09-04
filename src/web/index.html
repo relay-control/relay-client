@@ -15,26 +15,27 @@
 </head>
 
 <body>
+
 <div id="menu">
-<header>
-<h1>VPCP</h1>
-</header>
-<section>
-<h1 id="connection-status">Not connected</h1>
-<button id="menu-connect">Connect</button>
-<div id="panel-list2" style="visibility: hidden">
-	<h3>Available panels<button id="menu-refresh"><i class="fa fa-refresh fa-fw fa-2x"></i></button></h3>
-	
-	<ul id="panel-list"></ul>
-</div>
-</section>
+	<header>
+		<h1>VPCP</h1>
+	</header>
+	<section>
+		<h1 id="connection-status">Not connected</h1>
+		<button id="menu-connect">Connect</button>
+		<div id="panel-list2" style="visibility: hidden">
+			<h3>Available panels<button id="menu-refresh"><i class="fa fa-refresh fa-fw"></i></button></h3>
+			
+			<ul id="panel-list"></ul>
+		</div>
+	</section>
 </div>
 
 <div id="panel" style="display: none"></div>
 
 <dialog id="connectDialog">
 	<p>Connect to Relay server</p>
-	<form id="connectForm">
+	<form id="connect-form">
 		<div>
 			<div class="input">
 				<label for="connect-address">IP address</label>
@@ -44,10 +45,12 @@
 				<label for="connect-port">Port</label>
 				<input name="port" id="connect-port" required pattern="\d+">
 			</div>
-			<i id="loading" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw" style="visibility: hidden"></i>
 		</div>
-		<button type="button" id="connect-cancel">Cancel</button>
-		<button type="submit">Connect</button>
+		<div class="buttons">
+			<i id="loading" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw" style="visibility: hidden"></i>
+			<button type="submit">Connect</button>
+			<button type="button" id="connect-cancel">Cancel</button>
+		</div>
 	</form>
 </dialog>
 

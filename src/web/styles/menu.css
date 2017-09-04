@@ -1,8 +1,12 @@
 #menu {
+	display: flex;
+	flex-flow: column;
+	height: 100%;
 	background: #eee;
 }
 
 #menu header {
+	flex: 0 1 auto;
 	height: 100px;
 	background: #333;
 }
@@ -19,13 +23,11 @@
 }
 
 #menu section {
+	flex: 1 1 auto;
 	background: white;
 	width: 500px;
 	padding: 50px;
 	margin: auto;
-	/*
-	display: flex;
-	*/
 	justify-content: center;
 	flex-direction: column;
 }
@@ -92,6 +94,22 @@ dialog button {
 	font-family: inherit;
 	font-size: 20px;
 	padding: 8px;
-	border: none;
+	/* border: none; */
 	outline: none;
+}
+
+#connect-form {
+	display: flex;
+	flex-flow: column;
+}
+
+dialog .buttons {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 8px;
+}
+
+dialog .buttons button {
+	margin-left: 8px;
+	width: 100px;
 }

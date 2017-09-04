@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	
 	let connectDialog = document.getElementById('connectDialog')
 	
-	let connectForm = document.getElementById('connectForm')
+	let connectForm = document.getElementById('connect-form')
 	connectForm.addEventListener('submit', e => {
 		e.preventDefault()
 		ws.connect(e.target.elements.address.value, e.target.elements.port.value)

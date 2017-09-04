@@ -1,7 +1,7 @@
 function applyStyle(selector, control, element, mainControl) {
 	let style = getStyleRule(selector)
 	let data = control
-	style.color = data.color
+	style.color = parseColor(data.color, data.alpha)
 	if (data.width) style.width = data.width
 	if (data.height) style.height = data.height
 	for (let [property, handler] of Styles.global) {
@@ -38,6 +38,10 @@ class Style {
 	applyActive(style) {
 		applyStyle(`${this.selector} .control.pressed, ${this.selector} .control.active`, style, this.control)
 	}
+	
+	applyActiveLabel(style) {
+		applyStyle(`${this.selector} .control.pressed .label, ${this.selector} .control.active .label`, style, this.control)
+	}
 }
 
 class TemplateStyle extends Style {
@@ -55,12 +59,6 @@ class ControlStyle extends Style{
 
 var Styles = {
 	global: [
-		['label', (style, data, element) => {
-			// style.color = data.color
-		}],
-		// ['padding', (style, data, element, control) => {
-			// style.padding = `${data.y} ${data.x}`
-		// }],
 		['border', (style, data, element, control) => {
 			style.borderStyle = data.style
 			style.borderWidth = data.width
@@ -68,8 +66,14 @@ var Styles = {
 			if (!control.circle) style.borderRadius = data.radius
 		}],
 		['background', (style, data) => {
-			style.backgroundColor = data.color
-			style.backgroundImage = data.image || "initial"
+			style.backgroundColor = parseColor(data.color, data.alpha)
+			if (data.image) {
+				style.backgroundImage = `url(${getAssetPath(data.image)})`
+				style.backgroundSize = 'cover'
+				style.backgroundPosition = 'center'
+			} else {
+				style.backgroundImage = 'unset'
+			}
 			if (data.gradient) {
 				let gradient = []
 				for (point of data.gradient) {

@@ -110,7 +110,7 @@ function toRGBColor(args) {
 }
 
 function parseColor(color, alpha) {
-	if (alpha) {
+	if (color && alpha) {
 		if (color.charAt(0) === '#') {
 			var [r, g, b] = toRGBColor(color)
 		} else {
@@ -239,6 +239,9 @@ function loadPanel(panelName) {
 				}
 				if (template.active) {
 					style.applyActive(template.active)
+					if (template.active.label) {
+						style.applyActiveLabel(template.active.label)
+					}
 				}
 			}
 		}
@@ -291,6 +294,9 @@ function loadPanel(panelName) {
 			}
 			if (control.active) {
 				style.applyActive(control.active)
+				if (control.active.label) {
+					style.applyActiveLabel(control.active.label)
+				}
 			}
 			
 			if (control.heightw) {
