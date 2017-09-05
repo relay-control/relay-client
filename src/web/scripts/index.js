@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	modal.button1 = modal.dialog.appendChild(document.createElement('button'))
 	modal.button1.addEventListener('click', () => modal.dialog.close())
 	
-	let connectDialog = document.getElementById('connectDialog')
+	let connectDialog = document.getElementById('connect-dialog')
 	
 	let connectForm = document.getElementById('connect-form')
 	connectForm.addEventListener('submit', e => {
@@ -24,10 +24,16 @@ document.addEventListener('DOMContentLoaded', () => {
 		ws.connect(e.target.elements.address.value, e.target.elements.port.value)
 		document.getElementById('loading').style.visibility = 'visible'
 	})
-	let cancel = document.getElementById('connect-cancel')
-	cancel.addEventListener('click', e => {
+	connectForm.addEventListener('reset', e => {
+		e.preventDefault()
 		connectDialog.close()
 	})
+	
+	// let cancel = document.getElementById('connect-cancel')
+	// cancel.addEventListener('click', e => {
+		// connectDialog.close()
+	// })
+	
 	connectDialog.showModal()
 	
 	connectForm.elements.address.value = '192.168.0.202'
@@ -63,7 +69,7 @@ function updatePanels() {
 document.addEventListener("DOMContentLoaded", () => {
 	let connect = document.getElementById('menu-connect')
 	connect.addEventListener('click', e => {
-		let connectDialog = document.getElementById("connectDialog")
+		let connectDialog = document.getElementById("connect-dialog")
 		connectDialog.showModal()
 	})
 	

@@ -199,9 +199,13 @@ function loadPanel(panelName) {
 	
 	let xhr = new XMLHttpRequest()
 	xhr.open("GET", `${ws.server}/${panelName}.xml`)
+	xhr.responseType = 'document'
 	xhr.send()
 	xhr.onload = function() {
-		let {panel} = parse(domparser.parseFromString(this.responseText, "text/xml"))
+		console.dir(this.response)
+		
+		// let {panel} = parse(domparser.parseFromString(this.responseText, "text/xml"))
+		let {panel} = parse(this.response)
 		
 		// create a separate stylesheet for dynamic style rules
 		let link = document.createElement('style')

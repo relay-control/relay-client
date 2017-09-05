@@ -121,20 +121,20 @@ class IconLabel extends Label {
 var ControlTypes = {}
 
 function buttonActivated(element) {
-	if (element.dataset.button)
+	if (element.action)
 		RelaySocket.sendInput({
-			type2: 'button',
-			button: element.dataset.button,
+			type: element.action.type,
+			button: element.action.button,
 			state: true,
 		})
 	console.log("activated  ", element.id)
 }
 
 function buttonDeactivated(element) {
-	if (element.dataset.button)
+	if (element.action)
 		RelaySocket.sendInput({
-			type2: 'button',
-			button: element.dataset.button,
+			type: element.action.type,
+			button: element.action.button,
 			state: false,
 		})
 	console.log("deactivated", element.id)

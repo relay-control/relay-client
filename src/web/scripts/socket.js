@@ -51,7 +51,7 @@ class socket {
 		status.textContent = "Connected to " + this.address
 		document.getElementById('panel-list2').style.visibility = 'visible'
 		document.getElementById('loading').style.visibility = 'hidden'
-		document.getElementById('connectDialog').close()
+		document.getElementById('connect-dialog').close()
 	}
 	
 	onclose(e) {
@@ -63,7 +63,7 @@ class socket {
 			this.connect(this.address, this.port)
 		}
 		if (this.previousState === WebSocket.CONNECTING) {
-			document.getElementById('connectDialog').close()
+			document.getElementById('connect-dialog').close()
 			let status = document.getElementById('connection-status')
 			status.textContent = "Not connected"
 			document.getElementById('loading').style.visibility = 'hidden'
