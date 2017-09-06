@@ -3,6 +3,7 @@ const collections = [
 	"Controls",
 	"Shadows",
 	"Gradient",
+	"Assets",
 ]
 
   // firstCharLowerCase = function(str) {
@@ -182,7 +183,8 @@ function loadImage(url) {
 
 function loadAudio(url) {
 	return new Promise((resolve, reject) => {
-		let audio = new Audio(url)
+		let audio = new Audio()
+		audio.src = url
 		audio.canplaythrough = () => resolve()
 		audio.canplaythrough = console.log
 		audio.canplay = console.log
@@ -250,7 +252,9 @@ function loadPanel(panelName) {
 		
 		/* validate grid size and control placement */
 		
-		p.loadImage("103.jpg")
+		for (let asset of panel.assets) {
+			p.loadImage(asset.file)
+		}
 		
 		if (panel.templates) {
 			for (let template of panel.templates) {
