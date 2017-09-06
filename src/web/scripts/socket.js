@@ -49,7 +49,6 @@ class socket {
 		
 		let status = document.getElementById('connection-status')
 		status.textContent = "Connected to " + this.address
-		document.getElementById('panel-list2').style.visibility = 'visible'
 		document.getElementById('loading').style.visibility = 'hidden'
 		document.getElementById('connect-dialog').close()
 	}

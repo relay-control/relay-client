@@ -10,7 +10,24 @@ modal.show = function(text) {
 }
 
 
+function MenuViewModel() {
+    this.connected = ko.observable(true)
+	this.currentPanel = ko.observable()
+    this.panels = ko.observableArray()
+	this.connect = function() {
+		let connectDialog = document.getElementById("connect-dialog")
+		connectDialog.showModal()
+	}
+	this.refresh = function() {
+		updatePanels()
+	}
+}
+
+var menuViewModel = new MenuViewModel()
+
 document.addEventListener('DOMContentLoaded', () => {
+	ko.applyBindings(menuViewModel, document.getElementById('menu'))
+	
 	modal.dialog = document.body.appendChild(document.createElement('dialog'))
 	modal.text = modal.dialog.appendChild(document.createElement('p'))
 	modal.button1 = modal.dialog.appendChild(document.createElement('button'))
@@ -54,27 +71,6 @@ function getPanels() {
 
 function updatePanels() {
 	getPanels().then(panels => {
-		let panelList = document.getElementById('panel-list')
-		panelList.innerHTML = ''
-		for (let panel of panels) {
-			let item = document.createElement('li')
-			let button = document.createElement('li')
-			item.textContent = panel
-			item.addEventListener('click', e => loadPanel(panel))
-			panelList.appendChild(item)
-		}
+		menuViewModel.panels(panels)
 	})
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-	let connect = document.getElementById('menu-connect')
-	connect.addEventListener('click', e => {
-		let connectDialog = document.getElementById("connect-dialog")
-		connectDialog.showModal()
-	})
-	
-	let refresh = document.getElementById('menu-refresh')
-	refresh.addEventListener('click', e => {
-		updatePanels()
-	})
-})

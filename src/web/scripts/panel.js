@@ -1,14 +1,14 @@
 const collections = [
+	"Assets",
 	"Templates",
 	"Controls",
-	"Shadows",
 	"Gradient",
-	"Assets",
+	"Shadows",
 ]
 
-  // firstCharLowerCase = function(str) {
-    // return str.charAt(0).toLowerCase() + str.slice(1)
-  // }
+function firstCharLowerCase(str) {
+	return str.charAt(0).toLowerCase() + str.slice(1)
+}
 
   // stripPrefix = function(str) {
     // return str.replace(prefixMatch, '')
@@ -28,10 +28,10 @@ function parseNumber(str) {
 	return str
 }
 
-function parse(xml, isCollection) {
-	var data = collections.includes(xml.nodeName) ? [] : {}
+function parse(xml) {
+	let data = collections.includes(xml.nodeName) ? [] : {}
 
-	var isText = xml.nodeType === 3,
+	let isText = xml.nodeType === 3,
 		isElement = xml.nodeType === 1,
 		body = xml.textContent && xml.textContent.trim(),
 		hasChildren = xml.children && xml.children.length,
@@ -55,100 +55,16 @@ function parse(xml, isCollection) {
 
 	// recursively call #parse over children, adding results to data
 	for (child of xml.children) {
-		var name = child.nodeName
-
 		if (collections.includes(xml.nodeName)) {
-			// if we've encountered a second instance of the same nodeType, make our
-			// representation of it an array
-			// if (!data[name]) data[name] = []
-
-			// and finally, append the new child
-			data.push(parse(child, true))
+			// certain predetermined tags gets their children populated in an array
+			data.push([child.nodeName, parse(child)])
 		} else {
-			// if we've not come across a child with this nodeType, add it as an object
-			// and return here
-			// if (!_.has(data, name)) {
-				// data[name] = parse(child)
-				data[name.charAt(0).toLowerCase() + name.slice(1)] = parse(child)
-			// }
+			// the rest gets added as properties
+			data[firstCharLowerCase(child.nodeName)] = parse(child)
 		}
 	}
 	
-	if (isCollection) {
-		data.tag = xml.nodeName
-	}
-
 	return data
-}
-
-// convert.rgb.hex = function (args) {
-	// var integer = ((Math.round(args[0]) & 0xFF) << 16)
-		// + ((Math.round(args[1]) & 0xFF) << 8)
-		// + (Math.round(args[2]) & 0xFF);
-
-	// var string = integer.toString(16).toUpperCase();
-	// return '000000'.substring(string.length) + string;
-// }
-
-function toRGBColor(args) {
-	let match = args.toString(16).match(/[a-f0-9]{6}|[a-f0-9]{3}/i)
-	if (!match) {
-		return [0, 0, 0]
-	}
-
-	let colorString = match[0]
-
-	if (match[0].length === 3) {
-		colorString = colorString.split('').map(char => char + char).join('')
-	}
-
-	let integer = parseInt(colorString, 16)
-	let r = (integer >> 16) & 0xFF
-	let g = (integer >> 8) & 0xFF
-	let b = integer & 0xFF
-
-	return [r, g, b]
-}
-
-function parseColor(color, alpha) {
-	if (color && alpha) {
-		if (color.charAt(0) === '#') {
-			var [r, g, b] = toRGBColor(color)
-		} else {
-			var [r, g, b] = colors[color]
-		}
-		color = `rgba(${r}, ${g}, ${b}, ${alpha})`
-	}
-	return color
-}
-
-const flexPositions = {
-	top: 'flex-start',
-	left: 'flex-start',
-	bottom: 'flex-end',
-	right: 'flex-end',
-}
-
-function setFlexPosition(style, position) {
-	let [vertical, horizontal] = position.split(/\s+/)
-	if (vertical && horizontal) {
-		style.alignItems = flexPositions[vertical]
-		style.justifyContent = flexPositions[horizontal]
-	} else if (position === 'center') {
-		style.alignItems = 'center'
-		style.justifyContent = 'center'
-	} else {
-		switch (position) {
-			case 'top':
-			case 'bottom':
-				style.alignItems = flexPositions[position]
-				break
-			case 'left':
-			case 'right':
-				style.justifyContent = flexPositions[position]
-				break
-		}
-	}
 }
 
 let stylesheet
@@ -220,6 +136,7 @@ class Panel {
 let domparser = new DOMParser()
 
 function loadPanel(panelName) {
+	menuViewModel.currentPanel(panelName)
 	currentPanel = panelName
 	
 	let xhr = new XMLHttpRequest()
@@ -252,15 +169,17 @@ function loadPanel(panelName) {
 		
 		/* validate grid size and control placement */
 		
-		for (let asset of panel.assets) {
-			p.loadImage(asset.file)
+		if (panel.assets) {
+			for (let [type, asset] of panel.assets) {
+				p.loadImage(asset.file)
+			}
 		}
 		
 		if (panel.templates) {
-			for (let template of panel.templates) {
+			for (let [tag, template] of panel.templates) {
 				// map each template to a CSS class
 				let selector = template.name
-				if (template.tag !== 'Control') selector += '.' + template.tag.toLowerCase()
+				if (tag !== 'Control') selector += '.' + tag.toLowerCase()
 				if (template.padding) {
 					let style = getStyleRule(selector)
 					style.padding = `${template.padding.y} ${template.padding.x}`
@@ -281,9 +200,9 @@ function loadPanel(panelName) {
 		
 		let devices = []
 		
-		for (let control of panel.controls) {
-			let controlType = ControlTypes[control.tag]
-			switch (control.tag) {
+		for (let [tag, control] of panel.controls) {
+			let controlType = ControlTypes[tag]
+			switch (tag) {
 				case 'Button':
 					var c = new Button(p)
 					c.control.dataset.mode = control.mode
@@ -302,7 +221,7 @@ function loadPanel(panelName) {
 			c.setColumnSpan(control.width || 1)
 			c.setRowSpan(control.height || 1)
 			
-			c.addClass(control.tag.toLowerCase())
+			c.addClass(tag.toLowerCase())
 			
 			container.appendChild(element)
 			
@@ -358,7 +277,7 @@ function loadPanel(panelName) {
 				element.action = control.action
 			}
 			
-			if (control.tag === 'Slider') {
+			if (tag === 'Slider') {
 				// c.setSnapValue(control.snap)
 				c.setSnapValue(50)
 				

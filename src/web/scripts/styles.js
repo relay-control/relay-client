@@ -1,3 +1,73 @@
+// convert.rgb.hex = function (args) {
+	// var integer = ((Math.round(args[0]) & 0xFF) << 16)
+		// + ((Math.round(args[1]) & 0xFF) << 8)
+		// + (Math.round(args[2]) & 0xFF);
+
+	// var string = integer.toString(16).toUpperCase();
+	// return '000000'.substring(string.length) + string;
+// }
+
+function toRGBColor(args) {
+	let match = args.toString(16).match(/[a-f0-9]{6}|[a-f0-9]{3}/i)
+	if (!match) {
+		return [0, 0, 0]
+	}
+
+	let colorString = match[0]
+
+	if (match[0].length === 3) {
+		colorString = colorString.split('').map(char => char + char).join('')
+	}
+
+	let integer = parseInt(colorString, 16)
+	let r = (integer >> 16) & 0xFF
+	let g = (integer >> 8) & 0xFF
+	let b = integer & 0xFF
+
+	return [r, g, b]
+}
+
+function parseColor(color, alpha) {
+	if (color && alpha) {
+		if (color.charAt(0) === '#') {
+			var [r, g, b] = toRGBColor(color)
+		} else {
+			var [r, g, b] = colors[color]
+		}
+		color = `rgba(${r}, ${g}, ${b}, ${alpha})`
+	}
+	return color
+}
+
+const flexPositions = {
+	top: 'flex-start',
+	left: 'flex-start',
+	bottom: 'flex-end',
+	right: 'flex-end',
+}
+
+function setFlexPosition(style, position) {
+	let [vertical, horizontal] = position.split(/\s+/)
+	if (vertical && horizontal) {
+		style.alignItems = flexPositions[vertical]
+		style.justifyContent = flexPositions[horizontal]
+	} else if (position === 'center') {
+		style.alignItems = 'center'
+		style.justifyContent = 'center'
+	} else {
+		switch (position) {
+			case 'top':
+			case 'bottom':
+				style.alignItems = flexPositions[position]
+				break
+			case 'left':
+			case 'right':
+				style.justifyContent = flexPositions[position]
+				break
+		}
+	}
+}
+
 function applyStyle(selector, control, element, mainControl) {
 	let style = getStyleRule(selector)
 	let data = control
@@ -70,13 +140,12 @@ var Styles = {
 			if (data.image) {
 				style.backgroundImage = `url(${getAssetPath(data.image)})`
 				style.backgroundSize = 'cover'
-				style.backgroundPosition = 'center'
 			} else {
 				style.backgroundImage = 'unset'
 			}
 			if (data.gradient) {
 				let gradient = []
-				for (point of data.gradient) {
+				for (let [, point] of data.gradient) {
 					let colorStop = point.color
 					if (point.stop) colorStop += ' ' +point.stop
 					gradient.push(colorStop)

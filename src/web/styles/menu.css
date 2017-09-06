@@ -19,7 +19,7 @@
 }
 
 #menu {
-	font-family: 'PT Sans';
+	font-family: 'Open Sans';
 }
 
 #menu section {
@@ -56,11 +56,14 @@ h3 {
 	margin: 2px;
 	font-size: 20px;
 	font-weight: bold;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 dialog {
 	text-align: center;
-	font-family: 'PT Sans';
+	font-family: 'Open Sans';
 	border: none;
 }
 

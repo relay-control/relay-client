@@ -6,6 +6,7 @@
 	<link rel="stylesheet" href="styles/style.css">
 	<link rel="stylesheet" href="styles/defaults.css">
 	<link rel="stylesheet" href="styles/font-awesome.min.css">
+	<script src="scripts/knockout-3.4.2.js"></script>
 	<script src="scripts/styles.js"></script>
 	<script src="scripts/controls.js"></script>
 	<script src="scripts/socket.js"></script>
@@ -22,11 +23,17 @@
 	</header>
 	<section>
 		<h1 id="connection-status">Not connected</h1>
-		<button id="menu-connect">Connect</button>
-		<div id="panel-list2" style="visibility: hidden">
-			<h3>Available panels<button id="menu-refresh"><i class="fa fa-refresh fa-fw"></i></button></h3>
+		<button data-bind="click: connect">Connect</button>
+		<div data-bind="visible: connected">
+			<h3>Available panels<button data-bind="click: refresh"><i class="fa fa-refresh fa-fw"></i></button></h3>
 			
-			<ul id="panel-list"></ul>
+			<ul id="panel-list" data-bind="foreach: {data: panels, as: 'panel'}">
+				<li data-bind="click: loadPanel">
+					<span data-bind="text: panel"></span>
+					<i class="fa fa-circle-o-notch fa-spin fa-fw" data-bind="visible: $parent.currentPanel == panel"></i>
+				</li>
+			</ul>
+			<!-- <div data-bind="visible: panels().length > 0"> -->
 		</div>
 	</section>
 </div>

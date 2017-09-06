@@ -12,6 +12,7 @@ h1 {
 #panel {
 	display: grid;
 	height: 100%;
+	background-position: center;
 }
 
 .cell {
@@ -52,6 +53,7 @@ h1 {
 	width: 100%;
 	height: 100%;
 	outline: none;
+	background-position: center;
 }
 
 .cell > .container > span {
