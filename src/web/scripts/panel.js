@@ -189,13 +189,18 @@ class Panel {
 
 let domparser = new DOMParser()
 
+function get(url) {
+	return new Promise((resolve, reject) => {
+		let img = new Image()
+		img.src = url
+		img.onload = () => resolve()
+	})
+}
+
 function loadPanel(panelName) {
-	let panel = document.getElementById('panel')
-	let menu = document.getElementById('menu')
-	menu.style.display = 'none'
-	panel.style.display = 'grid'
-	
 	currentPanel = panelName
+	
+	get(getAssetPath("103.jpg")).then(console.log)
 	
 	let xhr = new XMLHttpRequest()
 	xhr.open("GET", `${ws.server}/${panelName}.xml`)
@@ -364,6 +369,11 @@ function loadPanel(panelName) {
 			square.style.height = 'auto'
 			setTimeout(() => {square.style.height = '100%'}, 0)
 		}
+		
+		let panel2 = document.getElementById('panel')
+		let menu = document.getElementById('menu')
+		menu.style.display = 'none'
+		panel2.style.display = 'grid'
 		
 		// request devices
 	}
