@@ -172,10 +172,38 @@ function getAssetPath(file) {
 	return `${ws.server}/${currentPanel}/${file}`
 }
 
+function loadImage(url) {
+	return new Promise((resolve, reject) => {
+		let img = new Image()
+		img.src = url
+		img.onload = () => resolve()
+	})
+}
+
+function loadAudio(url) {
+	return new Promise((resolve, reject) => {
+		let audio = new Audio(url)
+		audio.canplaythrough = () => resolve()
+		audio.canplaythrough = console.log
+		audio.canplay = console.log
+		audio.load = console.log
+	})
+}
+
 class Panel {
 	constructor() {
 		this.element = document.getElementById('panel')
 		this.id = 1
+		this.assets = []
+	}
+	
+	show() {
+		Promise.all(this.assets)
+		 .then(() => this.element.style.display = 'grid')
+	}
+	
+	loadImage(image) {
+		this.assets.push(loadImage(getAssetPath(image)))
 	}
 	
 	addControl(control) {
@@ -189,18 +217,8 @@ class Panel {
 
 let domparser = new DOMParser()
 
-function get(url) {
-	return new Promise((resolve, reject) => {
-		let img = new Image()
-		img.src = url
-		img.onload = () => resolve()
-	})
-}
-
 function loadPanel(panelName) {
 	currentPanel = panelName
-	
-	get(getAssetPath("103.jpg")).then(console.log)
 	
 	let xhr = new XMLHttpRequest()
 	xhr.open("GET", `${ws.server}/${panelName}.xml`)
@@ -231,6 +249,8 @@ function loadPanel(panelName) {
 		panelElement.style.gridTemplateRows = `repeat(${panel.grid.rows}, 1fr)`
 		
 		/* validate grid size and control placement */
+		
+		p.loadImage("103.jpg")
 		
 		if (panel.templates) {
 			for (let template of panel.templates) {
@@ -370,10 +390,10 @@ function loadPanel(panelName) {
 			setTimeout(() => {square.style.height = '100%'}, 0)
 		}
 		
-		let panel2 = document.getElementById('panel')
 		let menu = document.getElementById('menu')
 		menu.style.display = 'none'
-		panel2.style.display = 'grid'
+		
+		p.show()
 		
 		// request devices
 	}
