@@ -201,6 +201,7 @@ function loadPanel(panelName) {
 		let devices = []
 		
 		for (let [tag, control] of panel.controls) {
+			control.tag = tag // temporarily for substyles
 			let controlType = ControlTypes[tag]
 			switch (tag) {
 				case 'Button':

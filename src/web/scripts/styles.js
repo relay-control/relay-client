@@ -71,7 +71,6 @@ function setFlexPosition(style, position) {
 function applyStyle(selector, control, element, mainControl) {
 	let style = getStyleRule(selector)
 	let data = control
-	style.color = parseColor(data.color, data.alpha)
 	if (data.width) style.width = data.width
 	if (data.height) style.height = data.height
 	for (let [property, handler] of Styles.global) {
@@ -135,6 +134,11 @@ var Styles = {
 			style.borderColor = data.color
 			if (!control.circle) style.borderRadius = data.radius
 		}],
+		['font', (style, data, element, control) => {
+			style.color = parseColor(data.color, data.alpha)
+			if (data.family) style.fontFamily = data.family
+			style.fontSize = data.size
+		}],
 		['background', (style, data) => {
 			style.backgroundColor = parseColor(data.color, data.alpha)
 			if (data.image) {
@@ -164,7 +168,7 @@ var Styles = {
 		}],
 		['shadows', (style, data) => {
 			let boxShadows = []
-			for (shadow of data) {
+			for (let [, shadow] of data) {
 				let boxShadow = []
 				if (shadow.inset) boxShadow.push("inset")
 				boxShadow.push(shadow.offsetX, shadow.offsetY)
