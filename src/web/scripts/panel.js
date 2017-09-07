@@ -108,6 +108,12 @@ function loadAudio(url) {
 	})
 }
 
+async function loadFont(url) {
+	let font = new FontFace('Euro Caps', `url(${url})`)
+	document.fonts.add(font)
+	await font.load()
+}
+
 function redraw() {
 	// force a redraw of square elements since they get borked if dialog was shown prior to loading a panel
 	let squares = document.querySelectorAll('.cell.square img, .cell.circle img')
@@ -130,13 +136,17 @@ class Panel {
 	show() {
 		Promise.all(this.assets)
 		 .then(() => {
-			 this.element.style.display = 'grid'
-			 redraw()
+			this.element.style.display = 'grid'
+			redraw()
 		 })
 	}
 	
 	loadImage(image) {
 		this.assets.push(loadImage(getAssetPath(image)))
+	}
+	
+	loadFont(file) {
+		this.assets.push(loadFont(getAssetPath(file)))
 	}
 	
 	addControl(control) {
@@ -186,7 +196,14 @@ function loadPanel(panelName) {
 		
 		if (panel.assets) {
 			for (let [type, asset] of panel.assets) {
-				p.loadImage(asset.file)
+				switch (type) {
+					case 'Image':
+						p.loadImage(asset.file)
+						break
+					case 'Font':
+						p.loadFont(asset.file)
+						break
+				}
 			}
 		}
 		
