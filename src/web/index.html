@@ -30,7 +30,7 @@
 			<ul id="panel-list" data-bind="foreach: {data: panels, as: 'panel'}">
 				<li data-bind="click: loadPanel">
 					<span data-bind="text: panel"></span>
-					<i class="fa fa-circle-o-notch fa-spin fa-fw" data-bind="visible: $parent.currentPanel == panel"></i>
+					<i class="fa fa-circle-o-notch fa-spin fa-fw" data-bind="visible: $parent.currentPanel() == panel"></i>
 				</li>
 			</ul>
 			<!-- <div data-bind="visible: panels().length > 0"> -->

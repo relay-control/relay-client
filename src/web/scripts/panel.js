@@ -108,8 +108,8 @@ function loadAudio(url) {
 	})
 }
 
-async function loadFont(url) {
-	let font = new FontFace('Euro Caps', `url(${url})`)
+async function loadFont(family, url) {
+	let font = new FontFace(family, `url(${url})`)
 	document.fonts.add(font)
 	await font.load()
 }
@@ -136,6 +136,9 @@ class Panel {
 	show() {
 		Promise.all(this.assets)
 		 .then(() => {
+			let menu = document.getElementById('menu')
+			menu.style.display = 'none'
+			
 			this.element.style.display = 'grid'
 			redraw()
 		 })
@@ -145,8 +148,8 @@ class Panel {
 		this.assets.push(loadImage(getAssetPath(image)))
 	}
 	
-	loadFont(file) {
-		this.assets.push(loadFont(getAssetPath(file)))
+	loadFont(family, file) {
+		this.assets.push(loadFont(family, getAssetPath(file)))
 	}
 	
 	addControl(control) {
@@ -158,8 +161,6 @@ class Panel {
 	}
 }
 
-let domparser = new DOMParser()
-
 function loadPanel(panelName) {
 	menuViewModel.currentPanel(panelName)
 	currentPanel = panelName
@@ -169,9 +170,6 @@ function loadPanel(panelName) {
 	xhr.responseType = 'document'
 	xhr.send()
 	xhr.onload = function() {
-		console.dir(this.response)
-		
-		// let {panel} = parse(domparser.parseFromString(this.responseText, "text/xml"))
 		let {panel} = parse(this.response)
 		
 		// create a separate stylesheet for dynamic style rules
@@ -201,7 +199,7 @@ function loadPanel(panelName) {
 						p.loadImage(asset.file)
 						break
 					case 'Font':
-						p.loadFont(asset.file)
+						p.loadFont(asset.family, asset.file)
 						break
 				}
 			}
@@ -336,9 +334,6 @@ function loadPanel(panelName) {
 			// redraw??
 			// sel.style.display = 'run-in'; setTimeout(function () { sel.style.display = 'block'; }, 0);
 		}
-		
-		let menu = document.getElementById('menu')
-		menu.style.display = 'none'
 		
 		p.show()
 		
