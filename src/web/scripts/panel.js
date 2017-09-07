@@ -108,6 +108,18 @@ function loadAudio(url) {
 	})
 }
 
+function redraw() {
+	// force a redraw of square elements since they get borked if dialog was shown prior to loading a panel
+	let squares = document.querySelectorAll('.cell.square img, .cell.circle img')
+	for (let square of squares) {
+		// square.style.display = 'none'
+		// setTimeout(() => {square.style.display = 'inline-block'}, 0)
+		
+		square.style.height = 'auto'
+		setTimeout(() => {square.style.height = '100%'}, 0)
+	}
+}
+
 class Panel {
 	constructor() {
 		this.element = document.getElementById('panel')
@@ -117,7 +129,10 @@ class Panel {
 	
 	show() {
 		Promise.all(this.assets)
-		 .then(() => this.element.style.display = 'grid')
+		 .then(() => {
+			 this.element.style.display = 'grid'
+			 redraw()
+		 })
 	}
 	
 	loadImage(image) {
@@ -303,15 +318,6 @@ function loadPanel(panelName) {
 			
 			// redraw??
 			// sel.style.display = 'run-in'; setTimeout(function () { sel.style.display = 'block'; }, 0);
-		}
-		// force a redraw of square elements since they get borked if dialog was shown prior to loading a panel
-		let squares = document.querySelectorAll('.cell.square img, .cell.circle img')
-		for (let square of squares) {
-			// square.style.display = 'none'
-			// setTimeout(() => {square.style.display = 'inline-block'}, 0)
-			
-			square.style.height = 'auto'
-			setTimeout(() => {square.style.height = '100%'}, 0)
 		}
 		
 		let menu = document.getElementById('menu')
