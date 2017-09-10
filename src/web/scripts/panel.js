@@ -162,6 +162,12 @@ class Panel {
 }
 
 function loadPanel(panelName) {
+	if (panelName !== currentPanel) {
+		let panel = document.getElementById('panel')
+		while (panel.lastChild)
+			panel.lastChild.remove()
+	}
+		
 	menuViewModel.currentPanel(panelName)
 	currentPanel = panelName
 	
@@ -228,7 +234,9 @@ function loadPanel(panelName) {
 			}
 		}
 		
-		let devices = []
+		let usedVJoyDevices = []
+		let usedVJoyDeviceButtons = []
+		let usedVJoyDeviceAxes = []
 		
 		for (let [tag, control] of panel.controls) {
 			control.tag = tag // temporarily for substyles
@@ -304,7 +312,17 @@ function loadPanel(panelName) {
 			}
 			
 			if (control.action) {
-				if (!devices.includes(control.action.device)) devices.push(control.action.device)
+				if (control.action.device && !usedVJoyDevices.includes(control.action.device)) {
+					usedVJoyDevices.push(control.action.device)
+					usedVJoyDeviceButtons[control.action.device] = 0
+					usedVJoyDeviceAxes[control.action.device] = []
+				}
+				if (control.action.type === 'axis' && !usedVJoyDeviceAxes.includes(control.action.axis)) {
+					usedVJoyDeviceAxes[control.action.device].push(control.action.axis)
+				}
+				if (control.action.type === 'button') {
+					usedVJoyDeviceButtons[control.action.device] = Math.max(control.action.button, usedVJoyDeviceButtons[control.action.device])
+				}
 				element.action = control.action
 			}
 			
@@ -338,5 +356,19 @@ function loadPanel(panelName) {
 		p.show()
 		
 		// request devices
+		fetch(`${ws.server}/requestDevices`)
+		 .then(res => {
+			for (let device in res) {
+				if (!device.acquired) {
+					console.log("Unable to acquire device " + device.id)
+				}
+				if (usedVJoyDeviceButtons[device.id] > device.numButtons) {
+					console.log("Not enough buttons")
+				}
+				for (let axis of usedVJoyDeviceAxes[device.id]) {
+					if (!device.axes[axis])
+						console.log("Axis " +axis+ " not available")
+				}
+		 })
 	}
 }
