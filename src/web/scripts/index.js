@@ -9,6 +9,17 @@ modal.show = function(text) {
 	this.dialog.showModal()
 }
 
+let settings = {
+	address: '192.168.0.202',
+	port: '57882',
+	rememberPanel: true,
+	panel: 'Elite',
+}
+
+function isElectron() {
+	return process && process.versions && process.versions['electron']
+}
+
 
 function MenuViewModel() {
     this.connected = ko.observable(true)
@@ -28,6 +39,19 @@ var menuViewModel = new MenuViewModel()
 document.addEventListener('DOMContentLoaded', () => {
 	ko.applyBindings(menuViewModel, document.getElementById('menu'))
 	
+	document.addEventListener('keydown', e => {
+		if (e.code === 'Escape') {
+			let panel = document.getElementById('panel')
+			let style = window.getComputedStyle(panel)
+			if (style.display === 'grid') {
+				panel.style.visibility = 'hidden'
+				menuViewModel.currentPanel(null)
+				// let menu = document.getElementById('menu')
+				// menu.style.display = 'flex'
+			}
+		}
+	})
+	
 	modal.dialog = document.body.appendChild(document.createElement('dialog'))
 	modal.text = modal.dialog.appendChild(document.createElement('p'))
 	modal.button1 = modal.dialog.appendChild(document.createElement('button'))
@@ -41,21 +65,18 @@ document.addEventListener('DOMContentLoaded', () => {
 		ws.connect(e.target.elements.address.value, e.target.elements.port.value)
 		document.getElementById('loading').style.visibility = 'visible'
 	})
-	connectForm.addEventListener('reset', e => {
-		e.preventDefault()
+	let cancel = document.getElementById('connect-cancel')
+	cancel.addEventListener('click', e => {
 		connectDialog.close()
 	})
 	
-	// let cancel = document.getElementById('connect-cancel')
-	// cancel.addEventListener('click', e => {
-		// connectDialog.close()
-	// })
-	
-	connectDialog.showModal()
-	
-	connectForm.elements.address.value = '192.168.0.202'
-	connectForm.elements.port.value = '57882'
-	// ws.connect(connectForm.elements.address.value, connectForm.elements.port.value)
+	if (settings.address) {
+		connectForm.elements.address.value = settings.address
+		connectForm.elements.port.value = settings.port
+		ws.connect(settings.address, settings.port)
+	} else {
+		connectDialog.showModal()
+	}
 })
 
 var RelaySocket = {}
@@ -73,4 +94,7 @@ function updatePanels() {
 	getPanels().then(panels => {
 		menuViewModel.panels(panels)
 	})
+	if (settings.rememberPanel && settings.panel) {
+		loadPanel(settings.panel)
+	}
 }

@@ -39,14 +39,36 @@ class Button extends Control {
 	constructor(panel) {
 		super(panel)
 		this.control = document.createElement('button')
+		this.container.appendChild(this.control)
 	}
 }
 
 class Slider extends Control {
 	constructor(panel) {
 		super(panel)
+		
+		this.rules = {}
+		
+		let iframe = document.createElement('iframe')
+		this.frame = iframe
+		
+		this.container.appendChild(iframe)
+		
+		let cssLink = document.createElement('link')
+		cssLink.href = 'styles/slider.css'
+		cssLink.rel = 'stylesheet'
+		cssLink.type = 'text/css'
+		iframe.contentDocument.head.appendChild(cssLink)
+		
+		let link = document.createElement('style')
+		iframe.contentDocument.head.appendChild(link)
+		this.stylesheet = link.sheet
+		
+		// slider.style['will-change'] = 'transform'
 		this.control = document.createElement('input')
 		this.control.type = 'range'
+		this.control.id = this.id
+		iframe.contentDocument.body.appendChild(this.control)
 	}
 	
 	setSnapValue(value) {
@@ -58,6 +80,41 @@ class Slider extends Control {
 		let option = document.createElement('option')
 		option.value = value
 		datalist.appendChild(option)
+	}
+	
+	getStyleRule(selector) {
+		let rule = this.rules[selector]
+		if (!rule) {
+			let index = this.stylesheet.rules.length
+			this.stylesheet.insertRule(`${selector} {}`, index)
+			rule = this.stylesheet.rules[index].style
+			this.rules[selector] = rule
+		}
+		return rule
+	}
+	
+	applyStyle(selector, control) {
+		let element = this.control
+		let style = this.getStyleRule(selector)
+		let data = control
+		if (data.width) style.width = data.width
+		if (data.height) style.height = data.height
+		for (let [property, handler] of Styles.global) {
+			if (property in data) handler(style, data[property], element, control)
+		}
+		if (Styles.controls[control.tag]) {
+			// for (let [property, handler] of Styles.global) {
+				// if (property in data) handler(style, data[property])
+			// }
+			if (Styles.controls[control.tag].children) {
+				for (let [child, selector2, handler] of Styles.controls[control.tag].children) {
+					if (child in control) {
+						this.applyStyle(selector + selector2, control[child], element, control)
+						if (handler) handler(this.getStyleRule(selector + selector2), control[child], element, control)
+					}
+				}
+			}
+		}
 	}
 }
 

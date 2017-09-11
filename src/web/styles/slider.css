@@ -1,0 +1,48 @@
+body {
+	margin: 0;
+	height: 100vh;
+	user-select: none;
+	cursor: default;
+	overflow: hidden;
+	
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+input[type=range] {
+	-webkit-appearance: none;
+	background: none !important;
+	width: 100%;
+}
+
+input[type=range]:focus {
+	outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+	box-sizing: content-box;
+}
+
+input[type=range] {
+	width: 100% !important;
+	margin: 0 !important;
+}
+
+input[type=range]::-webkit-slider-thumb {
+	background: #fff;
+	width: 30px;
+	height: 40px;
+	/* this needs to be set manually to center the thumb vertically */
+	margin-top: calc(-40px / 2 + 20px / 2);
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+	background: #aaa;
+	height: 20px;
+}

@@ -122,7 +122,7 @@ function redraw() {
 		// setTimeout(() => {square.style.display = 'inline-block'}, 0)
 		
 		square.style.height = 'auto'
-		setTimeout(() => {square.style.height = '100%'}, 0)
+		setTimeout(() => {square.style.height = '100%'}, 100)
 	}
 }
 
@@ -139,7 +139,7 @@ class Panel {
 			let menu = document.getElementById('menu')
 			menu.style.display = 'none'
 			
-			this.element.style.display = 'grid'
+			this.element.style.visibility = 'visible'
 			redraw()
 		 })
 	}
@@ -161,11 +161,18 @@ class Panel {
 	}
 }
 
+let styleLink
+
 function loadPanel(panelName) {
 	if (panelName !== currentPanel) {
 		let panel = document.getElementById('panel')
 		while (panel.lastChild)
 			panel.lastChild.remove()
+		if (stylesheet)
+			// while (stylesheet.cssRules.length > 0)
+				// stylesheet.deleteRule(stylesheet.cssRules.length - 1)
+			styleLink.remove()
+		rules = {}
 	}
 		
 	menuViewModel.currentPanel(panelName)
@@ -182,9 +189,11 @@ function loadPanel(panelName) {
 		let link = document.createElement('style')
 		document.head.appendChild(link)
 		stylesheet = link.sheet
+		styleLink = link
 		
 		let p = new Panel()
 		let panelElement = p.element
+		panelElement.style = null
 		if (panel.background) {
 			panelElement.style.backgroundColor = panel.background.color
 			if (panel.background.image) {
@@ -251,9 +260,12 @@ function loadPanel(panelName) {
 					break
 			}
 			
-			let {area, container, control: element} = c
+			let {area, container, control: element, frame} = c
 			
-			element.classList.add('control')
+			if (frame)
+				frame.classList.add('control')
+			else
+				element.classList.add('control')
 			
 			c.setColumn(control.position.x)
 			c.setRow(control.position.y)
@@ -261,8 +273,6 @@ function loadPanel(panelName) {
 			c.setRowSpan(control.height || 1)
 			
 			c.addClass(tag.toLowerCase())
-			
-			container.appendChild(element)
 			
 			if ('inherits' in control)
 				c.addClass(control.inherits)
@@ -337,6 +347,8 @@ function loadPanel(panelName) {
 					valueLabel.setText("50%")
 					element.valueLabel = valueLabel
 				}
+				
+				c.applyStyle('#' + area.id, control)
 			}
 			
 			if (controlType.events) {
@@ -358,17 +370,20 @@ function loadPanel(panelName) {
 		// request devices
 		fetch(`${ws.server}/requestDevices`)
 		 .then(res => {
-			for (let device in res) {
-				if (!device.acquired) {
-					console.log("Unable to acquire device " + device.id)
+			if (res.ok) {
+				for (let device in res) {
+					if (!device.acquired) {
+						console.log("Unable to acquire device " + device.id)
+					}
+					if (usedVJoyDeviceButtons[device.id] > device.numButtons) {
+						console.log("Not enough buttons")
+					}
+					for (let axis of usedVJoyDeviceAxes[device.id]) {
+						if (!device.axes[axis])
+							console.log("Axis " +axis+ " not available")
+					}
 				}
-				if (usedVJoyDeviceButtons[device.id] > device.numButtons) {
-					console.log("Not enough buttons")
-				}
-				for (let axis of usedVJoyDeviceAxes[device.id]) {
-					if (!device.axes[axis])
-						console.log("Axis " +axis+ " not available")
-				}
+			}
 		 })
 	}
 }

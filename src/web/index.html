@@ -17,7 +17,7 @@
 
 <body>
 
-<div id="menu">
+<div id="menu" data-bind="visible: !currentPanel()">
 	<header>
 		<h1>VPCP</h1>
 	</header>
@@ -38,7 +38,7 @@
 	</section>
 </div>
 
-<div id="panel" style="display: none"></div>
+<div id="panel" style="visibility: hidden"></div>
 
 <dialog id="connect-dialog">
 	<p>Connect to Relay server</p>
@@ -56,7 +56,7 @@
 		<div class="buttons">
 			<i id="loading" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw" style="visibility: hidden"></i>
 			<button type="submit">Connect</button>
-			<button type="reset" id="connect-cancel">Cancel</button>
+			<button type="button" id="connect-cancel">Cancel</button>
 		</div>
 	</form>
 </dialog>
