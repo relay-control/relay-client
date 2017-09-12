@@ -86,7 +86,7 @@ RelaySocket.sendInput = function(input) {
 }
 
 function getPanels() {
-	return fetch(`${ws.server}/web.json`, {cache: 'no-store'})
+	return fetch(`${ws.server}/getpanellist`, {cache: 'no-store'})
 	 .then(response => response.json())
 }
 

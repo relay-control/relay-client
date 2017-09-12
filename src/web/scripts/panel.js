@@ -49,7 +49,7 @@ function parse(xml) {
 	// if it's an element with attributes, add them to data.attributes
 	if (isElement && hasAttributes) {
 		for (attribute of xml.attributes) {
-			data[attribute.name] = parseNumber(attribute.value)
+			data[attribute.name.replace(/-(\w)/, (m, s) => s.toUpperCase())] = parseNumber(attribute.value)
 		}
 	}
 
@@ -86,7 +86,7 @@ function getStyleRule(selector) {
 let currentPanel
 
 function getAssetPath(file) {
-	return `${ws.server}/${currentPanel}/${file}`
+	return `${ws.server}/${currentPanel}/assets/${file}`
 }
 
 function loadImage(url) {
@@ -169,17 +169,15 @@ function loadPanel(panelName) {
 		while (panel.lastChild)
 			panel.lastChild.remove()
 		if (stylesheet)
-			// while (stylesheet.cssRules.length > 0)
-				// stylesheet.deleteRule(stylesheet.cssRules.length - 1)
 			styleLink.remove()
 		rules = {}
 	}
-		
+	
 	menuViewModel.currentPanel(panelName)
 	currentPanel = panelName
 	
 	let xhr = new XMLHttpRequest()
-	xhr.open("GET", `${ws.server}/${panelName}.xml`)
+	xhr.open("GET", `${ws.server}/${panelName}/${panelName}.xml`)
 	xhr.responseType = 'document'
 	xhr.send()
 	xhr.onload = function() {
@@ -267,8 +265,10 @@ function loadPanel(panelName) {
 			else
 				element.classList.add('control')
 			
-			c.setColumn(control.position.x)
-			c.setRow(control.position.y)
+			if (control.position) {
+				c.setColumn(control.position.x)
+				c.setRow(control.position.y)
+			}
 			c.setColumnSpan(control.width || 1)
 			c.setRowSpan(control.height || 1)
 			

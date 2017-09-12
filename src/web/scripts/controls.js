@@ -181,20 +181,22 @@ function buttonActivated(element) {
 	if (element.action)
 		RelaySocket.sendInput({
 			type: element.action.type,
+			device: element.action.device,
 			button: element.action.button,
 			state: true,
 		})
-	console.log("activated  ", element.id)
+	// console.log("activated  ", element.id)
 }
 
 function buttonDeactivated(element) {
 	if (element.action)
 		RelaySocket.sendInput({
 			type: element.action.type,
+			device: element.action.device,
 			button: element.action.button,
 			state: false,
 		})
-	console.log("deactivated", element.id)
+	// console.log("deactivated", element.id)
 }
 
 function buttonPressed(element) {
