@@ -12,11 +12,6 @@ h1 {
 #panel {
 	display: grid;
 	background-position: center;
-	position: absolute;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
 }
 
 .cell {
@@ -26,21 +21,6 @@ h1 {
 	justify-content: center;
 	align-items: center;
 }
-
-/*
-.cell.adjust-width,
-.cell.adjust-height {
-	box-sizing: border-box;
-}
-
-.cell.adjust-width {
-	width: 100%;
-}
-
-.cell.adjust-height {
-	height: 100%;
-}
-*/
 
 .container {
 	width: 100%;
@@ -62,48 +42,6 @@ h1 {
 
 .cell > .container > span {
 	text-align: center;
-}
-
-.cell.square > .container,
-.cell.circle > .container {
-	display: inline-block;
-}
-
-.container img {
-	visibility: hidden;
-}
-
-.cell.square.adjust-width img,
-.cell.circle.adjust-width img {
-	width: 100%;
-}
-
-.cell.square.adjust-width > .container,
-.cell.circle.adjust-width > .container {
-	height: auto;
-}
-
-.cell.square.adjust-height img,
-.cell.circle.adjust-height img {
-	height: 100%;
-}
-
-.cell.square.adjust-height > .container,
-.cell.circle.adjust-height > .container {
-	width: auto;
-}
-
-.cell.square button,
-.cell.circle button {
-	position: absolute;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
-	/*
-	width: 100%;
-	height: 100%;
-	*/
 }
 
 .cell.circle > .container > button {

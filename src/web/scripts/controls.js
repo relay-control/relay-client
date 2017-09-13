@@ -54,6 +54,19 @@ class Slider extends Control {
 		
 		this.container.appendChild(iframe)
 		
+		iframe.contentDocument.body.addEventListener('keydown', e => {
+			if (e.code === 'Escape') {
+				let panel = document.getElementById('panel')
+				let style = window.getComputedStyle(panel)
+				if (style.display === 'grid') {
+					panel.style.display = 'none'
+					menuViewModel.currentPanel(null)
+					let menu = document.getElementById('menu')
+					menu.style.display = 'flex'
+				}
+			}
+		})
+		
 		let cssLink = document.createElement('link')
 		cssLink.href = 'styles/slider.css'
 		cssLink.rel = 'stylesheet'
@@ -69,6 +82,7 @@ class Slider extends Control {
 		this.control.type = 'range'
 		this.control.id = this.id
 		iframe.contentDocument.body.appendChild(this.control)
+		iframe.contentDocument.body.classList.add('default', 'slider')
 	}
 	
 	setSnapValue(value) {

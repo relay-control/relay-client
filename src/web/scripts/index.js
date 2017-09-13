@@ -44,10 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
 			let panel = document.getElementById('panel')
 			let style = window.getComputedStyle(panel)
 			if (style.display === 'grid') {
-				panel.style.visibility = 'hidden'
+				panel.style.display = 'none'
 				menuViewModel.currentPanel(null)
-				// let menu = document.getElementById('menu')
-				// menu.style.display = 'flex'
+				let menu = document.getElementById('menu')
+				menu.style.display = 'flex'
 			}
 		}
 	})

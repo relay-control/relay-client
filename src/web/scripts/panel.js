@@ -139,8 +139,8 @@ class Panel {
 			let menu = document.getElementById('menu')
 			menu.style.display = 'none'
 			
-			this.element.style.visibility = 'visible'
-			redraw()
+			this.element.style.display = 'grid'
+			// redraw()
 		 })
 	}
 	
@@ -168,8 +168,11 @@ function loadPanel(panelName) {
 		let panel = document.getElementById('panel')
 		while (panel.lastChild)
 			panel.lastChild.remove()
-		if (stylesheet)
+		if (stylesheet) {
+			while (stylesheet.cssRules.length > 0)
+				stylesheet.deleteRule(stylesheet.cssRules.length - 1)
 			styleLink.remove()
+		}
 		rules = {}
 	}
 	
@@ -204,6 +207,16 @@ function loadPanel(panelName) {
 		panelElement.style.gridTemplateRows = `repeat(${panel.grid.rows}, 1fr)`
 		
 		/* validate grid size and control placement */
+		
+		let size = `calc(100vh / ${panel.grid.rows} - 10px * 2)`
+		let style = getStyleRule('.adjust-height .container')
+		style.width = size
+		style.height = size
+		
+		let size2 = `calc(100vw / ${panel.grid.columns} - 10px * 2)`
+		let style2 = getStyleRule('.adjust-width .container')
+		style2.width = size2
+		style2.height = size2
 		
 		if (panel.assets) {
 			for (let [type, asset] of panel.assets) {
@@ -260,17 +273,16 @@ function loadPanel(panelName) {
 			
 			let {area, container, control: element, frame} = c
 			
+			element.classList.add('control')
 			if (frame)
 				frame.classList.add('control')
-			else
-				element.classList.add('control')
 			
 			if (control.position) {
-				c.setColumn(control.position.x)
-				c.setRow(control.position.y)
+				c.setRow(control.position.row)
+				c.setColumn(control.position.column)
 			}
-			c.setColumnSpan(control.width || 1)
-			c.setRowSpan(control.height || 1)
+			c.setRowSpan(control.rowSpan || 1)
+			c.setColumnSpan(control.columnSpan || 1)
 			
 			c.addClass(tag.toLowerCase())
 			
@@ -283,9 +295,6 @@ function loadPanel(panelName) {
 			if (control.circle) c.addClass('circle')
 			if (control.square || control.circle) {
 				c.addClass('adjust-' + (control.adjustSize || 'height'))
-				let img = container.appendChild(document.createElement('img'))
-				// img.src = "square.png"
-				img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="
 			}
 			
 			let style = new ControlStyle(c)
@@ -310,14 +319,14 @@ function loadPanel(panelName) {
 				if (label.text) {
 					let textLabel = new TextLabel(c)
 					textLabel.setText(label.text)
-					textLabel.setPosition(label['text-position'] || label.position)
-					textLabel.setAnchor(label['text-anchor'] || label.anchor)
+					textLabel.setPosition(label.textPosition || label.position)
+					textLabel.setAnchor(label.textAnchor || label.anchor)
 				}
 				if (label.icon) {
 					let iconLabel = new IconLabel(c)
 					iconLabel.setIcon(label.icon)
-					iconLabel.setPosition(label['icon-position'] || label.position)
-					iconLabel.setAnchor(label['icon-anchor'] || label.anchor)
+					iconLabel.setPosition(label.iconPosition || label.position)
+					iconLabel.setAnchor(label.iconAnchor || label.anchor)
 				}
 			}
 			
@@ -348,6 +357,23 @@ function loadPanel(panelName) {
 					element.valueLabel = valueLabel
 				}
 				
+				if (panel.templates) {
+					for (let [tag, template] of panel.templates) {
+						// map each template to a CSS class
+						let selector = template.name
+						template.tag = tag
+						if (tag !== 'Control') selector += '.' + tag.toLowerCase()
+						if (template.padding) {
+							let style = c.getStyleRule(selector)
+							style.padding = `${template.padding.y} ${template.padding.x}`
+						}
+						c.applyStyle(`.${selector} .control`, template)
+						if (template.label) {
+							c.applyStyle(`.${selector} .label`, template)
+						}
+					}
+				}
+				
 				c.applyStyle('#' + area.id, control)
 			}
 			
@@ -356,13 +382,6 @@ function loadPanel(panelName) {
 					element.addEventListener(event, callback)
 				}
 			}
-			
-			// PNG - data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=
-			// GIF - data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==
-			// GIF - data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=
-			
-			// redraw??
-			// sel.style.display = 'run-in'; setTimeout(function () { sel.style.display = 'block'; }, 0);
 		}
 		
 		p.show()
