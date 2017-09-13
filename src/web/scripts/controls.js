@@ -270,11 +270,12 @@ ControlTypes['Slider'] = {
 		input: e => {
 			// console.dir(e)
 			// console.log(e.currentTarget.value)
-			// buttonReleased(e.currentTarget)
-			e.currentTarget.valueLabel.setText(e.currentTarget.value + '%')
+			if (e.currentTarget.valueLabel)
+				e.currentTarget.valueLabel.setText(e.currentTarget.value + '%')
 			if (e.currentTarget.action)
 				RelaySocket.sendInput({
 					type: 'axis',
+					device: e.currentTarget.action.device,
 					axis: e.currentTarget.action.axis,
 					value: e.currentTarget.value,
 				})

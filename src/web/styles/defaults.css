@@ -13,7 +13,8 @@
 }
 
 .cell {
-	padding: 10px;
+	--inset: 10px;
+	padding: var(--inset);
 }
 
 .label, .text, .icon {
@@ -43,17 +44,19 @@
 
 input[type=range] {
 	width: 100%;
+	--thumb-height: 40px;
+	--track-height: 60px;
 }
 
 input[type=range]::-webkit-slider-thumb {
 	background: #fff;
 	width: 30px;
-	height: 40px;
+	height: var(--thumb-height);
 	/* this needs to be set manually to center the thumb vertically */
-	margin-top: calc(-40px / 2 + 20px / 2);
+	margin-top: calc(-var(--thumb-height) / 2 + var(--track-height) / 2);
 }
 
 input[type=range]::-webkit-slider-runnable-track {
 	background: #aaa;
-	height: 20px;
+	height: var(--track-height);
 }

@@ -3,6 +3,7 @@ body {
 	height: 100vh;
 	user-select: none;
 	cursor: default;
+	overflow: hidden;
 }
 
 h1 {
@@ -10,7 +11,10 @@ h1 {
 }
 
 #panel {
+	height: 100%;
 	display: grid;
+	grid-template-rows: repeat(var(--grid-rows), 1fr);
+	grid-template-columns: repeat(var(--grid-columns), 1fr);
 	background-position: center;
 }
 
@@ -42,6 +46,20 @@ h1 {
 
 .cell > .container > span {
 	text-align: center;
+}
+
+.cell.square.adjust-width > .container,
+.cell.circle.adjust-width > .container {
+	--size: calc(100vw / var(--grid-columns) - var(--inset) * 2);
+	width: var(--size);
+	height: var(--size);
+}
+
+.cell.square.adjust-height > .container,
+.cell.circle.adjust-height > .container {
+	--size: calc(100vh / var(--grid-rows) - var(--inset) * 2);
+	width: var(--size);
+	height: var(--size);
 }
 
 .cell.circle > .container > button {

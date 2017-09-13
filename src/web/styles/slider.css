@@ -32,17 +32,19 @@ input[type=range]::-webkit-slider-runnable-track {
 input[type=range] {
 	width: 100% !important;
 	margin: 0 !important;
+	--thumb-height: 40px;
+	--track-height: 20px;
 }
 
 input[type=range]::-webkit-slider-thumb {
 	background: #fff;
 	width: 30px;
-	height: 40px;
+	height: var(--thumb-height);
 	/* this needs to be set manually to center the thumb vertically */
-	margin-top: calc(-40px / 2 + 20px / 2);
+	margin-top: calc(var(--track-height) / 2 - var(--thumb-height) / 2);
 }
 
 input[type=range]::-webkit-slider-runnable-track {
 	background: #aaa;
-	height: 20px;
+	height: var(--track-height);
 }

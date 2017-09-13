@@ -1,3 +1,10 @@
+function parseLength(length) {
+	if (length && (typeof length == "number" || !length.endsWith('%'))) {
+		length += 'px'
+	}
+	return length
+}
+
 // convert.rgb.hex = function (args) {
 	// var integer = ((Math.round(args[0]) & 0xFF) << 16)
 		// + ((Math.round(args[1]) & 0xFF) << 8)
@@ -71,8 +78,8 @@ function setFlexPosition(style, position) {
 function applyStyle(selector, control, element, mainControl) {
 	let style = getStyleRule(selector)
 	let data = control
-	if (data.width) style.width = data.width
-	if (data.height) style.height = data.height
+	// if (data.width) style.width = data.width
+	// if (data.height) style.height = data.height
 	for (let [property, handler] of Styles.global) {
 		if (property in data) handler(style, data[property], element, control)
 	}
@@ -130,14 +137,14 @@ var Styles = {
 	global: [
 		['border', (style, data, element, control) => {
 			style.borderStyle = data.style
-			style.borderWidth = data.width
+			style.borderWidth = parseLength(data.width)
 			style.borderColor = data.color
-			if (!control.circle) style.borderRadius = data.radius
+			if (!control.circle) style.borderRadius = parseLength(data.radius)
 		}],
 		['font', (style, data, element, control) => {
 			style.color = parseColor(data.color, data.alpha)
 			if (data.family) style.fontFamily = data.family
-			style.fontSize = data.size
+			style.fontSize = parseLength(data.size)
 		}],
 		['background', (style, data) => {
 			style.backgroundColor = parseColor(data.color, data.alpha)
@@ -171,9 +178,9 @@ var Styles = {
 			for (let [, shadow] of data) {
 				let boxShadow = []
 				if (shadow.inset) boxShadow.push("inset")
-				boxShadow.push(shadow.offsetX, shadow.offsetY)
-				if (typeof shadow.blurRadius !== 'undefined') boxShadow.push(shadow.blurRadius)
-				if (typeof shadow.spreadRadius !== 'undefined') boxShadow.push(shadow.spreadRadius)
+				boxShadow.push(parseLength(shadow.offsetX), parseLength(shadow.offsetY))
+				if (typeof shadow.blurRadius !== 'undefined') boxShadow.push(parseLength(shadow.blurRadius))
+				if (typeof shadow.spreadRadius !== 'undefined') boxShadow.push(parseLength(shadow.spreadRadius))
 				if (shadow.color) boxShadow.push(parseColor(shadow.color, shadow.alpha))
 				boxShadows.push(boxShadow.join(" "))
 			}

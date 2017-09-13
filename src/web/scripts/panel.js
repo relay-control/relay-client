@@ -114,18 +114,6 @@ async function loadFont(family, url) {
 	await font.load()
 }
 
-function redraw() {
-	// force a redraw of square elements since they get borked if dialog was shown prior to loading a panel
-	let squares = document.querySelectorAll('.cell.square img, .cell.circle img')
-	for (let square of squares) {
-		// square.style.display = 'none'
-		// setTimeout(() => {square.style.display = 'inline-block'}, 0)
-		
-		square.style.height = 'auto'
-		setTimeout(() => {square.style.height = '100%'}, 100)
-	}
-}
-
 class Panel {
 	constructor() {
 		this.element = document.getElementById('panel')
@@ -140,7 +128,6 @@ class Panel {
 			menu.style.display = 'none'
 			
 			this.element.style.display = 'grid'
-			// redraw()
 		 })
 	}
 	
@@ -164,7 +151,7 @@ class Panel {
 let styleLink
 
 function loadPanel(panelName) {
-	if (panelName !== currentPanel) {
+	// if (panelName !== currentPanel) {
 		let panel = document.getElementById('panel')
 		while (panel.lastChild)
 			panel.lastChild.remove()
@@ -174,7 +161,7 @@ function loadPanel(panelName) {
 			styleLink.remove()
 		}
 		rules = {}
-	}
+	// }
 	
 	menuViewModel.currentPanel(panelName)
 	currentPanel = panelName
@@ -203,20 +190,20 @@ function loadPanel(panelName) {
 				panelElement.style.backgroundPosition = 'center'
 			}
 		}
-		panelElement.style.gridTemplateColumns = `repeat(${panel.grid.columns}, 1fr)`
-		panelElement.style.gridTemplateRows = `repeat(${panel.grid.rows}, 1fr)`
+		panelElement.style.setProperty('--grid-rows', panel.grid.rows)
+		panelElement.style.setProperty('--grid-columns', panel.grid.columns)
 		
 		/* validate grid size and control placement */
 		
-		let size = `calc(100vh / ${panel.grid.rows} - 10px * 2)`
-		let style = getStyleRule('.adjust-height .container')
-		style.width = size
-		style.height = size
+		// let size = `calc(100vh / ${panel.grid.rows} - 10px * 2)`
+		// let style = getStyleRule('.adjust-height .container')
+		// style.width = size
+		// style.height = size
 		
-		let size2 = `calc(100vw / ${panel.grid.columns} - 10px * 2)`
-		let style2 = getStyleRule('.adjust-width .container')
-		style2.width = size2
-		style2.height = size2
+		// let size2 = `calc(100vw / ${panel.grid.columns} - 10px * 2)`
+		// let style2 = getStyleRule('.adjust-width .container')
+		// style2.width = size2
+		// style2.height = size2
 		
 		if (panel.assets) {
 			for (let [type, asset] of panel.assets) {
@@ -236,9 +223,9 @@ function loadPanel(panelName) {
 				// map each template to a CSS class
 				let selector = template.name
 				if (tag !== 'Control') selector += '.' + tag.toLowerCase()
-				if (template.padding) {
-					let style = getStyleRule(selector)
-					style.padding = `${template.padding.y} ${template.padding.x}`
+				if (template.inset) {
+					let style = getStyleRule('.' + selector)
+					style.setProperty('--inset', parseLength(template.inset))
 				}
 				let style = new TemplateStyle(selector)
 				style.apply(template)
@@ -309,9 +296,19 @@ function loadPanel(panelName) {
 				}
 			}
 			
-			if (control.heightw) {
+			if (control.inset) {
+				let style = getStyleRule(`#${area.id}`)
+				style.setProperty('--inset', parseLength(control.inset))
+			}
+			
+			if (control.size) {
 				let style = getStyleRule(`#${area.id} .container`)
-				style.height = control.heightw
+				style.width = control.size
+				style.height = control.size
+			}
+			if (control.height) {
+				let style = getStyleRule(`#${area.id} .container`)
+				style.height = control.height
 			}
 			
 			let label = control.label
