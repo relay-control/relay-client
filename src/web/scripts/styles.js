@@ -190,9 +190,7 @@ var Styles = {
 	controls: {
 		Slider: {
 			children: [
-				['thumb', '::-webkit-slider-thumb', (style, data, element, control) => {
-					style.marginTop = `${-parseInt(data.height) / 2 + parseInt(control.track.height) / 2}px`
-				}],
+				['thumb', '::-webkit-slider-thumb'],
 				['track', '::-webkit-slider-runnable-track'],
 			],
 		},

@@ -1,15 +1,3 @@
-body {
-	margin: 0;
-	height: 100vh;
-	user-select: none;
-	cursor: default;
-	overflow: hidden;
-}
-
-h1 {
-	margin: 0;
-}
-
 #panel {
 	height: 100%;
 	display: grid;
@@ -37,6 +25,18 @@ h1 {
 	align-items: center;
 }
 
+.adjust-width .container {
+	--size: calc(100vw / var(--grid-columns) - var(--inset) * 2);
+	width: var(--size);
+	height: var(--size);
+}
+
+.adjust-height .container {
+	--size: calc(100vh / var(--grid-rows) - var(--inset) * 2);
+	width: var(--size);
+	height: var(--size);
+}
+
 .cell > .container > button {
 	width: 100%;
 	height: 100%;
@@ -44,25 +44,7 @@ h1 {
 	background-position: center;
 }
 
-.cell > .container > span {
-	text-align: center;
-}
-
-.cell.square.adjust-width > .container,
-.cell.circle.adjust-width > .container {
-	--size: calc(100vw / var(--grid-columns) - var(--inset) * 2);
-	width: var(--size);
-	height: var(--size);
-}
-
-.cell.square.adjust-height > .container,
-.cell.circle.adjust-height > .container {
-	--size: calc(100vh / var(--grid-rows) - var(--inset) * 2);
-	width: var(--size);
-	height: var(--size);
-}
-
-.cell.circle > .container > button {
+.cell.circle button {
 	border-radius: 50% !important;
 }
 
@@ -76,15 +58,6 @@ h1 {
 	display: flex;
 	pointer-events: none;
 	/*touch-action: none;*/
-}
-
-.text, .icon {
-	position: absolute;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
-	display: flex;
 }
 
 iframe {
@@ -106,6 +79,8 @@ input[type=range]:focus {
 
 input[type=range]::-webkit-slider-thumb {
 	-webkit-appearance: none;
+	/* this needs to be set manually to center the thumb vertically */
+	margin-top: calc(var(--track-height) / 2 - var(--thumb-height) / 2);
 }
 
 input[type=range]::-webkit-slider-runnable-track {

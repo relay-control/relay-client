@@ -12,6 +12,7 @@
 	<script src="scripts/socket.js"></script>
 	<script src="scripts/colors.js"></script>
 	<script src="scripts/index.js"></script>
+	<script src="scripts/settings.js"></script>
 	<script src="scripts/panel.js"></script>
 </head>
 
@@ -22,10 +23,15 @@
 		<h1>VPCP</h1>
 	</header>
 	<section>
-		<h1 id="connection-status">Not connected</h1>
-		<button data-bind="click: connect">Connect</button>
+		<header class="with-button">
+			<h1 id="connection-status">Not connected</h1>
+			<button data-bind="click: connect">Connect</button>
+		</header>
 		<div data-bind="visible: connected">
-			<h3>Available panels<button data-bind="click: refresh"><i class="fa fa-refresh fa-fw"></i></button></h3>
+			<header class="with-button">
+				<h3>Available panels</h3>
+				<button data-bind="click: refresh"><i class="fa fa-refresh fa-fw"></i></button>
+			</header>
 			
 			<ul id="panel-list" data-bind="foreach: {data: panels, as: 'panel'}">
 				<li data-bind="click: loadPanel">
@@ -41,11 +47,11 @@
 <div id="panel" style="display: none"></div>
 
 <dialog id="connect-dialog">
-	<p>Connect to Relay server</p>
+	<header>Connect to Relay server</header>
 	<form id="connect-form">
-		<div>
+		<div class="content">
 			<div class="input">
-				<label for="connect-address">IP address</label>
+				<label for="connect-address">Address</label>
 				<input name="address" id="connect-address" required pattern="[\d.]+">
 			</div>
 			<div class="input">
@@ -55,8 +61,8 @@
 		</div>
 		<div class="buttons">
 			<i id="loading" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw" style="visibility: hidden"></i>
-			<button type="submit">Connect</button>
 			<button type="button" id="connect-cancel">Cancel</button>
+			<button type="submit" class="primary">Connect</button>
 		</div>
 	</form>
 </dialog>

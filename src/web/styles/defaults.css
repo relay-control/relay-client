@@ -17,17 +17,9 @@
 	padding: var(--inset);
 }
 
-.label, .text, .icon {
-	padding: 10px;
-}
-
 .cell button {
 	background: #fff;
 	border: none;
-}
-
-.cell > div > span {
-	text-align: center;
 }
 
 .cell .label,
@@ -36,24 +28,20 @@
 	align-items: center;
 }
 
-.text,
-.icon {
-	justify-content: center;
-	align-items: center;
+.label, .text, .icon {
+	padding: 10px;
 }
 
 input[type=range] {
 	width: 100%;
 	--thumb-height: 40px;
-	--track-height: 60px;
+	--track-height: 20px;
 }
 
 input[type=range]::-webkit-slider-thumb {
 	background: #fff;
 	width: 30px;
 	height: var(--thumb-height);
-	/* this needs to be set manually to center the thumb vertically */
-	margin-top: calc(-var(--thumb-height) / 2 + var(--track-height) / 2);
 }
 
 input[type=range]::-webkit-slider-runnable-track {

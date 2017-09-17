@@ -1,4 +1,4 @@
-class socket {
+class Socket {
 	connect(address, port) {
 		this.address = address
 		this.port = port
@@ -47,6 +47,8 @@ class socket {
 		
 		updatePanels()
 		
+		menuViewModel.connected(true)
+		
 		let status = document.getElementById('connection-status')
 		status.textContent = "Connected to " + this.address
 		document.getElementById('loading').style.visibility = 'hidden'
@@ -61,12 +63,14 @@ class socket {
 		if (e.code === 4001) {
 			this.connect(this.address, this.port)
 		}
+		menuViewModel.connected(false)
 		if (this.previousState === WebSocket.CONNECTING) {
-			document.getElementById('connect-dialog').close()
+			if (document.getElementById('connect-dialog').open)
+				document.getElementById('connect-dialog').close()
 			let status = document.getElementById('connection-status')
 			status.textContent = "Not connected"
 			document.getElementById('loading').style.visibility = 'hidden'
-			modal.show("Unable to connect to Relay server")
+			modal.show("Unable to connect to Relay server", this.previousState)
 		}
 		if (this.previousState === WebSocket.OPEN) {
 			modal.show("Disconnected from Relay server")

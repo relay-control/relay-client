@@ -240,7 +240,6 @@ function buttonReleased(element) {
 }
 
 ControlTypes['Button'] = {
-	tag: 'button',
 	events: {
 		mousedown: e => {
 			buttonPressed(e.currentTarget)
@@ -265,7 +264,6 @@ ControlTypes['Button'] = {
 }
 
 ControlTypes['Slider'] = {
-	tag: 'input',
 	events: {
 		input: e => {
 			// console.dir(e)
@@ -296,6 +294,5 @@ ControlTypes['Slider'] = {
 }
 
 ControlTypes['Text'] = {
-	tag: 'span',
 	events: {},
 }

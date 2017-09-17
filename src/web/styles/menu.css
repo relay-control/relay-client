@@ -1,3 +1,18 @@
+html {
+	font-size: 14px;
+}
+
+body {
+	margin: 0;
+	height: 100vh;
+	user-select: none;
+	cursor: default;
+	overflow: hidden;
+	--border: 1px solid var(--border-color);
+	--border-color: rgba(34, 36, 38, 0.15);
+	--border-radius: 0.28571429rem;
+}
+
 #menu {
 	display: flex;
 	flex-flow: column;
@@ -5,114 +20,208 @@
 	background: #eee;
 }
 
-#menu header {
-	flex: 0 1 auto;
-	height: 100px;
-	background: #333;
-}
-
-#menu header h1 {
-	/*height: 30px;*/
-	color: white;
-	background: #111;
-	text-align: center;
-}
-
 #menu {
 	font-family: 'Open Sans';
+}
+
+#menu > header {
+	flex: 0 0 auto;
+	height: 100px;
+	background: #333;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: white;
+}
+
+header.with-button {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 #menu section {
 	flex: 1 1 auto;
 	background: white;
 	width: 500px;
-	padding: 50px;
+	padding: 1em 4em;
 	margin: auto;
 	justify-content: center;
 	flex-direction: column;
 }
 
-#menu button {
+#menu section header {
+	margin: 1em 0;
+}
+
+#menu section > header {
+	margin-bottom: 2em;
+}
+
+#menu button,
+dialog button {
+	font-size: 1rem;
+	
+	min-height: 1em;
+	outline: none;
+	border: none;
+	background: #e0e1e2;
+	color: rgba(0, 0, 0, 0.6);
 	font-family: inherit;
-	/*
-	background: #eee;
-	border: 1px solid #888;
-	border-radius: 5px;
-	*/
+	margin: 0em 0.25em 0em 0em;
+	padding: 0.78571429em 1.5em 0.78571429em;
+	font-weight: bold;
+	line-height: 1em;
+	border-radius: var(--border-radius);
+	transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+#menu button:active,
+dialog button:active {
+	background-color: #babbbc;
+	color: rgba(0, 0, 0, 0.9);
+}
+
+#menu button.primary,
+dialog button.primary {
+	background-color: #2185D0;
+	color: white;
+}
+
+#menu button.primary:active,
+dialog button.primary:active {
+	background-color: #1a69a4;
+}
+
+h1 {
+	margin: 0;
+}
+
+h3 {
+	font-size: 1.28571429rem;
+	margin: 0;
 }
 
 #panel-list {
 	list-style-type: none;
 	padding: 0;
-}
-
-h3 {
-		vertical-align: middle;
+	border: var(--border);
+	box-shadow: 0px 1px 2px 0 var(--border-color);
+	border-radius: var(--border-radius);
 }
 
 #panel-list li {
-	background: #ddd;
-	padding: 8px;
-	margin: 2px;
-	font-size: 20px;
-	font-weight: bold;
+	padding: 1em;
+	font-size: 1rem;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	border-top: var(--border);
+	transition: 0.1s background-color ease;
+}
+
+#panel-list li:active {
+	background: rgba(0,0,0,.05);
+	color: rgba(0,0,0,.9);
+}
+
+#panel-list li:first-child {
+	border-top: none;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
+#panel-list li:last-child {
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
 }
 
 dialog {
-	text-align: center;
 	font-family: 'Open Sans';
 	border: none;
+	padding: 0;
+	position: fixed;
+	top: 50%;
+	margin-top: -130px;
+	border-radius: var(--border-radius);
 }
 
 dialog::backdrop {
-	background: rgba(0, 0, 0, 0.5);
+	background: rgba(0, 0, 0, 0.85);
 }
 
-dialog p {
-	font-size: 20px;
-}
-
-dialog div.input {
-	display: inline-block;
-}
-
-dialog label {
-	display: block;
+dialog header {
+	font-size: 1.3rem;
 	font-weight: bold;
-}
-
-dialog input {
-	font-family: inherit;
-	font-size: 20px;
-}
-
-dialog input[name=port] {
-	width: 80px;
-}
-
-dialog button {
-	font-family: inherit;
-	font-size: 20px;
-	padding: 8px;
-	/* border: none; */
-	outline: none;
-}
-
-#connect-form {
-	display: flex;
-	flex-flow: column;
+	line-height: 1.28571429em;
+	padding: 1.25rem 1.5rem;
+	border-bottom: var(--border);
 }
 
 dialog .buttons {
+	background: #f9fafb;
+	padding: 1rem;
+	border-top: var(--border);
 	display: flex;
 	justify-content: flex-end;
-	margin-top: 8px;
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
 }
 
 dialog .buttons button {
-	margin-left: 8px;
-	width: 100px;
+	margin-left: 0.75em;
+}
+
+dialog div.input {
+	margin-bottom: 1em;
+	
+	font-size: 1em;
+	display: flex;
+	color: rgba(0, 0, 0, 0.87);
+}
+
+dialog div.input:last-child {
+	margin: 0;
+}
+/* 
+dialog label {
+	font-size: 1rem;
+}
+ */
+dialog label {
+	line-height: 1;
+	background-color: #e8e8e8;
+	padding: .78571429em .833em;
+	color: rgba(0, 0, 0, 0.6);
+	font-weight: bold;
+	border-top-left-radius: var(--border-radius);
+	border-bottom-left-radius: var(--border-radius);
+
+	flex: 0 0 auto;
+	font-size: 1em;
+	width: 4em;
+}
+
+dialog input {
+	margin: 0;
+	flex: 1 0 auto;
+	outline: 0;
+	line-height: 1.21428571em;
+	font-family: inherit;
+	padding: .67857143em 1em;
+	color: rgba(0, 0, 0, 0.87);
+	border: var(--border);
+	border-left-color: transparent;
+	border-top-right-radius: var(--border-radius);
+	border-bottom-right-radius: var(--border-radius);
+	transition: border-color .1s ease;
+}
+
+input:focus {
+	border-color: #85b7d9;
+	color: rgba(0, 0, 0, 0.8);
+}
+
+dialog .content {
+	padding: 1.5rem;
 }

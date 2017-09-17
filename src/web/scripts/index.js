@@ -1,23 +1,32 @@
-let ws = new socket()
+let socket = new Socket()
 
 
 var modal = {}
 
-modal.show = function(text) {
+modal.show = function(text, returnValue) {
 	this.text.textContent = text
 	this.button1.textContent = "OK"
+	this.dialog.connectionStatus = returnValue
 	this.dialog.showModal()
 }
 
-let settings = {
-	address: '192.168.0.202',
-	port: '57882',
-	rememberPanel: true,
-	panel: 'Elite',
+function isAndroid() {
+	return typeof Android !== 'undefined'
 }
 
 function isElectron() {
-	return process && process.versions && process.versions['electron']
+	return typeof process !== 'undefined' && process.versions && process.versions['electron']
+}
+
+function goBack() {
+	let panel = document.getElementById('panel')
+	let style = window.getComputedStyle(panel)
+	if (style.display === 'grid') {
+		panel.style.display = 'none'
+		menuViewModel.currentPanel(null)
+		let menu = document.getElementById('menu')
+		menu.style.display = 'flex'
+	}
 }
 
 
@@ -40,21 +49,16 @@ document.addEventListener('DOMContentLoaded', () => {
 	ko.applyBindings(menuViewModel, document.getElementById('menu'))
 	
 	document.addEventListener('keydown', e => {
-		if (e.code === 'Escape') {
-			let panel = document.getElementById('panel')
-			let style = window.getComputedStyle(panel)
-			if (style.display === 'grid') {
-				panel.style.display = 'none'
-				menuViewModel.currentPanel(null)
-				let menu = document.getElementById('menu')
-				menu.style.display = 'flex'
-			}
+		if (e.code === 'Escape' || e.code === 'Backspace') {
+			goBack()
 		}
 	})
 	
 	modal.dialog = document.body.appendChild(document.createElement('dialog'))
-	modal.text = modal.dialog.appendChild(document.createElement('p'))
-	modal.button1 = modal.dialog.appendChild(document.createElement('button'))
+	modal.text = modal.dialog.appendChild(document.createElement('header'))
+	modal.buttons = modal.dialog.appendChild(document.createElement('div'))
+	modal.buttons.classList.add('buttons')
+	modal.button1 = modal.buttons.appendChild(document.createElement('button'))
 	modal.button1.addEventListener('click', () => modal.dialog.close())
 	
 	let connectDialog = document.getElementById('connect-dialog')
@@ -62,31 +66,32 @@ document.addEventListener('DOMContentLoaded', () => {
 	let connectForm = document.getElementById('connect-form')
 	connectForm.addEventListener('submit', e => {
 		e.preventDefault()
-		ws.connect(e.target.elements.address.value, e.target.elements.port.value)
+		saveSetting('address', e.target.elements.address.value)
+		saveSetting('port', e.target.elements.port.value)
+		socket.connect(e.target.elements.address.value, e.target.elements.port.value)
 		document.getElementById('loading').style.visibility = 'visible'
 	})
 	let cancel = document.getElementById('connect-cancel')
 	cancel.addEventListener('click', e => {
 		connectDialog.close()
 	})
+	connectForm.elements.port.value = '32155'
 	
-	if (settings.address) {
-		connectForm.elements.address.value = settings.address
-		connectForm.elements.port.value = settings.port
-		ws.connect(settings.address, settings.port)
-	} else {
-		connectDialog.showModal()
-	}
+	modal.dialog.addEventListener('close', e => {
+		if (e.target.connectionStatus === WebSocket.CONNECTING)
+			connectDialog.showModal()
+		delete e.target.connectionStatus
+	})
 })
 
 var RelaySocket = {}
 
 RelaySocket.sendInput = function(input) {
-	ws.sendInput(JSON.stringify(input))
+	socket.sendInput(JSON.stringify(input))
 }
 
 function getPanels() {
-	return fetch(`${ws.server}/getpanellist`, {cache: 'no-store'})
+	return fetch(`${socket.server}/api/getpanels`, {cache: 'no-store'})
 	 .then(response => response.json())
 }
 
@@ -94,7 +99,7 @@ function updatePanels() {
 	getPanels().then(panels => {
 		menuViewModel.panels(panels)
 	})
-	if (settings.rememberPanel && settings.panel) {
-		loadPanel(settings.panel)
+	if (!settings.rememberPanel && settings.lastPanel) {
+		loadPanel(settings.lastPanel)
 	}
 }

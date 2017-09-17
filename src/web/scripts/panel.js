@@ -86,7 +86,7 @@ function getStyleRule(selector) {
 let currentPanel
 
 function getAssetPath(file) {
-	return `${ws.server}/${currentPanel}/assets/${file}`
+	return encodeURI(`${socket.server}/panels/${currentPanel}/assets/${file}`)
 }
 
 function loadImage(url) {
@@ -165,9 +165,10 @@ function loadPanel(panelName) {
 	
 	menuViewModel.currentPanel(panelName)
 	currentPanel = panelName
+	saveSetting('lastPanel', panelName)
 	
 	let xhr = new XMLHttpRequest()
-	xhr.open("GET", `${ws.server}/${panelName}/${panelName}.xml`)
+	xhr.open("GET", encodeURI(`${socket.server}/panels/${panelName}/${panelName}.xml`))
 	xhr.responseType = 'document'
 	xhr.send()
 	xhr.onload = function() {
@@ -303,8 +304,8 @@ function loadPanel(panelName) {
 			
 			if (control.size) {
 				let style = getStyleRule(`#${area.id} .container`)
-				style.width = control.size
-				style.height = control.size
+				style.width = parseLength(control.size)
+				style.height = parseLength(control.size)
 			}
 			if (control.height) {
 				let style = getStyleRule(`#${area.id} .container`)
@@ -372,6 +373,16 @@ function loadPanel(panelName) {
 				}
 				
 				c.applyStyle('#' + area.id, control)
+				
+				if (control.thumb) {
+					let style = c.getStyleRule(`#${area.id}`)
+					style.setProperty('--thumb-height', parseLength(control.thumb.height))
+				}
+				
+				if (control.track) {
+					let style = c.getStyleRule(`#${area.id}`)
+					style.setProperty('--track-height', parseLength(control.track.height))
+				}
 			}
 			
 			if (controlType.events) {
@@ -384,7 +395,7 @@ function loadPanel(panelName) {
 		p.show()
 		
 		// request devices
-		fetch(`${ws.server}/requestDevices`)
+		fetch(`${socket.server}/requestDevices`)
 		 .then(res => {
 			if (res.ok) {
 				for (let device in res) {
@@ -394,10 +405,10 @@ function loadPanel(panelName) {
 					if (usedVJoyDeviceButtons[device.id] > device.numButtons) {
 						console.log("Not enough buttons")
 					}
-					for (let axis of usedVJoyDeviceAxes[device.id]) {
-						if (!device.axes[axis])
-							console.log("Axis " +axis+ " not available")
-					}
+					// for (let axis of usedVJoyDeviceAxes[device.id]) {
+						// if (!device.axes[axis])
+							// console.log("Axis " +axis+ " not available")
+					// }
 				}
 			}
 		 })
