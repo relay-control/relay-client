@@ -309,7 +309,7 @@ function loadPanel(panelName) {
 			}
 			if (control.height) {
 				let style = getStyleRule(`#${area.id} .container`)
-				style.height = control.height
+				style.height = parseLength(control.height)
 			}
 			
 			let label = control.label
@@ -369,6 +369,16 @@ function loadPanel(panelName) {
 						if (template.label) {
 							c.applyStyle(`.${selector} .label`, template)
 						}
+						
+						if (template.thumb) {
+							let style = c.getStyleRule(`.${selector} .control`)
+							style.setProperty('--thumb-height', parseLength(template.thumb.height))
+						}
+						
+						if (template.track) {
+							let style = c.getStyleRule(`.${selector} .control`)
+							style.setProperty('--track-height', parseLength(template.track.height))
+						}
 					}
 				}
 				
@@ -395,22 +405,29 @@ function loadPanel(panelName) {
 		p.show()
 		
 		// request devices
-		fetch(`${socket.server}/requestDevices`)
+		fetch(`${socket.server}/api/requestdevice`)
+		 .then(response => response.json())
 		 .then(res => {
-			if (res.ok) {
-				for (let device in res) {
-					if (!device.acquired) {
-						console.log("Unable to acquire device " + device.id)
-					}
-					if (usedVJoyDeviceButtons[device.id] > device.numButtons) {
-						console.log("Not enough buttons")
-					}
-					// for (let axis of usedVJoyDeviceAxes[device.id]) {
-						// if (!device.axes[axis])
-							// console.log("Axis " +axis+ " not available")
-					// }
+			let deviceInfo = document.getElementById('device-info')
+			let deviceInfoText = document.querySelector('#device-info .content')
+			menuViewModel.deviceInfo.removeAll()
+			let device = res
+			// for (let device in res) {
+				if (!device.isEnabled) {
+					console.log("Unable to acquire device " + device.id)
+					menuViewModel.deviceInfo.push(`Unable to acquire device ${device.id}`)
 				}
-			}
+				if (usedVJoyDeviceButtons[device.id] > device.numButtons) {
+					console.log("Not enough buttons")
+					menuViewModel.deviceInfo.push(`Device ${device.id} has ${device.numButtons} buttons but this panel uses ${usedVJoyDeviceButtons[device.id]}`)
+				}
+				// for (let axis of usedVJoyDeviceAxes[device.id]) {
+					// if (!device.axes[axis])
+						// console.log("Axis " +axis+ " not available")
+				// }
+			// }
+			if (menuViewModel.deviceInfo().length > 0)
+				deviceInfo.showModal()
 		 })
 	}
 }

@@ -41,14 +41,19 @@ function MenuViewModel() {
 	this.refresh = function() {
 		updatePanels()
 	}
+	this.deviceInfo = ko.observableArray()
 }
 
 var menuViewModel = new MenuViewModel()
 
 document.addEventListener('DOMContentLoaded', () => {
-	ko.applyBindings(menuViewModel, document.getElementById('menu'))
+	ko.applyBindings(menuViewModel/* , document.getElementById('menu') */)
 	
 	document.addEventListener('keydown', e => {
+		if (document.getElementById('connect-dialog').open ||
+			document.getElementById('device-info').open ||
+			modal.dialog.open)
+			return
 		if (e.code === 'Escape' || e.code === 'Backspace') {
 			goBack()
 		}

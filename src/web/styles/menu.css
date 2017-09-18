@@ -140,9 +140,8 @@ dialog {
 	font-family: 'Open Sans';
 	border: none;
 	padding: 0;
-	position: fixed;
-	top: 50%;
-	margin-top: -130px;
+	top: 0;
+	bottom: 0;
 	border-radius: var(--border-radius);
 }
 
@@ -156,6 +155,18 @@ dialog header {
 	line-height: 1.28571429em;
 	padding: 1.25rem 1.5rem;
 	border-bottom: var(--border);
+}
+
+dialog .content {
+	padding: 1.5rem;
+}
+
+dialog .content p:first-child {
+	margin-top: 0;
+}
+
+dialog .content p:last-child {
+	margin-bottom: 0;
 }
 
 dialog .buttons {
@@ -220,8 +231,4 @@ dialog input {
 input:focus {
 	border-color: #85b7d9;
 	color: rgba(0, 0, 0, 0.8);
-}
-
-dialog .content {
-	padding: 1.5rem;
 }

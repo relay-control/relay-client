@@ -55,7 +55,11 @@ class Slider extends Control {
 		this.container.appendChild(iframe)
 		
 		iframe.contentDocument.body.addEventListener('keydown', e => {
-			if (e.code === 'Escape') {
+			if (document.getElementById('connect-dialog').open ||
+				document.getElementById('device-info').open ||
+				modal.dialog.open)
+				return
+			if (e.code === 'Escape' || e.code === 'Backspace') {
 				let panel = document.getElementById('panel')
 				let style = window.getComputedStyle(panel)
 				if (style.display === 'grid') {

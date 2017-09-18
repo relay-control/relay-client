@@ -67,6 +67,16 @@
 	</form>
 </dialog>
 
+<dialog id="device-info">
+	<header>Device info</header>
+	<div class="content" data-bind="foreach: deviceInfo">
+		<p data-bind="text: $data"></p>
+	</div>
+	<div class="buttons">
+		<button type="submit" class="primary">OK</button>
+	</div>
+</dialog>
+
 </body>
 
 </html>
