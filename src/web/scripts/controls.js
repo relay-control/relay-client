@@ -168,8 +168,7 @@ class LabelStyle extends SubStyle {
 
 class ActiveLabelStyle extends SubStyle {
 	constructor(parent) {
-		// super(' .label', parent)
-		super(` .control.pressed .label, ${parent.selector} .control.active .label`, parent)
+		super(' .control.active .label', parent)
 	}
 	
 	get styleProperties() {
@@ -202,8 +201,7 @@ class ActiveLabelStyle extends SubStyle {
 
 class ActiveStyle extends SubStyle {
 	constructor(parent) {
-		// super(' .control.pressed', parent)
-		super(` .control.pressed, ${parent.selector} .control.active`, parent)
+		super(' .control.active', parent)
 	}
 	
 	// getContainerStyle() {
@@ -311,6 +309,7 @@ class IconLabel extends Label {
 var ControlTypes = {}
 
 function buttonActivated(element) {
+	element.classList.add('active')
 	if (element.action)
 		RelaySocket.sendInput({
 			type: element.action.type,
@@ -322,6 +321,7 @@ function buttonActivated(element) {
 }
 
 function buttonDeactivated(element) {
+	element.classList.remove('active')
 	if (element.action)
 		RelaySocket.sendInput({
 			type: element.action.type,
@@ -333,28 +333,26 @@ function buttonDeactivated(element) {
 }
 
 function buttonPressed(element) {
-	if (element.dataset.mode === "toggle") {
-		if (!element.classList.contains("active")) {
+	if (element.dataset.mode === 'toggle') {
+		if (!element.wasActive) {
 			buttonActivated(element)
 		}
 	} else {
 		buttonActivated(element)
 	}
-	element.dataset.pressed = true
-	element.classList.add("pressed")
+	element.pressed = true
 	// console.log("pressed ", element.id)
 }
 
 function buttonReleased(element) {
-	if (element.dataset.mode === "toggle") {
-		element.classList.toggle("active")
-		if (!element.classList.contains("active"))
+	if (element.dataset.mode === 'toggle') {
+		if (element.wasActive)
 			buttonDeactivated(element)
+		element.wasActive = !element.wasActive
 	} else {
 		buttonDeactivated(element)
 	}
-	delete element.dataset.pressed
-	element.classList.remove("pressed")
+	element.pressed = false
 	// console.log("released", element.id)
 }
 
@@ -367,7 +365,7 @@ ControlTypes['Button'] = {
 			buttonReleased(e.currentTarget)
 		},
 		mouseout: e => {
-			if (e.currentTarget.dataset.pressed) {
+			if (e.currentTarget.pressed) {
 				buttonReleased(e.currentTarget)
 			}
 		},
