@@ -55,12 +55,13 @@ function parse(xml) {
 
 	// recursively call #parse over children, adding results to data
 	for (child of xml.children) {
+		let nodeName = child.nodeName
 		if (collections.includes(xml.nodeName)) {
 			// certain predetermined tags gets their children populated in an array
-			data.push([child.nodeName, parse(child)])
+			data.push([parse(child), nodeName])
 		} else {
 			// the rest gets added as properties
-			data[firstCharLowerCase(child.nodeName)] = parse(child)
+			data[firstCharLowerCase(nodeName)] = parse(child)
 		}
 	}
 	
@@ -156,8 +157,8 @@ function loadPanel(panelName) {
 		while (panel.lastChild)
 			panel.lastChild.remove()
 		if (stylesheet) {
-			while (stylesheet.cssRules.length > 0)
-				stylesheet.deleteRule(stylesheet.cssRules.length - 1)
+			// while (stylesheet.cssRules.length > 0)
+				// stylesheet.deleteRule(stylesheet.cssRules.length - 1)
 			styleLink.remove()
 		}
 		rules = {}
@@ -173,6 +174,8 @@ function loadPanel(panelName) {
 	xhr.send()
 	xhr.onload = function() {
 		let {panel} = parse(this.response)
+		
+		// console.log(panel)
 		
 		// create a separate stylesheet for dynamic style rules
 		let link = document.createElement('style')
@@ -196,18 +199,8 @@ function loadPanel(panelName) {
 		
 		/* validate grid size and control placement */
 		
-		// let size = `calc(100vh / ${panel.grid.rows} - 10px * 2)`
-		// let style = getStyleRule('.adjust-height .container')
-		// style.width = size
-		// style.height = size
-		
-		// let size2 = `calc(100vw / ${panel.grid.columns} - 10px * 2)`
-		// let style2 = getStyleRule('.adjust-width .container')
-		// style2.width = size2
-		// style2.height = size2
-		
 		if (panel.assets) {
-			for (let [type, asset] of panel.assets) {
+			for (let [asset, type] of panel.assets) {
 				switch (type) {
 					case 'Image':
 						p.loadImage(asset.file)
@@ -220,14 +213,10 @@ function loadPanel(panelName) {
 		}
 		
 		if (panel.templates) {
-			for (let [tag, template] of panel.templates) {
+			for (let [template, tag] of panel.templates) {
 				// map each template to a CSS class
 				let selector = template.name
 				if (tag !== 'Control') selector += '.' + tag.toLowerCase()
-				if (template.inset) {
-					let style = getStyleRule('.' + selector)
-					style.setProperty('--inset', parseLength(template.inset))
-				}
 				let style = new TemplateStyle(selector)
 				style.apply(template)
 				if (template.label) {
@@ -246,7 +235,7 @@ function loadPanel(panelName) {
 		let usedVJoyDeviceButtons = []
 		let usedVJoyDeviceAxes = []
 		
-		for (let [tag, control] of panel.controls) {
+		for (let [control, tag] of panel.controls) {
 			control.tag = tag // temporarily for substyles
 			let controlType = ControlTypes[tag]
 			switch (tag) {
@@ -259,11 +248,9 @@ function loadPanel(panelName) {
 					break
 			}
 			
-			let {area, container, control: element, frame} = c
+			let {area, container, control: element} = c
 			
 			element.classList.add('control')
-			if (frame)
-				frame.classList.add('control')
 			
 			if (control.position) {
 				c.setRow(control.position.row)
@@ -285,31 +272,13 @@ function loadPanel(panelName) {
 				c.addClass('adjust-' + (control.adjustSize || 'height'))
 			}
 			
-			let style = new ControlStyle(c)
+			let style = c
 			style.apply(control)
-			if (control.label) {
-				style.applyLabel(control.label)
-			}
 			if (control.active) {
 				style.applyActive(control.active)
 				if (control.active.label) {
 					style.applyActiveLabel(control.active.label)
 				}
-			}
-			
-			if (control.inset) {
-				let style = getStyleRule(`#${area.id}`)
-				style.setProperty('--inset', parseLength(control.inset))
-			}
-			
-			if (control.size) {
-				let style = getStyleRule(`#${area.id} .container`)
-				style.width = parseLength(control.size)
-				style.height = parseLength(control.size)
-			}
-			if (control.height) {
-				let style = getStyleRule(`#${area.id} .container`)
-				style.height = parseLength(control.height)
 			}
 			
 			let label = control.label
@@ -326,6 +295,7 @@ function loadPanel(panelName) {
 					iconLabel.setPosition(label.iconPosition || label.position)
 					iconLabel.setAnchor(label.iconAnchor || label.anchor)
 				}
+				style.applyLabel(control.label)
 			}
 			
 			if (control.action) {
@@ -356,43 +326,20 @@ function loadPanel(panelName) {
 				}
 				
 				if (panel.templates) {
-					for (let [tag, template] of panel.templates) {
+					for (let [template, tag] of panel.templates) {
 						// map each template to a CSS class
 						let selector = template.name
 						template.tag = tag
 						if (tag !== 'Control') selector += '.' + tag.toLowerCase()
-						if (template.padding) {
-							let style = c.getStyleRule(selector)
-							style.padding = `${template.padding.y} ${template.padding.x}`
-						}
-						c.applyStyle(`.${selector} .control`, template)
+						let style = new TemplateStyle2(selector, c)
+						style.apply(template)
 						if (template.label) {
-							c.applyStyle(`.${selector} .label`, template)
-						}
-						
-						if (template.thumb) {
-							let style = c.getStyleRule(`.${selector} .control`)
-							style.setProperty('--thumb-height', parseLength(template.thumb.height))
-						}
-						
-						if (template.track) {
-							let style = c.getStyleRule(`.${selector} .control`)
-							style.setProperty('--track-height', parseLength(template.track.height))
+							// style.applyLabel(template.label)
 						}
 					}
 				}
 				
-				c.applyStyle('#' + area.id, control)
-				
-				if (control.thumb) {
-					let style = c.getStyleRule(`#${area.id}`)
-					style.setProperty('--thumb-height', parseLength(control.thumb.height))
-				}
-				
-				if (control.track) {
-					let style = c.getStyleRule(`#${area.id}`)
-					style.setProperty('--track-height', parseLength(control.track.height))
-				}
+				c.apply(control)
 			}
 			
 			if (controlType.events) {

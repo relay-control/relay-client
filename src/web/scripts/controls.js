@@ -1,6 +1,8 @@
-class Control {
+class Control extends ControlStyle {
 	constructor(panel) {
-		this.id = panel.getNextID()
+		let id = panel.getNextID()
+		super(id)
+		this.id = id
 		
 		this.area = document.createElement('div')
 		this.area.classList.add('cell')
@@ -25,14 +27,6 @@ class Control {
 		this.column = column
 		this.area.style.gridColumnStart = column
 	}
-	
-	setRowSpan(span) {
-		this.area.style.gridRowEnd = this.row + span
-	}
-	
-	setColumnSpan(span) {
-		this.area.style.gridColumnEnd = this.column + span
-	}
 }
 
 class Button extends Control {
@@ -50,7 +44,7 @@ class Slider extends Control {
 		this.rules = {}
 		
 		let iframe = document.createElement('iframe')
-		this.frame = iframe
+		iframe.classList.add('control')
 		
 		this.container.appendChild(iframe)
 		
@@ -111,28 +105,149 @@ class Slider extends Control {
 		return rule
 	}
 	
-	applyStyle(selector, control) {
-		let element = this.control
-		let style = this.getStyleRule(selector)
-		let data = control
-		if (data.width) style.width = data.width
-		if (data.height) style.height = data.height
-		for (let [property, handler] of Styles.global) {
-			if (property in data) handler(style, data[property], element, control)
+	apply(style) {
+		for (let property of this.styleProperties) {
+			if (property in style) this[property] = style[property]
 		}
-		if (Styles.controls[control.tag]) {
-			// for (let [property, handler] of Styles.global) {
-				// if (property in data) handler(style, data[property])
-			// }
-			if (Styles.controls[control.tag].children) {
-				for (let [child, selector2, handler] of Styles.controls[control.tag].children) {
-					if (child in control) {
-						this.applyStyle(selector + selector2, control[child], element, control)
-						if (handler) handler(this.getStyleRule(selector + selector2), control[child], element, control)
-					}
-				}
-			}
+		
+		if (style.thumb) {
+			let ThumbStyle = new SliderThumbStyle(this)
+			ThumbStyle.apply(style.thumb)
 		}
+		
+		if (style.track) {
+			let TrackStyle = new SliderTrackStyle(this)
+			TrackStyle.apply(style.track)
+		}
+	}
+	
+	getControlStyle() {
+		return this.getStyleRule(`${this.selector}`)
+	}
+}
+
+class SubStyle extends Style {
+	constructor(selector, parent) {
+		super(parent.selector + selector)
+		this.parent = parent
+	}
+}
+
+class LabelStyle extends SubStyle {
+	constructor(parent) {
+		super(' .label', parent)
+	}
+	
+	get styleProperties() {
+		return [
+			'inset',
+			'size',
+			'width',
+			'height',
+			'background',
+			'shadows',
+			'border',
+			'font',
+		]
+	}
+	
+	getContainerStyle() {
+		return this.getStyleRule(`${this.selector}`)
+	}
+	
+	getControlStyle() {
+		return this.getStyleRule(`${this.selector}`)
+	}
+	
+	set font(font) {
+		this.setControlStyle('color', parseColor(font.color, font.alpha))
+		if (font.family) this.setControlStyle('font-family', font.family)
+		this.setControlStyle('font-size', parseLength(font.size))
+	}
+}
+
+class ActiveLabelStyle extends SubStyle {
+	constructor(parent) {
+		// super(' .label', parent)
+		super(` .control.pressed .label, ${parent.selector} .control.active .label`, parent)
+	}
+	
+	get styleProperties() {
+		return [
+			'inset',
+			'size',
+			'width',
+			'height',
+			'background',
+			'shadows',
+			'border',
+			'font',
+		]
+	}
+	
+	set font(font) {
+		this.setControlStyle('color', parseColor(font.color, font.alpha))
+		if (font.family) this.setControlStyle('font-family', font.family)
+		this.setControlStyle('font-size', parseLength(font.size))
+	}
+	
+	// getContainerStyle() {
+		// return getStyleRule(`${this.selector}`)
+	// }
+	
+	getControlStyle() {
+		return getStyleRule(`${this.selector}`)
+	}
+}
+
+class ActiveStyle extends SubStyle {
+	constructor(parent) {
+		// super(' .control.pressed', parent)
+		super(` .control.pressed, ${parent.selector} .control.active`, parent)
+	}
+	
+	// getContainerStyle() {
+		// return getStyleRule(`${this.selector}`)
+	// }
+	
+	getControlStyle() {
+		return getStyleRule(`${this.selector}`)
+	}
+}
+
+class SliderThumbStyle extends SubStyle {
+	constructor(parent) {
+		super('::-webkit-slider-thumb', parent)
+	}
+	
+	getContainerStyle() {
+		return this.parent.getStyleRule(`${this.selector}`)
+	}
+	
+	getControlStyle() {
+		return this.parent.getStyleRule(`${this.selector}`)
+	}
+	
+	set height(height) {
+		this.parent.setControlStyle('--thumb-height', parseLength(height))
+	}
+}
+
+class SliderTrackStyle extends SubStyle {
+	constructor(parent) {
+		super('::-webkit-slider-runnable-track', parent)
+	}
+	
+	getContainerStyle() {
+		return this.parent.getStyleRule(`${this.selector}`)
+	}
+	
+	getControlStyle() {
+		return this.parent.getStyleRule(`${this.selector}`)
+	}
+	
+	set height(height) {
+		this.parent.setControlStyle('--track-height', parseLength(height))
 	}
 }
 
@@ -283,20 +398,4 @@ ControlTypes['Slider'] = {
 				})
 		},
 	},
-	onCreate: (element) => {
-		// element.setAttribute("list", "datalist-" + element.id)
-		// let datalist = element.appendChild(document.createElement("datalist"))
-		// datalist.id = "datalist-" + element.id
-		// let option = datalist.appendChild(document.createElement("option"))
-		// option.value = 50
-		// let trackStyle = createStyleRule(`#${element.id}::-webkit-slider-runnable-track`)
-		// applyStyle(trackStyle, element.track)
-		// let thumbStyle = createStyleRule(`#${element.id}::-webkit-slider-thumb`)
-		// applyStyle(thumbStyle, control.thumb)
-		// thumbStyle.marginTop = `${-parseInt(control.thumb.height) / 2 + parseInt(control.track.height) / 2 - 1}px`
-	},
-}
-
-ControlTypes['Text'] = {
-	events: {},
 }
