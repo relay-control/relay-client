@@ -236,20 +236,15 @@ function loadPanel(panelName) {
 		let usedVJoyDeviceAxes = []
 		
 		for (let [control, tag] of panel.controls) {
-			control.tag = tag // temporarily for substyles
 			switch (tag) {
 				case 'Button':
 					var c = new Button(p)
-					c.control.dataset.mode = control.mode
+					c.mode = control.mode
 					break
 				case 'Slider':
 					var c = new Slider(p)
 					break
 			}
-			
-			let {area, container, control: element} = c
-			
-			element.classList.add('control')
 			
 			if (control.position) {
 				c.setRow(control.position.row)
@@ -309,7 +304,7 @@ function loadPanel(panelName) {
 				if (control.action.type === 'button') {
 					usedVJoyDeviceButtons[control.action.device] = Math.max(control.action.button, usedVJoyDeviceButtons[control.action.device])
 				}
-				element.action = control.action
+				c.action = control.action
 			}
 			
 			if (tag === 'Slider') {
@@ -321,7 +316,7 @@ function loadPanel(panelName) {
 					valueLabel.setPosition(control.value.position)
 					valueLabel.setAnchor('container')
 					valueLabel.setText("50%")
-					element.valueLabel = valueLabel
+					c.valueLabel = valueLabel
 				}
 				
 				if (panel.templates) {

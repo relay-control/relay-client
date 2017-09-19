@@ -37,6 +37,7 @@ class Button extends Control {
 	constructor(panel) {
 		super(panel)
 		this.control = document.createElement('button')
+		this.control.classList.add('control')
 		this.container.appendChild(this.control)
 		
 		for (let [event, callback] of Object.entries(this.events)) {
@@ -46,50 +47,48 @@ class Button extends Control {
 	
 	activate() {
 		this.addClass('active')
-		if (this.control.action)
+		if (this.action) {
 			RelaySocket.sendInput({
-				type: this.control.action.type,
-				device: this.control.action.device,
-				button: this.control.action.button,
+				type: this.action.type,
+				device: this.action.device,
+				button: this.action.button,
 				state: true,
 			})
-		// console.log("activated  ", this.control.id)
+		}
 	}
 	
 	deactivate() {
 		this.removeClass('active')
-		if (this.control.action)
+		if (this.action) {
 			RelaySocket.sendInput({
-				type: this.control.action.type,
-				device: this.control.action.device,
-				button: this.control.action.button,
+				type: this.action.type,
+				device: this.action.device,
+				button: this.action.button,
 				state: false,
 			})
-		// console.log("deactivated", this.control.id)
+		}
 	}
 	
 	press() {
-		if (this.control.dataset.mode === 'toggle') {
-			if (!this.control.wasActive) {
-				this.activate(this.control)
+		if (this.mode === 'toggle') {
+			if (!this.wasActive) {
+				this.activate()
 			}
 		} else {
-			this.activate(this.control)
+			this.activate()
 		}
-		this.control.pressed = true
-		// console.log("pressed ", this.control.id)
+		this.pressed = true
 	}
 	
 	release() {
-		if (this.control.dataset.mode === 'toggle') {
-			if (this.control.wasActive)
-				this.deactivate(this.control)
-			this.control.wasActive = !this.control.wasActive
+		if (this.mode === 'toggle') {
+			if (this.wasActive)
+				this.deactivate()
+			this.wasActive = !this.wasActive
 		} else {
-			this.deactivate(this.control)
+			this.deactivate()
 		}
-		this.control.pressed = false
-		// console.log("released", this.control.id)
+		this.pressed = false
 	}
 	
 	get events() {
@@ -101,7 +100,7 @@ class Button extends Control {
 				this.release()
 			},
 			mouseout: e => {
-				if (e.currentTarget.pressed) {
+				if (this.pressed) {
 					this.release()
 				}
 			},
@@ -159,6 +158,7 @@ class Slider extends Control {
 		this.control = document.createElement('input')
 		this.control.type = 'range'
 		this.control.id = this.id
+		this.control.classList.add('control')
 		iframe.contentDocument.body.appendChild(this.control)
 		iframe.contentDocument.body.classList.add('default', 'slider')
 		
@@ -210,17 +210,24 @@ class Slider extends Control {
 	get events() {
 		return {
 			input: e => {
-				// console.dir(e)
-				// console.log(e.currentTarget.value)
-				if (e.currentTarget.valueLabel)
-					e.currentTarget.valueLabel.setText(e.currentTarget.value + '%')
-				if (e.currentTarget.action)
+				if (45 < e.currentTarget.value && e.currentTarget.value < 55)
+					e.currentTarget.value = 50
+				
+				// avoid sending input if value is unchanged
+				if (e.currentTarget.value === this.previousValue) return
+				this.previousValue = e.currentTarget.value
+				
+				if (this.valueLabel)
+					this.valueLabel.setText(e.currentTarget.value + '%')
+				
+				if (this.action) {
 					RelaySocket.sendInput({
 						type: 'axis',
-						device: e.currentTarget.action.device,
-						axis: e.currentTarget.action.axis,
+						device: this.action.device,
+						axis: this.action.axis,
 						value: e.currentTarget.value,
 					})
+				}
 			},
 		}
 	}
@@ -270,18 +277,18 @@ class ActiveLabelStyle extends SubStyle {
 		])
 	}
 	
-	set font(font) {
-		this.setControlStyle('color', parseColor(font.color, font.alpha))
-		if (font.family) this.setControlStyle('font-family', font.family)
-		this.setControlStyle('font-size', parseLength(font.size))
-	}
-	
 	// getContainerStyle() {
 		// return getStyleRule(`${this.selector}`)
 	// }
 	
 	getControlStyle() {
 		return getStyleRule(`${this.selector}`)
+	}
+	
+	set font(font) {
+		this.setControlStyle('color', parseColor(font.color, font.alpha))
+		if (font.family) this.setControlStyle('font-family', font.family)
+		this.setControlStyle('font-size', parseLength(font.size))
 	}
 }
 
