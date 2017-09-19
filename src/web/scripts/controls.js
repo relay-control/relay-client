@@ -18,6 +18,10 @@ class Control extends ControlStyle {
 		this.area.classList.add(className)
 	}
 	
+	removeClass(className) {
+		this.area.classList.remove(className)
+	}
+	
 	setRow(row) {
 		this.row = row
 		this.area.style.gridRowStart = row
@@ -34,6 +38,82 @@ class Button extends Control {
 		super(panel)
 		this.control = document.createElement('button')
 		this.container.appendChild(this.control)
+		
+		for (let [event, callback] of Object.entries(this.events)) {
+			this.control.addEventListener(event, callback)
+		}
+	}
+	
+	activate() {
+		this.addClass('active')
+		if (this.control.action)
+			RelaySocket.sendInput({
+				type: this.control.action.type,
+				device: this.control.action.device,
+				button: this.control.action.button,
+				state: true,
+			})
+		// console.log("activated  ", this.control.id)
+	}
+	
+	deactivate() {
+		this.removeClass('active')
+		if (this.control.action)
+			RelaySocket.sendInput({
+				type: this.control.action.type,
+				device: this.control.action.device,
+				button: this.control.action.button,
+				state: false,
+			})
+		// console.log("deactivated", this.control.id)
+	}
+	
+	press() {
+		if (this.control.dataset.mode === 'toggle') {
+			if (!this.control.wasActive) {
+				this.activate(this.control)
+			}
+		} else {
+			this.activate(this.control)
+		}
+		this.control.pressed = true
+		// console.log("pressed ", this.control.id)
+	}
+	
+	release() {
+		if (this.control.dataset.mode === 'toggle') {
+			if (this.control.wasActive)
+				this.deactivate(this.control)
+			this.control.wasActive = !this.control.wasActive
+		} else {
+			this.deactivate(this.control)
+		}
+		this.control.pressed = false
+		// console.log("released", this.control.id)
+	}
+	
+	get events() {
+		return {
+			mousedown: e => {
+				this.press()
+			},
+			mouseup: e => {
+				this.release()
+			},
+			mouseout: e => {
+				if (e.currentTarget.pressed) {
+					this.release()
+				}
+			},
+			touchstart: e => {
+				// e.preventDefault()
+				this.press()
+			},
+			touchend: e => {
+				e.preventDefault()
+				this.release()
+			},
+		}
 	}
 }
 
@@ -81,6 +161,10 @@ class Slider extends Control {
 		this.control.id = this.id
 		iframe.contentDocument.body.appendChild(this.control)
 		iframe.contentDocument.body.classList.add('default', 'slider')
+		
+		for (let [event, callback] of Object.entries(this.events)) {
+			this.control.addEventListener(event, callback)
+		}
 	}
 	
 	setSnapValue(value) {
@@ -106,9 +190,7 @@ class Slider extends Control {
 	}
 	
 	apply(style) {
-		for (let property of this.styleProperties) {
-			if (property in style) this[property] = style[property]
-		}
+		super.apply(style)
 		
 		if (style.thumb) {
 			let ThumbStyle = new SliderThumbStyle(this)
@@ -123,6 +205,24 @@ class Slider extends Control {
 	
 	getControlStyle() {
 		return this.getStyleRule(`${this.selector}`)
+	}
+	
+	get events() {
+		return {
+			input: e => {
+				// console.dir(e)
+				// console.log(e.currentTarget.value)
+				if (e.currentTarget.valueLabel)
+					e.currentTarget.valueLabel.setText(e.currentTarget.value + '%')
+				if (e.currentTarget.action)
+					RelaySocket.sendInput({
+						type: 'axis',
+						device: e.currentTarget.action.device,
+						axis: e.currentTarget.action.axis,
+						value: e.currentTarget.value,
+					})
+			},
+		}
 	}
 }
 
@@ -139,16 +239,9 @@ class LabelStyle extends SubStyle {
 	}
 	
 	get styleProperties() {
-		return [
-			'inset',
-			'size',
-			'width',
-			'height',
-			'background',
-			'shadows',
-			'border',
+		return super.styleProperties.concat([
 			'font',
-		]
+		])
 	}
 	
 	getContainerStyle() {
@@ -168,20 +261,13 @@ class LabelStyle extends SubStyle {
 
 class ActiveLabelStyle extends SubStyle {
 	constructor(parent) {
-		super(' .control.active .label', parent)
+		super('.active .label', parent)
 	}
 	
 	get styleProperties() {
-		return [
-			'inset',
-			'size',
-			'width',
-			'height',
-			'background',
-			'shadows',
-			'border',
+		return super.styleProperties.concat([
 			'font',
-		]
+		])
 	}
 	
 	set font(font) {
@@ -201,15 +287,7 @@ class ActiveLabelStyle extends SubStyle {
 
 class ActiveStyle extends SubStyle {
 	constructor(parent) {
-		super(' .control.active', parent)
-	}
-	
-	// getContainerStyle() {
-		// return getStyleRule(`${this.selector}`)
-	// }
-	
-	getControlStyle() {
-		return getStyleRule(`${this.selector}`)
+		super('.active', parent)
 	}
 }
 
@@ -304,96 +382,4 @@ class IconLabel extends Label {
 	setIcon(icon) {
 		this.icon.classList.add('fa-' + icon)
 	}
-}
-
-var ControlTypes = {}
-
-function buttonActivated(element) {
-	element.classList.add('active')
-	if (element.action)
-		RelaySocket.sendInput({
-			type: element.action.type,
-			device: element.action.device,
-			button: element.action.button,
-			state: true,
-		})
-	// console.log("activated  ", element.id)
-}
-
-function buttonDeactivated(element) {
-	element.classList.remove('active')
-	if (element.action)
-		RelaySocket.sendInput({
-			type: element.action.type,
-			device: element.action.device,
-			button: element.action.button,
-			state: false,
-		})
-	// console.log("deactivated", element.id)
-}
-
-function buttonPressed(element) {
-	if (element.dataset.mode === 'toggle') {
-		if (!element.wasActive) {
-			buttonActivated(element)
-		}
-	} else {
-		buttonActivated(element)
-	}
-	element.pressed = true
-	// console.log("pressed ", element.id)
-}
-
-function buttonReleased(element) {
-	if (element.dataset.mode === 'toggle') {
-		if (element.wasActive)
-			buttonDeactivated(element)
-		element.wasActive = !element.wasActive
-	} else {
-		buttonDeactivated(element)
-	}
-	element.pressed = false
-	// console.log("released", element.id)
-}
-
-ControlTypes['Button'] = {
-	events: {
-		mousedown: e => {
-			buttonPressed(e.currentTarget)
-		},
-		mouseup: e => {
-			buttonReleased(e.currentTarget)
-		},
-		mouseout: e => {
-			if (e.currentTarget.pressed) {
-				buttonReleased(e.currentTarget)
-			}
-		},
-		touchstart: e => {
-			// e.preventDefault()
-			buttonPressed(e.currentTarget)
-		},
-		touchend: e => {
-			e.preventDefault()
-			buttonReleased(e.currentTarget)
-		},
-	},
-}
-
-ControlTypes['Slider'] = {
-	events: {
-		input: e => {
-			// console.dir(e)
-			// console.log(e.currentTarget.value)
-			if (e.currentTarget.valueLabel)
-				e.currentTarget.valueLabel.setText(e.currentTarget.value + '%')
-			if (e.currentTarget.action)
-				RelaySocket.sendInput({
-					type: 'axis',
-					device: e.currentTarget.action.device,
-					axis: e.currentTarget.action.axis,
-					value: e.currentTarget.value,
-				})
-		},
-	},
 }

@@ -237,7 +237,6 @@ function loadPanel(panelName) {
 		
 		for (let [control, tag] of panel.controls) {
 			control.tag = tag // temporarily for substyles
-			let controlType = ControlTypes[tag]
 			switch (tag) {
 				case 'Button':
 					var c = new Button(p)
@@ -340,12 +339,6 @@ function loadPanel(panelName) {
 				}
 				
 				c.apply(control)
-			}
-			
-			if (controlType.events) {
-				for (let [event, callback] of Object.entries(controlType.events)) {
-					element.addEventListener(event, callback)
-				}
 			}
 		}
 		

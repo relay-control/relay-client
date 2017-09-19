@@ -103,10 +103,10 @@ class Style {
 	
 	get styleProperties() {
 		return [
-			'inset',
 			'size',
 			'width',
 			'height',
+			'inset',
 			'background',
 			'border',
 			'shadows',
@@ -148,10 +148,6 @@ class Style {
 		this.area.style.gridColumnEnd = this.column + span
 	}
 	
-	set inset(inset) {
-		this.setAreaStyle('--inset', parseLength(inset))
-	}
-	
 	set size(size) {
 		this.setContainerStyle('width', parseLength(size))
 		this.setContainerStyle('height', parseLength(size))
@@ -163,6 +159,10 @@ class Style {
 	
 	set height(height) {
 		this.setContainerStyle('height', parseLength(height))
+	}
+	
+	set inset(inset) {
+		this.setAreaStyle('--inset', parseLength(inset))
 	}
 	
 	set background(background) {
