@@ -298,11 +298,11 @@ function loadPanel(panelName) {
 					usedVJoyDeviceButtons[control.action.device] = 0
 					usedVJoyDeviceAxes[control.action.device] = []
 				}
-				if (control.action.type === 'axis' && !usedVJoyDeviceAxes.includes(control.action.axis)) {
-					usedVJoyDeviceAxes[control.action.device].push(control.action.axis)
-				}
 				if (control.action.type === 'button') {
 					usedVJoyDeviceButtons[control.action.device] = Math.max(control.action.button, usedVJoyDeviceButtons[control.action.device])
+				}
+				if (control.action.type === 'axis' && !usedVJoyDeviceAxes.includes(control.action.axis)) {
+					usedVJoyDeviceAxes[control.action.device].push(control.action.axis)
 				}
 				c.action = control.action
 			}
@@ -333,14 +333,14 @@ function loadPanel(panelName) {
 					}
 				}
 				
-				c.apply(control)
+				// c.apply(control)
 			}
 		}
 		
 		p.show()
 		
 		// request devices
-		fetch(`${socket.server}/api/requestdevice`)
+		fetch(`${socket.server}/api/requestdevice/1`)
 		 .then(response => response.json())
 		 .then(res => {
 			let deviceInfo = document.getElementById('device-info')
@@ -348,7 +348,7 @@ function loadPanel(panelName) {
 			menuViewModel.deviceInfo.removeAll()
 			let device = res
 			// for (let device in res) {
-				if (!device.isEnabled) {
+				if (!device.acquired) {
 					console.log("Unable to acquire device " + device.id)
 					menuViewModel.deviceInfo.push(`Unable to acquire device ${device.id}`)
 				}
