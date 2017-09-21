@@ -115,6 +115,15 @@ async function loadFont(family, url) {
 	await font.load()
 }
 
+function loadScript(url, panel) {
+	return new Promise((resolve, reject) => {
+		let script = document.createElement('script')
+		script.src = url
+		script.onload = () => resolve()
+		panel.element.appendChild(script)
+	})
+}
+
 class Panel {
 	constructor() {
 		this.element = document.getElementById('panel')
@@ -138,6 +147,10 @@ class Panel {
 	
 	loadFont(family, file) {
 		this.assets.push(loadFont(family, getAssetPath(file)))
+	}
+	
+	loadScript(file) {
+		this.assets.push(loadScript(getAssetPath(file), this))
 	}
 	
 	addControl(control) {
@@ -208,6 +221,9 @@ function loadPanel(panelName) {
 					case 'Font':
 						p.loadFont(asset.family, asset.file)
 						break
+					case 'Script':
+						p.loadScript(asset.file)
+						break
 				}
 			}
 		}
@@ -232,8 +248,8 @@ function loadPanel(panelName) {
 		}
 		
 		let usedVJoyDevices = []
-		let usedVJoyDeviceButtons = []
-		let usedVJoyDeviceAxes = []
+		let usedVJoyDeviceButtons = {}
+		let usedVJoyDeviceAxes = {}
 		
 		for (let [control, tag] of panel.controls) {
 			switch (tag) {
@@ -301,7 +317,7 @@ function loadPanel(panelName) {
 				if (control.action.type === 'button') {
 					usedVJoyDeviceButtons[control.action.device] = Math.max(control.action.button, usedVJoyDeviceButtons[control.action.device])
 				}
-				if (control.action.type === 'axis' && !usedVJoyDeviceAxes.includes(control.action.axis)) {
+				if (control.action.type === 'axis' && !usedVJoyDeviceAxes[control.action.device].includes(control.action.axis)) {
 					usedVJoyDeviceAxes[control.action.device].push(control.action.axis)
 				}
 				c.action = control.action
@@ -356,10 +372,13 @@ function loadPanel(panelName) {
 					console.log("Not enough buttons")
 					menuViewModel.deviceInfo.push(`Device ${device.id} has ${device.numButtons} buttons but this panel uses ${usedVJoyDeviceButtons[device.id]}`)
 				}
-				// for (let axis of usedVJoyDeviceAxes[device.id]) {
-					// if (!device.axes[axis])
-						// console.log("Axis " +axis+ " not available")
-				// }
+				if (usedVJoyDeviceAxes[device.id]) {
+					for (let axis of usedVJoyDeviceAxes[device.id]) {
+						if (!device.axes[axis])
+							console.log("Axis " +axis+ " not available")
+							menuViewModel.deviceInfo.push(`Requested axis ${axis} not enabled on device ${device.id}`)
+					}
+				}
 			// }
 			if (menuViewModel.deviceInfo().length > 0)
 				deviceInfo.showModal()
