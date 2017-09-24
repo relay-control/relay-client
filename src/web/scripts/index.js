@@ -31,17 +31,38 @@ function goBack() {
 
 
 function MenuViewModel() {
-    this.connected = ko.observable(true)
+    this.connected = ko.observable(false)
+	this.currentServer = ko.observable()
 	this.currentPanel = ko.observable()
     this.panels = ko.observableArray()
 	this.connect = function() {
-		let connectDialog = document.getElementById("connect-dialog")
+		let connectDialog = document.getElementById('connect-dialog')
 		connectDialog.showModal()
 	}
 	this.refresh = function() {
 		updatePanels()
 	}
-	this.deviceInfo = ko.observableArray()
+	
+	this.connectDialog = {
+		address: ko.observable(),
+		port: ko.observable('32155'),
+		connecting: ko.observable(false),
+		submit: (form) => {
+			saveSetting('address', form.elements.address.value)
+			saveSetting('port', form.elements.port.value)
+			socket.connect(form.elements.address.value, form.elements.port.value)
+			this.connectDialog.connecting(true)
+		},
+		show: () => document.getElementById('connect-dialog').showModal(),
+		close: () => document.getElementById('connect-dialog').close(),
+		isOpen: () => document.getElementById('connect-dialog').open,
+	}
+	
+	this.deviceInfoDialog = {
+		data: ko.observableArray(),
+		close: () => document.getElementById('device-info').close(),
+		isOpen: () => document.getElementById('device-info').open,
+	}
 }
 
 var menuViewModel = new MenuViewModel()
@@ -50,8 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	ko.applyBindings(menuViewModel/* , document.getElementById('menu') */)
 	
 	document.addEventListener('keydown', e => {
-		if (document.getElementById('connect-dialog').open ||
-			document.getElementById('device-info').open ||
+		if (menuViewModel.connectDialog.isOpen() ||
+			menuViewModel.deviceInfoDialog.isOpen() ||
 			modal.dialog.open)
 			return
 		if (e.code === 'Escape' || e.code === 'Backspace') {
@@ -66,25 +87,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	modal.button1 = modal.buttons.appendChild(document.createElement('button'))
 	modal.button1.addEventListener('click', () => modal.dialog.close())
 	
-	let connectDialog = document.getElementById('connect-dialog')
-	
-	let connectForm = document.getElementById('connect-form')
-	connectForm.addEventListener('submit', e => {
-		e.preventDefault()
-		saveSetting('address', e.target.elements.address.value)
-		saveSetting('port', e.target.elements.port.value)
-		socket.connect(e.target.elements.address.value, e.target.elements.port.value)
-		document.getElementById('loading').style.visibility = 'visible'
-	})
-	let cancel = document.getElementById('connect-cancel')
-	cancel.addEventListener('click', e => {
-		connectDialog.close()
-	})
-	connectForm.elements.port.value = '32155'
-	
 	modal.dialog.addEventListener('close', e => {
 		if (e.target.connectionStatus === WebSocket.CONNECTING)
-			connectDialog.showModal()
+			menuViewModel.connectDialog.show()
 		delete e.target.connectionStatus
 	})
 })

@@ -15,14 +15,12 @@ function setup(storedSettings) {
 	if (isAndroid())
 		settings = storedSettings
 	
-	let connectForm = document.getElementById('connect-form')
 	if (settings.address) {
-		connectForm.elements.address.value = settings.address
-		connectForm.elements.port.value = settings.port
+		menuViewModel.connectDialog.address(settings.address)
+		menuViewModel.connectDialog.port(settings.port)
 		socket.connect(settings.address, settings.port)
 	} else {
-		let connectDialog = document.getElementById('connect-dialog')
-		connectDialog.showModal()
+		menuViewModel.connectDialog.show()
 	}
 }
 

@@ -2,10 +2,10 @@
 <html>
 <head>
 	<meta charset="utf-8"/>
+	<link rel="stylesheet" href="styles/font-awesome.min.css">
 	<link rel="stylesheet" href="styles/menu.css">
 	<link rel="stylesheet" href="styles/style.css">
 	<link rel="stylesheet" href="styles/defaults.css">
-	<link rel="stylesheet" href="styles/font-awesome.min.css">
 	<script src="scripts/knockout-3.4.2.js"></script>
 	<script src="scripts/styles.js"></script>
 	<script src="scripts/controls.js"></script>
@@ -24,7 +24,7 @@
 	</header>
 	<section>
 		<header class="with-button">
-			<h1 id="connection-status">Not connected</h1>
+			<h1 id="connection-status" data-bind="text: connected() ? `Connected to ${currentServer()}` : 'Not connected'"></h1>
 			<button data-bind="click: connect">Connect</button>
 		</header>
 		<div data-bind="visible: connected">
@@ -46,34 +46,40 @@
 
 <div id="panel" style="display: none"></div>
 
-<dialog id="connect-dialog">
+<dialog id="connect-dialog" data-bind="with: connectDialog">
 	<header>Connect to Relay server</header>
-	<form id="connect-form">
+	<form data-bind="submit: submit">
 		<div class="content">
 			<div class="input">
-				<label for="connect-address">Address</label>
-				<input name="address" id="connect-address" required pattern="[\d.]+">
+				<label>Address</label>
+				<input name="address" required pattern="[\d.]+" data-bind="value: address">
 			</div>
 			<div class="input">
-				<label for="connect-port">Port</label>
-				<input name="port" id="connect-port" required pattern="\d+">
+				<label>Port</label>
+				<input name="port" required pattern="\d+" data-bind="value: port">
 			</div>
 		</div>
 		<div class="buttons">
-			<i id="loading" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw" style="visibility: hidden"></i>
-			<button type="button" id="connect-cancel">Cancel</button>
-			<button type="submit" class="primary">Connect</button>
+			<button type="button" data-bind="click: close">Cancel</button>
+			<button type="submit" class="primary">
+				<span class="loading" data-bind="visible: connecting"></span>
+				<span data-bind="css: {hidden: connecting}">Connect</span>
+			</button>
 		</div>
 	</form>
 </dialog>
 
-<dialog id="device-info">
+<dialog id="device-info" data-bind="with: deviceInfoDialog">
 	<header>Device info</header>
-	<div class="content" data-bind="foreach: deviceInfo">
+	<div class="content" data-bind="foreach: data">
 		<p data-bind="text: $data"></p>
 	</div>
 	<div class="buttons">
-		<button type="submit" class="primary">OK</button>
+		<div class="checkbox">
+          <input type="checkbox">
+          <label>Stop this</label>
+        </div>
+		<button class="primary" data-bind="click: close">OK</button>
 	</div>
 </dialog>
 

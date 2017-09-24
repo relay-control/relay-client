@@ -166,12 +166,13 @@ class Style {
 	}
 	
 	set background(background) {
-		this.setControlStyle('background-color', parseColor(background.color, background.alpha))
+		if (background.color) {
+			this.setControlStyle('background-color', parseColor(background.color, background.alpha))
+			this.setControlStyle('background-image', 'unset')
+		}
 		if (background.image) {
 			this.setControlStyle('background-image', `url(${getAssetPath(background.image)})`)
 			this.setControlStyle('background-size', 'cover')
-		} else {
-			this.setControlStyle('background-image', 'unset')
 		}
 		if (background.gradient) {
 			let gradient = []

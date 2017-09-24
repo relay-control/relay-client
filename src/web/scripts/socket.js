@@ -48,34 +48,34 @@ class Socket {
 		updatePanels()
 		
 		menuViewModel.connected(true)
-		
-		let status = document.getElementById('connection-status')
-		status.textContent = "Connected to " + this.address
-		document.getElementById('loading').style.visibility = 'hidden'
-		document.getElementById('connect-dialog').close()
+		menuViewModel.currentServer(this.address)
+		menuViewModel.connectDialog.connecting(false)
+		if (menuViewModel.connectDialog.isOpen())
+			menuViewModel.connectDialog.close()
 	}
 	
 	onclose(e) {
+		let previousState = this.previousState
+		this.previousState = this.ws.readyState
 		console.log('WebSocket connection closed')
 		console.log('readyState:', e.target.readyState)
 		console.log('code:', e.code)
 		// closing existing websocket before opening new
+		menuViewModel.connected(false)
+		menuViewModel.currentServer(null)
 		if (e.code === 4001) {
 			this.connect(this.address, this.port)
+			return
 		}
-		menuViewModel.connected(false)
-		if (this.previousState === WebSocket.CONNECTING) {
-			if (document.getElementById('connect-dialog').open)
-				document.getElementById('connect-dialog').close()
-			let status = document.getElementById('connection-status')
-			status.textContent = "Not connected"
-			document.getElementById('loading').style.visibility = 'hidden'
-			modal.show("Unable to connect to Relay server", this.previousState)
+		if (previousState === WebSocket.CONNECTING) {
+			if (menuViewModel.connectDialog.isOpen())
+				menuViewModel.connectDialog.close()
+			menuViewModel.connectDialog.connecting(false)
+			modal.show("Unable to connect to Relay server", previousState)
 		}
-		if (this.previousState === WebSocket.OPEN) {
+		if (previousState === WebSocket.OPEN) {
 			modal.show("Disconnected from Relay server")
 		}
-		this.previousState = this.ws.readyState
 	}
 	
 	onerror(err) {

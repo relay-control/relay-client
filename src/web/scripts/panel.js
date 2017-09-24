@@ -356,31 +356,30 @@ function loadPanel(panelName) {
 		p.show()
 		
 		// request devices
-		fetch(`${socket.server}/api/requestdevice/1`)
-		 .then(response => response.json())
-		 .then(res => {
+		Promise.all(usedVJoyDevices.map(e => fetch(`${socket.server}/api/requestdevice/${e}`).then(response => response.json())))
+		 .then(devices => {
 			let deviceInfo = document.getElementById('device-info')
-			let deviceInfoText = document.querySelector('#device-info .content')
-			menuViewModel.deviceInfo.removeAll()
-			let device = res
-			// for (let device in res) {
+			menuViewModel.deviceInfoDialog.data.removeAll()
+			for (let device of devices) {
 				if (!device.acquired) {
 					console.log("Unable to acquire device " + device.id)
-					menuViewModel.deviceInfo.push(`Unable to acquire device ${device.id}`)
-				}
-				if (usedVJoyDeviceButtons[device.id] > device.numButtons) {
-					console.log("Not enough buttons")
-					menuViewModel.deviceInfo.push(`Device ${device.id} has ${device.numButtons} buttons but this panel uses ${usedVJoyDeviceButtons[device.id]}`)
-				}
-				if (usedVJoyDeviceAxes[device.id]) {
-					for (let axis of usedVJoyDeviceAxes[device.id]) {
-						if (!device.axes[axis])
-							console.log("Axis " +axis+ " not available")
-							menuViewModel.deviceInfo.push(`Requested axis ${axis} not enabled on device ${device.id}`)
+					menuViewModel.deviceInfoDialog.data.push(`Unable to acquire device ${device.id}`)
+				} else {
+					if (usedVJoyDeviceButtons[device.id] > device.numButtons) {
+						console.log("Not enough buttons")
+						menuViewModel.deviceInfoDialog.data.push(`Device ${device.id} has ${device.numButtons} buttons but this panel uses ${usedVJoyDeviceButtons[device.id]}`)
+					}
+					if (usedVJoyDeviceAxes[device.id]) {
+						for (let axis of usedVJoyDeviceAxes[device.id]) {
+							if (!device.axes[axis]) {
+								console.log("Axis " +axis+ " not available")
+								menuViewModel.deviceInfoDialog.data.push(`Requested axis ${axis} not enabled on device ${device.id}`)
+							}
+						}
 					}
 				}
-			// }
-			if (menuViewModel.deviceInfo().length > 0)
+			}
+			if (menuViewModel.deviceInfoDialog.data().length > 0)
 				deviceInfo.showModal()
 		 })
 	}

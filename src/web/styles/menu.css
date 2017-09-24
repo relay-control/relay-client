@@ -121,8 +121,8 @@ h3 {
 }
 
 #panel-list li:active {
-	background: rgba(0,0,0,.05);
-	color: rgba(0,0,0,.9);
+	background: rgba(0, 0, 0, 0.05);
+	color: rgba(0, 0, 0, 0.9);
 }
 
 #panel-list li:first-child {
@@ -134,6 +134,111 @@ h3 {
 #panel-list li:last-child {
     border-bottom-left-radius: var(--border-radius);
     border-bottom-right-radius: var(--border-radius);
+}
+
+.fa-spin {
+	animation-duration: 0.6s;
+}
+
+.hidden {
+	visibility: hidden;
+}
+
+.loading {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.loading::before {
+	content: '';
+	width: 24px;
+	height: 24px;
+	border: 0.2em solid rgba(0, 0, 0, 0.5);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: rotate 0.6s linear infinite;
+	box-sizing: border-box;
+}
+
+@keyframes rotate {
+	from {
+		transform: rotate(0);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.checkbox {
+	min-height: 17px;
+	font-size: 1rem;
+	line-height: 17px;
+	min-width: 17px;
+
+	display: flex;
+	align-items: center;
+	flex: 1 1 auto;
+
+	margin-left: 0.25em;
+}
+
+input[type=checkbox] {
+	-webkit-appearance: none;
+	position: relative;
+		
+	font-family: sans-serif;
+	font-size: 100%;
+	line-height: 1.15;
+	margin: 0;
+
+	outline: 0;
+
+	width: 17px;
+	height: 17px;
+	background: #fff;
+	border-radius: 0.21428571rem;
+	transition: border .1s ease;
+	border: 1px solid #d4d4d5;
+}
+
+input[type=checkbox]::before {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	content: '\f00c';
+	font-family: FontAwesome;
+
+	font-size: 14px;
+	text-align: center;
+	color: transparent;
+	transition: color .1s ease;
+}
+
+input[type=checkbox]:checked {
+	border-color: rgba(34, 36, 38, 0.35);
+}
+
+input[type=checkbox]:checked::before {
+	color: rgba(0, 0, 0, 0.95);
+}
+
+.checkbox label {
+    padding-left: calc(1.85714em - 17px);
+    font-size: 1em;
+}
+
+.checkbox label {
+    color: rgba(0,0,0,.87);
+    transition: color .1s ease;
 }
 
 dialog {
@@ -181,6 +286,7 @@ dialog .buttons {
 
 dialog .buttons button {
 	margin-left: 0.75em;
+	position: relative;
 }
 
 dialog div.input {
@@ -199,7 +305,7 @@ dialog label {
 	font-size: 1rem;
 }
  */
-dialog label {
+dialog .input label {
 	line-height: 1;
 	background-color: #e8e8e8;
 	padding: .78571429em .833em;
@@ -213,7 +319,7 @@ dialog label {
 	width: 4em;
 }
 
-dialog input {
+dialog .input input {
 	margin: 0;
 	flex: 1 0 auto;
 	outline: 0;
@@ -228,7 +334,7 @@ dialog input {
 	transition: border-color .1s ease;
 }
 
-input:focus {
+dialog .input input:focus {
 	border-color: #85b7d9;
 	color: rgba(0, 0, 0, 0.8);
 }

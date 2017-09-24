@@ -128,19 +128,12 @@ class Slider extends Control {
 		this.container.appendChild(iframe)
 		
 		iframe.contentDocument.body.addEventListener('keydown', e => {
-			if (document.getElementById('connect-dialog').open ||
-				document.getElementById('device-info').open ||
+			if (menuViewModel.connectDialog.isOpen() ||
+				menuViewModel.deviceInfoDialog.isOpen() ||
 				modal.dialog.open)
 				return
 			if (e.code === 'Escape' || e.code === 'Backspace') {
-				let panel = document.getElementById('panel')
-				let style = window.getComputedStyle(panel)
-				if (style.display === 'grid') {
-					panel.style.display = 'none'
-					menuViewModel.currentPanel(null)
-					let menu = document.getElementById('menu')
-					menu.style.display = 'flex'
-				}
+				goBack()
 			}
 		})
 		
