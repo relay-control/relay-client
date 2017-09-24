@@ -33,13 +33,13 @@
 				<button data-bind="click: refresh"><i class="fa fa-refresh fa-fw"></i></button>
 			</header>
 			
-			<ul id="panel-list" data-bind="foreach: {data: panels, as: 'panel'}">
+			<ul id="panel-list" data-bind="foreach: {data: panels, as: 'panel'}, visible: panels().length > 0">
 				<li data-bind="click: loadPanel">
 					<span data-bind="text: panel"></span>
 					<i class="fa fa-circle-o-notch fa-spin fa-fw" data-bind="visible: $parent.currentPanel() == panel"></i>
 				</li>
 			</ul>
-			<!-- <div data-bind="visible: panels().length > 0"> -->
+			<p data-bind="visible: panels().length === 0" style="text-align: center; margin-top: 4em">No panels found</p>
 		</div>
 	</section>
 </div>
