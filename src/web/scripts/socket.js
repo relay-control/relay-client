@@ -45,13 +45,14 @@ class Socket {
 		console.log('readyState:', this.ws.readyState)
 		this.previousState = this.ws.readyState
 		
-		updatePanels()
-		
 		menuViewModel.connected(true)
 		menuViewModel.currentServer(this.address)
 		menuViewModel.connectDialog.connecting(false)
 		if (menuViewModel.connectDialog.isOpen())
 			menuViewModel.connectDialog.close()
+		
+		menuViewModel.updatePanels()
+		menuViewModel.loadLastPanel()
 	}
 	
 	onclose(e) {
@@ -60,9 +61,9 @@ class Socket {
 		console.log('WebSocket connection closed')
 		console.log('readyState:', e.target.readyState)
 		console.log('code:', e.code)
-		// closing existing websocket before opening new
 		menuViewModel.connected(false)
 		menuViewModel.currentServer(null)
+		// closing existing websocket before opening new
 		if (e.code === 4001) {
 			this.connect(this.address, this.port)
 			return
@@ -71,10 +72,10 @@ class Socket {
 			if (menuViewModel.connectDialog.isOpen())
 				menuViewModel.connectDialog.close()
 			menuViewModel.connectDialog.connecting(false)
-			modal.show("Unable to connect to Relay server", previousState)
+			menuViewModel.modalDialog.show("Unable to connect to Relay server", previousState)
 		}
 		if (previousState === WebSocket.OPEN) {
-			modal.show("Disconnected from Relay server")
+			menuViewModel.modalDialog.show("Disconnected from Relay server")
 		}
 	}
 	

@@ -30,7 +30,7 @@
 		<div data-bind="visible: connected">
 			<header class="with-button">
 				<h3>Available panels</h3>
-				<button data-bind="click: refresh"><i class="fa fa-refresh fa-fw"></i></button>
+				<button data-bind="click: updatePanels"><i class="fa fa-refresh fa-fw"></i></button>
 			</header>
 			
 			<ul id="panel-list" data-bind="foreach: {data: panels, as: 'panel'}, visible: panels().length > 0">
@@ -46,7 +46,7 @@
 
 <div id="panel" style="display: none"></div>
 
-<dialog id="connect-dialog" data-bind="with: connectDialog">
+<dialog data-bind="with: connectDialog, modal: true">
 	<header>Connect to Relay server</header>
 	<form data-bind="submit: submit">
 		<div class="content">
@@ -69,7 +69,7 @@
 	</form>
 </dialog>
 
-<dialog id="device-info" data-bind="with: deviceInfoDialog">
+<dialog data-bind="with: deviceInfoDialog, modal: true">
 	<header>Device info</header>
 	<div class="content" data-bind="foreach: data">
 		<p data-bind="text: $data"></p>
@@ -79,6 +79,16 @@
           <input type="checkbox">
           <label>Stop this</label>
         </div>
+		<button class="primary" data-bind="click: close">OK</button>
+	</div>
+</dialog>
+
+<dialog data-bind="with: modalDialog, modal: true, event: {close: modalDialog.onClose}">
+	<header data-bind="text: text"></header>
+	<div class="content">
+		<p data-bind="text: text"></p>
+	</div>
+	<div class="buttons">
 		<button class="primary" data-bind="click: close">OK</button>
 	</div>
 </dialog>

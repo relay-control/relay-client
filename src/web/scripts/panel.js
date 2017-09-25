@@ -235,14 +235,8 @@ function loadPanel(panelName) {
 				if (tag !== 'Control') selector += '.' + tag.toLowerCase()
 				let style = new TemplateStyle(selector)
 				style.apply(template)
-				if (template.label) {
-					style.applyLabel(template.label)
-				}
 				if (template.active) {
 					style.applyActive(template.active)
-					if (template.active.label) {
-						style.applyActiveLabel(template.active.label)
-					}
 				}
 			}
 		}
@@ -286,9 +280,6 @@ function loadPanel(panelName) {
 			style.apply(control)
 			if (control.active) {
 				style.applyActive(control.active)
-				if (control.active.label) {
-					style.applyActiveLabel(control.active.label)
-				}
 			}
 			
 			let label = control.label
@@ -305,7 +296,6 @@ function loadPanel(panelName) {
 					iconLabel.setPosition(label.iconPosition || label.position)
 					iconLabel.setAnchor(label.iconAnchor || label.anchor)
 				}
-				style.applyLabel(control.label)
 			}
 			
 			if (control.action) {
@@ -358,7 +348,6 @@ function loadPanel(panelName) {
 		// request devices
 		Promise.all(usedVJoyDevices.map(e => fetch(`${socket.server}/api/requestdevice/${e}`).then(response => response.json())))
 		 .then(devices => {
-			let deviceInfo = document.getElementById('device-info')
 			menuViewModel.deviceInfoDialog.data.removeAll()
 			for (let device of devices) {
 				if (!device.acquired) {
@@ -380,7 +369,7 @@ function loadPanel(panelName) {
 				}
 			}
 			if (menuViewModel.deviceInfoDialog.data().length > 0)
-				deviceInfo.showModal()
+				menuViewModel.deviceInfoDialog.show()
 		 })
 	}
 }

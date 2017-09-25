@@ -1,15 +1,6 @@
 let socket = new Socket()
 
 
-var modal = {}
-
-modal.show = function(text, returnValue) {
-	this.text.textContent = text
-	this.button1.textContent = "OK"
-	this.dialog.connectionStatus = returnValue
-	this.dialog.showModal()
-}
-
 function isAndroid() {
 	return typeof Android !== 'undefined'
 }
@@ -30,17 +21,38 @@ function goBack() {
 }
 
 
+ko.bindingHandlers.modal = {
+	init: (element, valueAccessor, allBindings, viewModel, bindingContext) => {
+		allBindings.get('with').element = element
+		bindingContext.$data.modals.push(allBindings.get('with'))
+	}
+}
+
 function MenuViewModel() {
     this.connected = ko.observable(false)
 	this.currentServer = ko.observable()
 	this.currentPanel = ko.observable()
     this.panels = ko.observableArray()
-	this.connect = function() {
-		let connectDialog = document.getElementById('connect-dialog')
-		connectDialog.showModal()
+	this.connect = () => {
+		this.connectDialog.show()
 	}
-	this.refresh = function() {
-		updatePanels()
+	this.updatePanels = () => {
+		fetch(`${socket.server}/api/getpanels`, {cache: 'no-store'})
+		 .then(response => response.json())
+		 .then(panels => {
+			this.panels(panels)
+		})
+	}
+	this.loadLastPanel = function() {
+		if (!settings.rememberPanel && settings.lastPanel) {
+			loadPanel(settings.lastPanel)
+		}
+	}
+	
+	this.modals = []
+	
+	this.isModalShown = () => {
+		return this.modals.some(e => e.isOpen())
 	}
 	
 	this.connectDialog = {
@@ -53,44 +65,47 @@ function MenuViewModel() {
 			socket.connect(form.elements.address.value, form.elements.port.value)
 			this.connectDialog.connecting(true)
 		},
-		show: () => document.getElementById('connect-dialog').showModal(),
-		close: () => document.getElementById('connect-dialog').close(),
-		isOpen: () => document.getElementById('connect-dialog').open,
+		show: () => this.connectDialog.element.showModal(),
+		close: () => this.connectDialog.element.close(),
+		isOpen: () => this.connectDialog.element.open,
 	}
 	
 	this.deviceInfoDialog = {
 		data: ko.observableArray(),
-		close: () => document.getElementById('device-info').close(),
-		isOpen: () => document.getElementById('device-info').open,
+		show: () => this.deviceInfoDialog.element.showModal(),
+		close: () => this.deviceInfoDialog.element.close(),
+		isOpen: () => this.deviceInfoDialog.element.open,
+	}
+	
+	this.modalDialog = {
+		show: (text, returnValue) => {
+			this.modalDialog.text(text)
+			// this.button1.textContent = "OK"
+			this.modalDialog.connectionStatus = returnValue
+			this.modalDialog.element.showModal()
+		},
+		text: ko.observable(),
+		close: () => this.modalDialog.element.close(),
+		isOpen: () => this.modalDialog.element.open,
+		onClose: (a, b) => {
+			if (this.modalDialog.connectionStatus === WebSocket.CONNECTING)
+				this.connectDialog.show()
+			delete this.modalDialog.connectionStatus
+		},
 	}
 }
 
 var menuViewModel = new MenuViewModel()
 
 document.addEventListener('DOMContentLoaded', () => {
-	ko.applyBindings(menuViewModel/* , document.getElementById('menu') */)
+	ko.applyBindings(menuViewModel)
 	
 	document.addEventListener('keydown', e => {
-		if (menuViewModel.connectDialog.isOpen() ||
-			menuViewModel.deviceInfoDialog.isOpen() ||
-			modal.dialog.open)
+		if (menuViewModel.isModalShown())
 			return
 		if (e.code === 'Escape' || e.code === 'Backspace') {
 			goBack()
 		}
-	})
-	
-	modal.dialog = document.body.appendChild(document.createElement('dialog'))
-	modal.text = modal.dialog.appendChild(document.createElement('header'))
-	modal.buttons = modal.dialog.appendChild(document.createElement('div'))
-	modal.buttons.classList.add('buttons')
-	modal.button1 = modal.buttons.appendChild(document.createElement('button'))
-	modal.button1.addEventListener('click', () => modal.dialog.close())
-	
-	modal.dialog.addEventListener('close', e => {
-		if (e.target.connectionStatus === WebSocket.CONNECTING)
-			menuViewModel.connectDialog.show()
-		delete e.target.connectionStatus
 	})
 })
 
@@ -98,18 +113,4 @@ var RelaySocket = {}
 
 RelaySocket.sendInput = function(input) {
 	socket.sendInput(JSON.stringify(input))
-}
-
-function getPanels() {
-	return fetch(`${socket.server}/api/getpanels`, {cache: 'no-store'})
-	 .then(response => response.json())
-}
-
-function updatePanels() {
-	getPanels().then(panels => {
-		menuViewModel.panels(panels)
-	})
-	if (!settings.rememberPanel && settings.lastPanel) {
-		loadPanel(settings.lastPanel)
-	}
 }

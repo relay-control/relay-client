@@ -84,11 +84,11 @@ class Style {
 		for (let property of this.styleProperties) {
 			if (property in style) this[property] = style[property]
 		}
-	}
-	
-	applyLabel(style) {
-		let labelStyle = new LabelStyle(this)
-		labelStyle.apply(style)
+		
+		if (style.label) {
+			let labelStyle = new LabelStyle(this)
+			labelStyle.apply(style.label)
+		}
 	}
 	
 	applyActive(style) {

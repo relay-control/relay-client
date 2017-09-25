@@ -128,9 +128,7 @@ class Slider extends Control {
 		this.container.appendChild(iframe)
 		
 		iframe.contentDocument.body.addEventListener('keydown', e => {
-			if (menuViewModel.connectDialog.isOpen() ||
-				menuViewModel.deviceInfoDialog.isOpen() ||
-				modal.dialog.open)
+			if (menuViewModel.isModalShown())
 				return
 			if (e.code === 'Escape' || e.code === 'Backspace') {
 				goBack()
