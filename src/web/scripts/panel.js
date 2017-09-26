@@ -41,7 +41,7 @@ function parse(xml) {
 	if (isText) { return xml.nodeValue.trim() }
 
 	// if it doesn't have any children or attributes, just return the contents
-	if (!hasChildren && !hasAttributes) { return body }
+	if (!hasChildren && !hasAttributes) { return { } }
 
 	// if it doesn't have children but _does_ have body content, we'll use that
 	if (!hasChildren && body.length) { data.text = body }
@@ -186,6 +186,12 @@ function loadPanel(panelName) {
 	xhr.responseType = 'document'
 	xhr.send()
 	xhr.onload = function() {
+		if (!this.response) {
+			menuViewModel.modalDialog.show("Unable to parse panel XML")
+			menuViewModel.currentPanel(null)
+			return
+		}
+		
 		let {panel} = parse(this.response)
 		
 		// console.log(panel)
@@ -282,21 +288,23 @@ function loadPanel(panelName) {
 				style.applyActive(control.active)
 			}
 			
-			let label = control.label
-			if (label) {
-				if (label.text) {
-					let textLabel = new TextLabel(c)
-					textLabel.setText(label.text)
-					textLabel.setPosition(label.textPosition || label.position)
-					textLabel.setAnchor(label.textAnchor || label.anchor)
-				}
-				if (label.icon) {
-					let iconLabel = new IconLabel(c)
-					iconLabel.setIcon(label.icon)
-					iconLabel.setPosition(label.iconPosition || label.position)
-					iconLabel.setAnchor(label.iconAnchor || label.anchor)
-				}
+			let textLabel2 = control.textLabel
+			if (textLabel2) {
+				let textLabel = new TextLabel(c)
+				textLabel.setText(textLabel2.text)
+				textLabel.setPosition(textLabel2.position)
+				textLabel.setAnchor(textLabel2.anchor)
 			}
+			
+			let iconLabel2 = control.iconLabel
+			if (iconLabel2) {
+				let iconLabel = new IconLabel(c)
+				iconLabel.setIcon(iconLabel2.icon)
+				iconLabel.setPosition(iconLabel2.position)
+				iconLabel.setAnchor(iconLabel2.anchor)
+			}
+			
+			let imageLabel = control.imageLabel
 			
 			if (control.action) {
 				if (control.action.device && !usedVJoyDevices.includes(control.action.device)) {
@@ -317,9 +325,9 @@ function loadPanel(panelName) {
 				// c.setSnapValue(control.snap)
 				c.setSnapValue(50)
 				
-				if (control.value) {
+				if (control.valueLabel) {
 					let valueLabel = new ValueLabel(c)
-					valueLabel.setPosition(control.value.position)
+					valueLabel.setPosition(control.valueLabel.position)
 					valueLabel.setAnchor('container')
 					valueLabel.setText("50%")
 					c.valueLabel = valueLabel
@@ -333,9 +341,6 @@ function loadPanel(panelName) {
 						if (tag !== 'Control') selector += '.' + tag.toLowerCase()
 						let style = new TemplateStyle2(selector, c)
 						style.apply(template)
-						if (template.label) {
-							// style.applyLabel(template.label)
-						}
 					}
 				}
 				

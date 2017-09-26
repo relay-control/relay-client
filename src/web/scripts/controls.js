@@ -183,14 +183,19 @@ class Slider extends Control {
 	apply(style) {
 		super.apply(style)
 		
+		if (style.valueLabel) {
+			let valueLabelStyle = new ValueLabelStyle(this)
+			valueLabelStyle.apply(style.valueLabel)
+		}
+		
 		if (style.thumb) {
-			let ThumbStyle = new SliderThumbStyle(this)
-			ThumbStyle.apply(style.thumb)
+			let thumbStyle = new SliderThumbStyle(this)
+			thumbStyle.apply(style.thumb)
 		}
 		
 		if (style.track) {
-			let TrackStyle = new SliderTrackStyle(this)
-			TrackStyle.apply(style.track)
+			let trackStyle = new SliderTrackStyle(this)
+			trackStyle.apply(style.track)
 		}
 	}
 	
@@ -232,12 +237,13 @@ class SubStyle extends Style {
 }
 
 class LabelStyle extends SubStyle {
-	constructor(parent) {
-		super(' .label', parent)
+	constructor(selector, parent) {
+		super(' .label' + selector, parent)
 	}
 	
 	get styleProperties() {
 		return super.styleProperties.concat([
+			'color',
 			'font',
 		])
 	}
@@ -247,13 +253,35 @@ class LabelStyle extends SubStyle {
 	}
 	
 	getControlStyle() {
-		return this.getStyleRule(`${this.selector}`)
+		return this.getStyleRule(`${this.selector} span`)
+	}
+	
+	set color(color) {
+		this.setControlStyle('color', color)
 	}
 	
 	set font(font) {
-		this.setControlStyle('color', parseColor(font.color, font.alpha))
+		// this.setControlStyle('color', parseColor(font.color, font.alpha))
 		if (font.family) this.setControlStyle('font-family', font.family)
 		this.setControlStyle('font-size', parseLength(font.size))
+	}
+}
+
+class TextLabelStyle extends LabelStyle {
+	constructor(parent) {
+		super('.text', parent)
+	}
+}
+
+class IconLabelStyle extends LabelStyle {
+	constructor(parent) {
+		super('.icon', parent)
+	}
+}
+
+class ValueLabelStyle extends LabelStyle {
+	constructor(parent) {
+		super('.value', parent)
 	}
 }
 
@@ -349,11 +377,13 @@ class ValueLabel extends Label {
 	constructor(parent) {
 		super(parent)
 		this.element.classList.add('value')
+		this.span = document.createElement('span')
+		this.element.appendChild(this.span)
 		parent.value = this
 	}
 	
 	setText(text) {
-		this.element.textContent = text
+		this.span.textContent = text
 	}
 }
 
@@ -361,10 +391,12 @@ class TextLabel extends Label {
 	constructor(parent) {
 		super(parent)
 		this.element.classList.add('text')
+		this.span = document.createElement('span')
+		this.element.appendChild(this.span)
 	}
 	
 	setText(text) {
-		this.element.textContent = text
+		this.span.textContent = text
 	}
 }
 
@@ -372,7 +404,7 @@ class IconLabel extends Label {
 	constructor(parent) {
 		super(parent)
 		this.element.classList.add('icon')
-		this.icon = document.createElement('i')
+		this.icon = document.createElement('span')
 		this.icon.classList.add('fa', 'fa-fw', 'fa-2x')
 		this.element.appendChild(this.icon)
 	}

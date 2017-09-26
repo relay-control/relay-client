@@ -85,9 +85,14 @@ class Style {
 			if (property in style) this[property] = style[property]
 		}
 		
-		if (style.label) {
-			let labelStyle = new LabelStyle(this)
-			labelStyle.apply(style.label)
+		if (style.textLabel) {
+			let labelStyle = new TextLabelStyle(this)
+			labelStyle.apply(style.textLabel)
+		}
+		
+		if (style.iconLabel) {
+			let labelStyle = new IconLabelStyle(this)
+			labelStyle.apply(style.iconLabel)
 		}
 	}
 	
@@ -243,14 +248,19 @@ class TemplateStyle2 extends TemplateStyle {
 	apply(style) {
 		super.apply(style)
 		
+		if (style.valueLabel) {
+			let valueLabelStyle = new ValueLabelStyle(this)
+			valueLabelStyle.apply(style.valueLabel)
+		}
+		
 		if (style.thumb) {
-			let ThumbStyle = new SliderThumbStyle(this.parent)
-			ThumbStyle.apply(style.thumb)
+			let thumbStyle = new SliderThumbStyle(this.parent)
+			thumbStyle.apply(style.thumb)
 		}
 		
 		if (style.track) {
-			let TrackStyle = new SliderTrackStyle(this.parent)
-			TrackStyle.apply(style.track)
+			let trackStyle = new SliderTrackStyle(this.parent)
+			trackStyle.apply(style.track)
 		}
 	}
 	
