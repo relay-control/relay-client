@@ -4,6 +4,7 @@ const collections = [
 	"Controls",
 	"Gradient",
 	"Shadows",
+	"TextShadow",
 ]
 
 function firstCharLowerCase(str) {
@@ -262,12 +263,12 @@ function loadPanel(panelName) {
 					break
 			}
 			
-			if (control.position) {
-				c.setRow(control.position.row)
-				c.setColumn(control.position.column)
-			}
-			c.setRowSpan(control.rowSpan || 1)
-			c.setColumnSpan(control.columnSpan || 1)
+			if (control.row)
+				c.setRow(control.row)
+			if (control.column)
+				c.setColumn(control.column)
+			c.setRowSpan(control.rowSpan)
+			c.setColumnSpan(control.columnSpan)
 			
 			c.addClass(tag.toLowerCase())
 			
@@ -292,19 +293,25 @@ function loadPanel(panelName) {
 			if (textLabel2) {
 				let textLabel = new TextLabel(c)
 				textLabel.setText(textLabel2.text)
-				textLabel.setPosition(textLabel2.position)
-				textLabel.setAnchor(textLabel2.anchor)
+				// textLabel.setPosition(textLabel2.position)
+				// textLabel.setAnchor(textLabel2.anchor)
 			}
 			
 			let iconLabel2 = control.iconLabel
 			if (iconLabel2) {
 				let iconLabel = new IconLabel(c)
 				iconLabel.setIcon(iconLabel2.icon)
-				iconLabel.setPosition(iconLabel2.position)
-				iconLabel.setAnchor(iconLabel2.anchor)
+				// iconLabel.setPosition(iconLabel2.position)
+				// iconLabel.setAnchor(iconLabel2.anchor)
 			}
 			
-			let imageLabel = control.imageLabel
+			let imageLabel2 = control.imageLabel
+			if (imageLabel2) {
+				let imageLabel = new ImageLabel(c)
+				imageLabel.setImage(imageLabel2.image)
+				// iconLabel.setPosition(iconLabel2.position)
+				// imageLabel.setAnchor(imageLabel2.anchor)
+			}
 			
 			if (control.action) {
 				if (control.action.device && !usedVJoyDevices.includes(control.action.device)) {
@@ -327,8 +334,8 @@ function loadPanel(panelName) {
 				
 				if (control.valueLabel) {
 					let valueLabel = new ValueLabel(c)
-					valueLabel.setPosition(control.valueLabel.position)
-					valueLabel.setAnchor('container')
+					// valueLabel.setPosition(control.valueLabel.position)
+					// valueLabel.setAnchor('container')
 					valueLabel.setText("50%")
 					c.valueLabel = valueLabel
 				}

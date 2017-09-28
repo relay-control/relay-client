@@ -23,13 +23,11 @@ class Control extends ControlStyle {
 	}
 	
 	setRow(row) {
-		this.row = row
-		this.area.style.gridRowStart = row
+		this.area.style.setProperty('--row', row)
 	}
 	
 	setColumn(column) {
-		this.column = column
-		this.area.style.gridColumnStart = column
+		this.area.style.setProperty('--column', column)
 	}
 }
 
@@ -245,6 +243,7 @@ class LabelStyle extends SubStyle {
 		return super.styleProperties.concat([
 			'color',
 			'font',
+			'textShadow',
 		])
 	}
 	
@@ -256,6 +255,11 @@ class LabelStyle extends SubStyle {
 		return this.getStyleRule(`${this.selector} span`)
 	}
 	
+	set anchor(anchor) {
+		super.anchor = anchor
+		this.areaStyle.setProperty('--parent', anchor.parent)
+	}
+	
 	set color(color) {
 		this.setControlStyle('color', color)
 	}
@@ -264,6 +268,18 @@ class LabelStyle extends SubStyle {
 		// this.setControlStyle('color', parseColor(font.color, font.alpha))
 		if (font.family) this.setControlStyle('font-family', font.family)
 		this.setControlStyle('font-size', parseLength(font.size))
+	}
+	
+	set textShadow(shadows) {
+		let textShadows = []
+		for (let [shadow] of shadows) {
+			let textShadow = []
+			textShadow.push(parseLength(shadow.offsetX || 0), parseLength(shadow.offsetY || 0))
+			if ('blurRadius' in shadow) textShadow.push(parseLength(shadow.blurRadius))
+			if (shadow.color) textShadow.push(parseColor(shadow.color, shadow.alpha))
+			textShadows.push(textShadow.join(' '))
+		}
+		this.setControlStyle('text-shadow', textShadows.join(', '))
 	}
 }
 
@@ -360,12 +376,12 @@ class Label {
 		this.parent = parent
 	}
 	
-	setPosition(position) {
-		if (position) setFlexPosition(this.element.style, position)
-	}
-	
-	setAnchor(anchor) {
-		if (anchor === 'container') {
+	setParent() {
+		// first append the label to the area so that selectors such as control ID and templates are accounted for
+		this.parent.area.appendChild(this.element)
+		let computedStyle = window.getComputedStyle(this.element)
+		let parent = computedStyle.getPropertyValue('--parent')
+		if (parent === 'container') {
 			this.parent.area.appendChild(this.element)
 		} else {
 			this.parent.control.appendChild(this.element)
@@ -379,6 +395,7 @@ class ValueLabel extends Label {
 		this.element.classList.add('value')
 		this.span = document.createElement('span')
 		this.element.appendChild(this.span)
+		this.setParent()
 		parent.value = this
 	}
 	
@@ -393,6 +410,7 @@ class TextLabel extends Label {
 		this.element.classList.add('text')
 		this.span = document.createElement('span')
 		this.element.appendChild(this.span)
+		this.setParent()
 	}
 	
 	setText(text) {
@@ -407,9 +425,24 @@ class IconLabel extends Label {
 		this.icon = document.createElement('span')
 		this.icon.classList.add('fa', 'fa-fw', 'fa-2x')
 		this.element.appendChild(this.icon)
+		this.setParent()
 	}
 	
 	setIcon(icon) {
 		this.icon.classList.add('fa-' + icon)
+	}
+}
+
+class ImageLabel extends Label {
+	constructor(parent) {
+		super(parent)
+		this.element.classList.add('image')
+		this.image = document.createElement('img')
+		this.element.appendChild(this.image)
+		this.setParent()
+	}
+	
+	setImage(image) {
+		this.image.src = getAssetPath(image)
 	}
 }

@@ -101,13 +101,9 @@ class Style {
 		activeStyle.apply(style)
 	}
 	
-	applyActiveLabel(style) {
-		let activeLabelStyle = new ActiveLabelStyle(this)
-		activeLabelStyle.apply(style)
-	}
-	
 	get styleProperties() {
 		return [
+			'anchor',
 			'size',
 			'width',
 			'height',
@@ -122,17 +118,25 @@ class Style {
 		return getStyleRule(selector)
 	}
 	
+	get areaStyle() {
+		return this.getStyleRule(`${this.selector}`)
+	}
+	
 	getContainerStyle() {
 		return this.getStyleRule(`${this.selector} .container`)
 	}
 	
+	get controlStyle() {
+		return this.getControlStyle()
+	}
+	
 	getControlStyle() {
 		return this.getStyleRule(`${this.selector} .control`)
+		// return this.controlStyle
 	}
 	
 	setAreaStyle(property, value) {
-		let style = getStyleRule(this.selector)
-		style.setProperty(property, value)
+		this.areaStyle.setProperty(property, value)
 	}
 	
 	setContainerStyle(property, value) {
@@ -141,16 +145,42 @@ class Style {
 	}
 	
 	setControlStyle(property, value) {
-		let style = this.getControlStyle()
-		style.setProperty(property, value)
+		this.controlStyle.setProperty(property, value)
 	}
 	
 	setRowSpan(span) {
-		this.area.style.gridRowEnd = this.row + span
+		this.area.style.setProperty('--row-span', span)
 	}
 	
 	setColumnSpan(span) {
-		this.area.style.gridColumnEnd = this.column + span
+		this.area.style.setProperty('--column-span', span)
+	}
+	
+	set anchor(anchor) {
+		if (anchor.point) {
+			let style = this.areaStyle
+			let [vertical, horizontal] = anchor.point.split(/\s+/)
+			if (vertical && horizontal) {
+				style.alignItems = flexPositions[vertical]
+				style.justifyContent = flexPositions[horizontal]
+			} else if (anchor.point === 'center') {
+				style.alignItems = 'center'
+				style.justifyContent = 'center'
+			} else {
+				switch (anchor.point) {
+					case 'top':
+					case 'bottom':
+						style.alignItems = flexPositions[anchor.point]
+						break
+					case 'left':
+					case 'right':
+						style.justifyContent = flexPositions[anchor.point]
+						break
+				}
+			}
+		}
+		this.setContainerStyle('--offset-x', parseLength(anchor.offsetX))
+		this.setContainerStyle('--offset-y', parseLength(anchor.offsetY))
 	}
 	
 	set size(size) {
@@ -190,15 +220,15 @@ class Style {
 			gradient = gradient.join(', ')
 			if (background.gradient.type === 'radial') {
 				if (background.gradient.position)
-					gradient = background.gradient.position + ', ' + gradient
-				this.setControlStyle('background-image', `-webkit-radial-gradient(${gradient})`)
+					gradient = 'circle at ' + background.gradient.position + ', ' + gradient
+				this.setControlStyle('background-image', `radial-gradient(${gradient})`)
 			} else {
 				let direction = background.gradient.direction
 				if (direction && !direction.match(/\d+deg/))
 					direction = 'to ' + direction
 				if (direction)
-					gradient = background.gradient.direction + ', ' + gradient
-				this.setControlStyle('background-image', `-webkit-linear-gradient(${gradient})`)
+					gradient = direction + ', ' + gradient
+				this.setControlStyle('background-image', `linear-gradient(${gradient})`)
 			}
 		}
 	}
@@ -216,7 +246,7 @@ class Style {
 		for (let [shadow] of shadows) {
 			let boxShadow = []
 			if (shadow.inset) boxShadow.push('inset')
-			boxShadow.push(parseLength(shadow.offsetX), parseLength(shadow.offsetY))
+			boxShadow.push(parseLength(shadow.offsetX || 0), parseLength(shadow.offsetY || 0))
 			if (typeof shadow.blurRadius !== 'undefined') boxShadow.push(parseLength(shadow.blurRadius))
 			if (typeof shadow.spreadRadius !== 'undefined') boxShadow.push(parseLength(shadow.spreadRadius))
 			if (shadow.color) boxShadow.push(parseColor(shadow.color, shadow.alpha))

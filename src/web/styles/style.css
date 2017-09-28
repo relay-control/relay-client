@@ -12,6 +12,14 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	
+	grid-row-start: var(--row);
+	grid-row-end: calc(var(--row) + var(--row-span));
+	grid-column-start: var(--column);
+	grid-column-end: calc(var(--column) + var(--column-span));
+	
+	--offset-x: 0;
+	--offset-y: 0;
 }
 
 .container {
@@ -23,6 +31,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	transform: translate(var(--offset-x), var(--offset-y));
 }
 
 .adjust-width .container {
@@ -48,8 +57,7 @@
 	border-radius: 50% !important;
 }
 
-.cell .label,
-.cell .value {
+.cell .label {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -60,8 +68,21 @@
 	/*touch-action: none;*/
 }
 
+.slider .label {
+	--parent:container;
+}
+
 .label span {
+	--offset-x: 0;
+	--offset-y: 0;
+	transform: translate(var(--offset-x), var(--offset-y));
 	padding: 0 0.4em;
+}
+
+.label.image img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
 }
 
 iframe {
