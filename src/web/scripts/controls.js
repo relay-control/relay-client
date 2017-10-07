@@ -4,6 +4,8 @@ class Control extends ControlStyle {
 		super(id)
 		this.id = id
 		
+		this.panel = panel.parent
+		
 		this.area = document.createElement('div')
 		this.area.classList.add('cell')
 		this.area.id = this.id
@@ -45,7 +47,7 @@ class Button extends Control {
 	
 	activate() {
 		this.addClass('active')
-		if (this.action) {
+		if (this.action.type === 'button') {
 			RelaySocket.sendInput({
 				type: this.action.type,
 				device: this.action.device,
@@ -57,13 +59,16 @@ class Button extends Control {
 	
 	deactivate() {
 		this.removeClass('active')
-		if (this.action) {
+		if (this.action.type === 'button') {
 			RelaySocket.sendInput({
 				type: this.action.type,
 				device: this.action.device,
 				button: this.action.button,
 				state: false,
 			})
+		}
+		if (this.action.type === 'view') {
+			this.panel.setView(this.action.view)
 		}
 	}
 	
