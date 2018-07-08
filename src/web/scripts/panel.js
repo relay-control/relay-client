@@ -172,6 +172,23 @@ class Panel {
 	loadScript(file) {
 		this.assets.push(loadScript(getAssetPath(file), this))
 	}
+	
+	set rows(rows) {
+		this.element.style.setProperty('--grid-rows', rows)
+	}
+	
+	set columns(columns) {
+		this.element.style.setProperty('--grid-columns', columns)
+	}
+	
+	set background(background) {
+		this.element.style.backgroundColor = background.color
+		if (background.image) {
+			this.element.style.backgroundImage = `url(${getAssetPath(background.image)})`
+			this.element.style.backgroundSize = 'cover'
+			this.element.style.backgroundPosition = 'center'
+		}
+	}
 }
 
 class View {
@@ -200,7 +217,7 @@ class View {
 		switch (type) {
 			case 'Button':
 				var control = new Button(this)
-				control.mode = control.mode
+				control.mode = data.mode
 				break
 			case 'Slider':
 				var control = new Slider(this)
@@ -255,18 +272,11 @@ function loadPanel(panelName) {
 		styleLink = link
 		
 		let p = new Panel()
-		let panelElement = p.element
-		panelElement.style = null
-		if (panel.background) {
-			panelElement.style.backgroundColor = panel.background.color
-			if (panel.background.image) {
-				panelElement.style.backgroundImage = `url(${getAssetPath(panel.background.image)})`
-				panelElement.style.backgroundSize = 'cover'
-				panelElement.style.backgroundPosition = 'center'
-			}
-		}
-		panelElement.style.setProperty('--grid-rows', panel.grid.rows)
-		panelElement.style.setProperty('--grid-columns', panel.grid.columns)
+		p.element.style = null
+		if (panel.background)
+			p.background = panel.background
+		p.rows = panel.grid.rows
+		p.columns = panel.grid.columns
 		
 		/* validate grid size and control placement */
 		
@@ -328,15 +338,14 @@ function loadPanel(panelName) {
 					c.addClass('adjust-' + (control.adjustSize || 'height'))
 				}
 				
-				let style = c
-				style.apply(control)
+				c.apply(control)
 				if (control.active) {
-					style.applyActive(control.active)
+					c.applyActive(control.active)
 				}
 				
 				let textLabel2 = control.textLabel
 				if (textLabel2) {
-					let textLabel = new TextLabel(c)
+					let textLabel = c.createTextLabel()
 					textLabel.setText(textLabel2.text)
 					// textLabel.setPosition(textLabel2.position)
 					// textLabel.setAnchor(textLabel2.anchor)
@@ -344,7 +353,7 @@ function loadPanel(panelName) {
 				
 				let iconLabel2 = control.iconLabel
 				if (iconLabel2) {
-					let iconLabel = new IconLabel(c)
+					let iconLabel = c.createIconLabel()
 					iconLabel.setIcon(iconLabel2.icon)
 					// iconLabel.setPosition(iconLabel2.position)
 					// iconLabel.setAnchor(iconLabel2.anchor)
@@ -352,7 +361,7 @@ function loadPanel(panelName) {
 				
 				let imageLabel2 = control.imageLabel
 				if (imageLabel2) {
-					let imageLabel = new ImageLabel(c)
+					let imageLabel = c.createImageLabel()
 					imageLabel.setImage(imageLabel2.image)
 					// iconLabel.setPosition(iconLabel2.position)
 					// imageLabel.setAnchor(imageLabel2.anchor)
@@ -406,7 +415,7 @@ function loadPanel(panelName) {
 		p.show()
 		
 		// request devices
-		Promise.all(usedVJoyDevices.map(e => fetch(`${socket.server}/api/requestdevice/${e}`).then(response => response.json())))
+		Promise.all(usedVJoyDevices.map(e => fetch(`${socket.server}/api/test/requestdevice/${e}`).then(response => response.json())))
 		 .then(devices => {
 			menuViewModel.deviceInfoDialog.data.removeAll()
 			for (let device of devices) {

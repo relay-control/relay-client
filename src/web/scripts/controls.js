@@ -31,6 +31,21 @@ class Control extends ControlStyle {
 	setColumn(column) {
 		this.area.style.setProperty('--column', column)
 	}
+	
+	createTextLabel() {
+		let textLabel = new TextLabel(this)
+		return textLabel
+	}
+	
+	createIconLabel() {
+		let iconLabel = new IconLabel(this)
+		return iconLabel
+	}
+	
+	createImageLabel() {
+		let imageLabel = new ImageLabel(this)
+		return imageLabel
+	}
 }
 
 class Button extends Control {
@@ -47,28 +62,34 @@ class Button extends Control {
 	
 	activate() {
 		this.addClass('active')
-		if (this.action.type === 'button') {
-			RelaySocket.sendInput({
-				type: this.action.type,
-				device: this.action.device,
-				button: this.action.button,
-				state: true,
-			})
+		if (this.action) {
+			if (this.action.type === 'key' || this.action.type === 'button') {
+				RelaySocket.sendInput({
+					type: this.action.type,
+					device: this.action.device,
+					key: this.action.key,
+					button: this.action.button,
+					state: true,
+				})
+			}
 		}
 	}
 	
 	deactivate() {
 		this.removeClass('active')
-		if (this.action.type === 'button') {
-			RelaySocket.sendInput({
-				type: this.action.type,
-				device: this.action.device,
-				button: this.action.button,
-				state: false,
-			})
-		}
-		if (this.action.type === 'view') {
-			this.panel.setView(this.action.view)
+		if (this.action) {
+			if (this.action.type === 'key' || this.action.type === 'button') {
+				RelaySocket.sendInput({
+					type: this.action.type,
+					device: this.action.device,
+					key: this.action.key,
+					button: this.action.button,
+					state: false,
+				})
+			}
+			if (this.action.type === 'view') {
+				this.panel.setView(this.action.view)
+			}
 		}
 	}
 	

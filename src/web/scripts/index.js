@@ -37,7 +37,7 @@ function MenuViewModel() {
 		this.connectDialog.show()
 	}
 	this.updatePanels = () => {
-		fetch(`${socket.server}/api/getpanels`, {cache: 'no-store'})
+		fetch(`${socket.server}/api/panels`, {cache: 'no-store'})
 		 .then(response => response.json())
 		 .then(panels => {
 			this.panels(panels)
