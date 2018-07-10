@@ -89,7 +89,7 @@ function getStyleRule(selector) {
 let currentPanel
 
 function getAssetPath(file) {
-	return encodeURI(`http://${recon.address}:${recon.port}/panels/${currentPanel}/assets/${file}`)
+	return encodeURI(`${recon.asset}/${file}`)
 }
 
 function loadImage(url) {
@@ -247,14 +247,10 @@ function loadPanel(panelName) {
 	// }
 	
 	menuViewModel.currentPanel(panelName)
-	currentPanel = panelName
+	recon.currentPanel = panelName
 	saveSetting('lastPanel', panelName)
 	
-	let xhr = new XMLHttpRequest()
-	xhr.open("GET", encodeURI(`http://${recon.address}:${recon.port}/panels/${panelName}/${panelName}.xml`))
-	xhr.responseType = 'document'
-	xhr.send()
-	xhr.onload = function() {
+	recon.getPanel(panelName, function() {
 		if (!this.response) {
 			menuViewModel.modalDialog.show("Unable to parse panel XML")
 			menuViewModel.currentPanel(null)
@@ -415,7 +411,7 @@ function loadPanel(panelName) {
 		p.show()
 		
 		// request devices
-		recon.connect(recon.address, recon.port, usedVJoyDevices, (devices) => {
+		recon.connect(usedVJoyDevices, (devices) => {
 			menuViewModel.deviceInfoDialog.data.removeAll()
 			for (let device of devices) {
 				if (!device.acquired) {
@@ -439,5 +435,5 @@ function loadPanel(panelName) {
 			if (menuViewModel.deviceInfoDialog.data().length > 0)
 				menuViewModel.deviceInfoDialog.show()
 		})
-	}
+	})
 }

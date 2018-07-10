@@ -64,7 +64,7 @@ class Button extends Control {
 		this.addClass('active')
 		if (this.action) {
 			if (this.action.type === 'key' || this.action.type === 'button') {
-				RelaySocket.sendInput({
+				recon.sendInput({
 					type: this.action.type,
 					device: this.action.device,
 					key: this.action.key,
@@ -79,7 +79,7 @@ class Button extends Control {
 		this.removeClass('active')
 		if (this.action) {
 			if (this.action.type === 'key' || this.action.type === 'button') {
-				RelaySocket.sendInput({
+				recon.sendInput({
 					type: this.action.type,
 					device: this.action.device,
 					key: this.action.key,
@@ -241,7 +241,7 @@ class Slider extends Control {
 					this.valueLabel.setText(e.currentTarget.value + '%')
 				
 				if (this.action) {
-					RelaySocket.sendInput({
+					recon.sendInput({
 						type: 'axis',
 						device: this.action.device,
 						axis: this.action.axis,

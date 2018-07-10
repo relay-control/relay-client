@@ -20,10 +20,6 @@ class Socket {
 		this.server = url.origin
 	}
 	
-	sendInput(data) {
-		this.ws.send(data)
-	}
-	
 	close(code, reason) {
 		this.ws.close(code, reason)
 		console.log("Closing WebSocket connection")

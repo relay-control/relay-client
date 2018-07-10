@@ -38,7 +38,7 @@ function MenuViewModel() {
 		this.connectDialog.show()
 	}
 	this.updatePanels = () => {
-		fetch(`http://${recon.address}:${recon.port}/api/panels`, {cache: 'no-store'})
+		fetch(recon.panels, {cache: 'no-store'})
 		 .then(response => response.json())
 		 .then(panels => {
 			this.panels(panels)
@@ -111,9 +111,3 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	})
 })
-
-var RelaySocket = {}
-
-RelaySocket.sendInput = function(input) {
-	recon.sendInput(JSON.stringify(input))
-}
