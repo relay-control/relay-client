@@ -1,3 +1,4 @@
+let recon = new Recon()
 let socket = new Socket()
 
 
@@ -37,7 +38,7 @@ function MenuViewModel() {
 		this.connectDialog.show()
 	}
 	this.updatePanels = () => {
-		fetch(`${socket.server}/api/panels`, {cache: 'no-store'})
+		fetch(`http://${recon.address}:${recon.port}/api/panels`, {cache: 'no-store'})
 		 .then(response => response.json())
 		 .then(panels => {
 			this.panels(panels)
@@ -62,8 +63,10 @@ function MenuViewModel() {
 		submit: (form) => {
 			saveSetting('address', form.elements.address.value)
 			saveSetting('port', form.elements.port.value)
-			socket.connect(form.elements.address.value, form.elements.port.value)
+			recon.con(form.elements.address.value, form.elements.port.value)
 			this.connectDialog.connecting(true)
+			menuViewModel.updatePanels()
+			// menuViewModel.loadLastPanel()
 		},
 		show: () => this.connectDialog.element.showModal(),
 		close: () => this.connectDialog.element.close(),
@@ -112,5 +115,5 @@ document.addEventListener('DOMContentLoaded', () => {
 var RelaySocket = {}
 
 RelaySocket.sendInput = function(input) {
-	socket.sendInput(JSON.stringify(input))
+	recon.sendInput(JSON.stringify(input))
 }

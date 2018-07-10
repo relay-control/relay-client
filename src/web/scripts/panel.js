@@ -89,7 +89,7 @@ function getStyleRule(selector) {
 let currentPanel
 
 function getAssetPath(file) {
-	return encodeURI(`${socket.server}/panels/${currentPanel}/assets/${file}`)
+	return encodeURI(`http://${recon.address}:${recon.port}/panels/${currentPanel}/assets/${file}`)
 }
 
 function loadImage(url) {
@@ -251,7 +251,7 @@ function loadPanel(panelName) {
 	saveSetting('lastPanel', panelName)
 	
 	let xhr = new XMLHttpRequest()
-	xhr.open("GET", encodeURI(`${socket.server}/panels/${panelName}/${panelName}.xml`))
+	xhr.open("GET", encodeURI(`http://${recon.address}:${recon.port}/panels/${panelName}/${panelName}.xml`))
 	xhr.responseType = 'document'
 	xhr.send()
 	xhr.onload = function() {
@@ -415,8 +415,7 @@ function loadPanel(panelName) {
 		p.show()
 		
 		// request devices
-		Promise.all(usedVJoyDevices.map(e => fetch(`${socket.server}/api/test/requestdevice/${e}`).then(response => response.json())))
-		 .then(devices => {
+		recon.connect(recon.address, recon.port, usedVJoyDevices, (devices) => {
 			menuViewModel.deviceInfoDialog.data.removeAll()
 			for (let device of devices) {
 				if (!device.acquired) {
@@ -439,6 +438,6 @@ function loadPanel(panelName) {
 			}
 			if (menuViewModel.deviceInfoDialog.data().length > 0)
 				menuViewModel.deviceInfoDialog.show()
-		 })
+		})
 	}
 }

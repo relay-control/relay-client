@@ -50,9 +50,6 @@ class Socket {
 		menuViewModel.connectDialog.connecting(false)
 		if (menuViewModel.connectDialog.isOpen())
 			menuViewModel.connectDialog.close()
-		
-		menuViewModel.updatePanels()
-		menuViewModel.loadLastPanel()
 	}
 	
 	onclose(e) {

@@ -1,4 +1,4 @@
-let settings
+let settings = {}
 
 function saveSetting(setting, value) {
 	if (isAndroid())
@@ -18,7 +18,11 @@ function setup(storedSettings) {
 	if (settings.address) {
 		menuViewModel.connectDialog.address(settings.address)
 		menuViewModel.connectDialog.port(settings.port)
-		socket.connect(settings.address, settings.port)
+		
+		recon.con(settings.address, settings.port)
+		
+		menuViewModel.updatePanels()
+		menuViewModel.loadLastPanel()
 	} else {
 		menuViewModel.connectDialog.show()
 	}
