@@ -1,1 +1,1 @@
-@electron-packager src\electron --arch=ia32,x64 --out=build --asar=true --overwrite=true --win32metadata.ProductName="VPCP"
+@electron-packager src\electron --arch=ia32,x64 --out=build --asar=true --overwrite=true --win32metadata.ProductName="Recon"
