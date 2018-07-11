@@ -86,14 +86,6 @@ function getStyleRule(selector) {
 }
 
 
-function loadImage(url) {
-	return new Promise((resolve, reject) => {
-		let img = new Image()
-		img.src = url
-		img.onload = () => resolve()
-	})
-}
-
 function loadAudio(url) {
 	return new Promise((resolve, reject) => {
 		let audio = new Audio()
@@ -102,21 +94,6 @@ function loadAudio(url) {
 		audio.canplaythrough = console.log
 		audio.canplay = console.log
 		audio.load = console.log
-	})
-}
-
-async function loadFont(family, url) {
-	let font = new FontFace(family, `url(${url})`)
-	document.fonts.add(font)
-	await font.load()
-}
-
-function loadScript(url, panel) {
-	return new Promise((resolve, reject) => {
-		let script = document.createElement('script')
-		script.src = url
-		script.onload = () => resolve()
-		panel.element.appendChild(script)
 	})
 }
 
@@ -145,6 +122,7 @@ class Panel {
 	}
 	
 	setView(view) {
+		// decrement to translate human index to 0 index
 		view--
 		for (let i = 0; i < this.views.length; i++) {
 			if (i == view) {
@@ -156,15 +134,26 @@ class Panel {
 	}
 	
 	loadImage(image) {
-		this.assets.push(loadImage(recon.getAssetPath(image)))
+		this.assets.push(new Promise((resolve, reject) => {
+			let img = new Image()
+			img.src = image
+			img.onload = () => resolve()
+		}))
 	}
 	
 	loadFont(family, file) {
-		this.assets.push(loadFont(family, recon.getAssetPath(file)))
+		let font = new FontFace(family, `url(${file})`)
+		document.fonts.add(font)
+		this.assets.push(font.load())
 	}
 	
 	loadScript(file) {
-		this.assets.push(loadScript(recon.getAssetPath(file), this))
+		this.assets.push(new Promise((resolve, reject) => {
+			let script = document.createElement('script')
+			script.src = file
+			script.onload = () => resolve()
+			this.element.appendChild(script)
+		}))
 	}
 	
 	set rows(rows) {
@@ -272,15 +261,16 @@ function loadPanel(panelName) {
 		
 		if (panel.assets) {
 			for (let [asset, type] of panel.assets) {
+				let file = recon.getAssetPath(asset.file)
 				switch (type) {
 					case 'Image':
-						p.loadImage(asset.file)
+						p.loadImage(file)
 						break
 					case 'Font':
-						p.loadFont(asset.family, asset.file)
+						p.loadFont(asset.family, file)
 						break
 					case 'Script':
-						p.loadScript(asset.file)
+						p.loadScript(file)
 						break
 				}
 			}

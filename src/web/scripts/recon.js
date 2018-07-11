@@ -35,12 +35,14 @@ class Recon {
 		xhr.onload = cb
 	}
 	
-	get panels() {
-		return new URL('api/panels', this.url.origin).href
+	panels() {
+		return fetch(new URL('api/panels', this.url.origin).href, {cache: 'no-store'})
+		 .then(response => response.json())
 	}
 	
 	getAssetPath(file) {
-		return encodeURI(new URL(`panels/${this.currentPanel}/assets/${file}`, this.url.origin).href)
+		// return encodeURI(new URL(`panels/${this.currentPanel}/assets/${file}`, this.url.origin).href)
+		return new URL(`panels/${this.currentPanel}/assets/${file}`, this.url.origin).href
 	}
 	
 	sendInput(input) {

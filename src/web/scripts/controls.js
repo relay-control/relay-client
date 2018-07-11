@@ -469,6 +469,6 @@ class ImageLabel extends Label {
 	}
 	
 	setImage(image) {
-		this.image.src = getAssetPath(image)
+		this.image.src = recon.getAssetPath(image)
 	}
 }

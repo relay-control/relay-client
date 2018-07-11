@@ -1,5 +1,4 @@
 let recon = new Recon()
-let socket = new Socket()
 
 
 function isAndroid() {
@@ -38,8 +37,7 @@ function MenuViewModel() {
 		this.connectDialog.show()
 	}
 	this.updatePanels = () => {
-		fetch(recon.panels, {cache: 'no-store'})
-		 .then(response => response.json())
+		recon.panels()
 		 .then(panels => {
 			this.panels(panels)
 		})

@@ -206,7 +206,7 @@ class Style {
 			this.setControlStyle('background-image', 'unset')
 		}
 		if (background.image) {
-			this.setControlStyle('background-image', `url(${getAssetPath(background.image)})`)
+			this.setControlStyle('background-image', `url(${recon.getAssetPath(background.image)})`)
 			this.setControlStyle('background-size', 'cover')
 		}
 		if (background.gradient) {
