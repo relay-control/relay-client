@@ -29,7 +29,7 @@ class Recon {
 	
 	getPanel(panel, cb) {
 		let xhr = new XMLHttpRequest()
-		xhr.open("GET", encodeURI(`${this.url.origin}/panels/${panel}/${panel}.xml`))
+		xhr.open("GET", encodeURI(`${this.url.origin}/panels/${panel}/panel.xml`))
 		xhr.responseType = 'document'
 		xhr.send()
 		xhr.onload = cb
