@@ -86,12 +86,6 @@ function getStyleRule(selector) {
 }
 
 
-let currentPanel
-
-function getAssetPath(file) {
-	return encodeURI(`${recon.asset}/${file}`)
-}
-
 function loadImage(url) {
 	return new Promise((resolve, reject) => {
 		let img = new Image()
@@ -162,15 +156,15 @@ class Panel {
 	}
 	
 	loadImage(image) {
-		this.assets.push(loadImage(getAssetPath(image)))
+		this.assets.push(loadImage(recon.getAssetPath(image)))
 	}
 	
 	loadFont(family, file) {
-		this.assets.push(loadFont(family, getAssetPath(file)))
+		this.assets.push(loadFont(family, recon.getAssetPath(file)))
 	}
 	
 	loadScript(file) {
-		this.assets.push(loadScript(getAssetPath(file), this))
+		this.assets.push(loadScript(recon.getAssetPath(file), this))
 	}
 	
 	set rows(rows) {
@@ -184,7 +178,7 @@ class Panel {
 	set background(background) {
 		this.element.style.backgroundColor = background.color
 		if (background.image) {
-			this.element.style.backgroundImage = `url(${getAssetPath(background.image)})`
+			this.element.style.backgroundImage = `url(${recon.getAssetPath(background.image)})`
 			this.element.style.backgroundSize = 'cover'
 			this.element.style.backgroundPosition = 'center'
 		}

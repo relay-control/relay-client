@@ -39,8 +39,8 @@ class Recon {
 		return new URL('api/panels', this.url.origin).href
 	}
 	
-	get asset() {
-		return encodeURI(new URL(`panels/${this.currentPanel}/assets`, this.url.origin).href)
+	getAssetPath(file) {
+		return encodeURI(new URL(`panels/${this.currentPanel}/assets/${file}`, this.url.origin).href)
 	}
 	
 	sendInput(input) {
