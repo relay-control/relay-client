@@ -1,1 +1,1 @@
-@ src\electron\node_modules\.bin\electron src\electron\main
+@ npm start --prefix src\electron
