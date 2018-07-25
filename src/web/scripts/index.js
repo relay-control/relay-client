@@ -1,4 +1,4 @@
-let recon = new Recon()
+let recon
 
 
 function isAndroid() {
@@ -10,9 +10,14 @@ function isElectron() {
 }
 
 function goBack() {
+	recon.ws.close()
+	closePanel()
+}
+
+function closePanel() {
 	let panel = document.getElementById('panel')
 	let style = window.getComputedStyle(panel)
-	if (style.display === 'grid') {
+	if (style.display === 'block') {
 		panel.style.display = 'none'
 		menuViewModel.currentPanel(null)
 		let menu = document.getElementById('menu')
@@ -28,19 +33,71 @@ ko.bindingHandlers.modal = {
 	}
 }
 
+// recon.on('open', () => console.log('open'))
+
+function connect(address, port) {
+	try {
+		recon = new Recon(address, port)
+	} catch (err) {
+		menuViewModel.modalDialog.show("Invalid URL")
+		return
+	}
+	
+	recon.getPanels()
+	 .then(panels => {
+		menuViewModel.panels(panels)
+		menuViewModel.connected(true)
+		menuViewModel.currentServer(recon.address)
+		menuViewModel.connectDialog.connecting(false)
+		if (menuViewModel.connectDialog.isOpen())
+			menuViewModel.connectDialog.close()
+		
+		menuViewModel.loadLastPanel()
+	})
+	 .catch(err => {
+		if (err instanceof FileNotFoundError) {
+			console.log("not found")
+		} else {
+			if (menuViewModel.connectDialog.isOpen())
+				menuViewModel.connectDialog.close()
+			menuViewModel.connectDialog.connecting(false)
+			menuViewModel.modalDialog.show("Unable to connect to Recon server")
+		}
+	 })
+
+	recon.on('close', (e, previousState) => {
+		// menuViewModel.connected(false)
+		// menuViewModel.currentServer(null)
+		// closing existing websocket before opening new
+		if (e.code === 4001) {
+			this.connect2(this.address, this.port)
+			return
+		}
+		if (previousState === WebSocket.CONNECTING) {
+			// if (menuViewModel.connectDialog.isOpen())
+				// menuViewModel.connectDialog.close()
+			menuViewModel.connectDialog.connecting(false)
+			// menuViewModel.modalDialog.show("Unable to connect to Recon server", previousState)
+		}
+		if (previousState === WebSocket.OPEN) {
+			// try to reconnect?
+			closePanel()
+			menuViewModel.modalDialog.show("Disconnected from Recon server")
+		}
+	})
+}
+
 function MenuViewModel() {
     this.connected = ko.observable(false)
 	this.currentServer = ko.observable()
 	this.currentPanel = ko.observable()
-    this.panels = ko.observableArray()
+	this.panels = ko.observableArray()
 	this.connect = () => {
 		this.connectDialog.show()
 	}
-	this.updatePanels = () => {
-		recon.panels()
-		 .then(panels => {
-			this.panels(panels)
-		})
+	this.updatePanels = async () => {
+		let panels = await recon.getPanels()
+		this.panels(panels)
 	}
 	this.loadLastPanel = function() {
 		if (!settings.rememberPanel && settings.lastPanel) {
@@ -61,10 +118,8 @@ function MenuViewModel() {
 		submit: (form) => {
 			saveSetting('address', form.elements.address.value)
 			saveSetting('port', form.elements.port.value)
-			recon.con(form.elements.address.value, form.elements.port.value)
 			this.connectDialog.connecting(true)
-			menuViewModel.updatePanels()
-			// menuViewModel.loadLastPanel()
+			connect(form.elements.address.value, form.elements.port.value)
 		},
 		show: () => this.connectDialog.element.showModal(),
 		close: () => this.connectDialog.element.close(),
@@ -108,4 +163,22 @@ document.addEventListener('DOMContentLoaded', () => {
 			goBack()
 		}
 	})
+	
+	if (isElectron()) {
+		// var settings2 = require('electron-settings')
+		settings = settings2.getAll()
+		
+		// document.addEventListener('DOMContentLoaded', () => {
+			// setup()
+		// })
+	}
+	
+	if (settings.address) {
+		menuViewModel.connectDialog.address(settings.address)
+		menuViewModel.connectDialog.port(settings.port)
+		
+		connect(settings.address, settings.port)
+	} else {
+		menuViewModel.connectDialog.show()
+	}
 })

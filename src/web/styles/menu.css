@@ -93,6 +93,10 @@ dialog button.primary:active {
 	background-color: #1a69a4;
 }
 
+dialog button[disabled] {
+	color: #ccc;
+}
+
 h1 {
 	margin: 0;
 }
@@ -248,6 +252,7 @@ dialog {
 	top: 0;
 	bottom: 0;
 	border-radius: var(--border-radius);
+	min-width: 300px;
 }
 
 dialog::backdrop {

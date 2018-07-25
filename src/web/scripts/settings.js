@@ -28,11 +28,11 @@ function setup(storedSettings) {
 	}
 }
 
-if (isElectron()) {
+// if (isElectron()) {
 	var settings2 = require('electron-settings')
-	settings = settings2.getAll()
+	// settings = settings2.getAll()
 	
-	document.addEventListener('DOMContentLoaded', () => {
-		setup()
-	})
-}
+	// document.addEventListener('DOMContentLoaded', () => {
+		// setup()
+	// })
+// }
