@@ -434,7 +434,8 @@ function loadPanel(panelName) {
 			menuViewModel.modalDialog.show(`Unable to load panel ${panelName}.`)
 			menuViewModel.currentPanel(null)
 		} else {
-			console.log("connection refused")
+			menuViewModel.modalDialog.show(`Connection refused`)
+			menuViewModel.currentPanel(null)
 		}
 	 })
 }
