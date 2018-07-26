@@ -55,13 +55,18 @@ function connect(address, port) {
 		menuViewModel.loadLastPanel()
 	})
 	 .catch(err => {
-		if (err instanceof FileNotFoundError) {
-			console.log("not found")
-		} else {
-			if (menuViewModel.connectDialog.isOpen())
-				menuViewModel.connectDialog.close()
-			menuViewModel.connectDialog.connecting(false)
-			menuViewModel.modalDialog.show("Unable to connect to Recon server")
+		switch (err.constructor) {
+			case FileNotFoundError:
+				console.log("not found")
+				break
+			case TypeError:
+				if (menuViewModel.connectDialog.isOpen())
+					menuViewModel.connectDialog.close()
+				menuViewModel.connectDialog.connecting(false)
+				menuViewModel.modalDialog.show("Unable to connect to Recon server")
+				break
+			default:
+				throw err
 		}
 	 })
 
