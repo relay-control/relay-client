@@ -81,6 +81,8 @@
 	display: flex;
 	pointer-events: none;
 	/*touch-action: none;*/
+	--offset-x: 0;
+	--offset-y: 0;
 }
 
 .slider .label {
@@ -88,8 +90,6 @@
 }
 
 .label span {
-	--offset-x: 0;
-	--offset-y: 0;
 	transform: translate(var(--offset-x), var(--offset-y));
 	padding: 0 0.4em;
 }
