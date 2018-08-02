@@ -101,8 +101,24 @@ function MenuViewModel() {
 		this.connectDialog.show()
 	}
 	this.updatePanels = async () => {
-		let panels = await recon.getPanels()
-		this.panels(panels)
+		try {
+			let panels = await recon.getPanels()
+			this.panels(panels)
+		} catch (err) {
+			switch (err.constructor) {
+				case FileNotFoundError:
+					console.log("not found")
+					break
+				case TypeError:
+					if (menuViewModel.connectDialog.isOpen())
+						menuViewModel.connectDialog.close()
+					menuViewModel.connectDialog.connecting(false)
+					menuViewModel.modalDialog.show("Unable to connect to Recon server")
+					break
+				default:
+					throw err
+			}
+		}
 	}
 	this.loadLastPanel = function() {
 		if (!settings.rememberPanel && settings.lastPanel) {

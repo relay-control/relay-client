@@ -394,6 +394,7 @@ function buildPanel(panel) {
 		}
 	 })
 	 .catch(err => {
+		console.error(err)
 		menuViewModel.modalDialog.show(`Connection refused`)
 		menuViewModel.currentPanel(null)
 	 })
@@ -434,6 +435,7 @@ function loadPanel(panelName) {
 			menuViewModel.modalDialog.show(`Unable to load panel ${panelName}.`)
 			menuViewModel.currentPanel(null)
 		} else {
+			console.error(err)
 			menuViewModel.modalDialog.show(`Connection refused`)
 			menuViewModel.currentPanel(null)
 		}
