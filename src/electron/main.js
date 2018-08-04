@@ -9,6 +9,10 @@ app.on("ready", () => {
 		width: 1280,
 		height: 720,
 		show: false,
+		webPreferences: {
+			nodeIntegration: false,
+			preload: path.join(__dirname, 'preload.js'),
+		},
 	})
 	
 	win.loadURL(url.format({

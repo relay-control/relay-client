@@ -27,12 +27,3 @@ function setup(storedSettings) {
 		menuViewModel.connectDialog.show()
 	}
 }
-
-// if (isElectron()) {
-	var settings2 = require('electron-settings')
-	// settings = settings2.getAll()
-	
-	// document.addEventListener('DOMContentLoaded', () => {
-		// setup()
-	// })
-// }

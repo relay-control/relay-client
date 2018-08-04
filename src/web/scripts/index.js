@@ -6,7 +6,7 @@ function isAndroid() {
 }
 
 function isElectron() {
-	return typeof process !== 'undefined' && process.versions && process.versions['electron']
+	return typeof Electron !== 'undefined'
 }
 
 function goBack() {
