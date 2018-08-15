@@ -143,7 +143,11 @@ function MenuViewModel() {
 			connect(form.elements.address.value, form.elements.port.value)
 		},
 		show: () => this.connectDialog.element.showModal(),
-		close: () => this.connectDialog.element.close(),
+		close: () => {
+			// if (this.connectDialog.connecting())
+				// recon.abort()
+			this.connectDialog.element.close()
+		},
 		isOpen: () => this.connectDialog.element.open,
 	}
 	

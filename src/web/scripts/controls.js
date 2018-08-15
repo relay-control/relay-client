@@ -63,13 +63,14 @@ class Button extends Control {
 	activate() {
 		this.addClass('active')
 		if (this.action) {
-			if (this.action.type === 'key' || this.action.type === 'button') {
+			if (this.action.type === 'key' || this.action.type === 'button' || this.action.type === 'macro') {
 				recon.sendInput({
 					type: this.action.type,
-					device: this.action.device,
+					deviceID: this.action.device,
 					key: this.action.key,
 					button: this.action.button,
 					state: true,
+					actions: this.action.action,
 				})
 			}
 		}
@@ -81,10 +82,11 @@ class Button extends Control {
 			if (this.action.type === 'key' || this.action.type === 'button') {
 				recon.sendInput({
 					type: this.action.type,
-					device: this.action.device,
+					deviceID: this.action.device,
 					key: this.action.key,
 					button: this.action.button,
 					state: false,
+					actions: this.action.action,
 				})
 			}
 			if (this.action.type === 'view') {

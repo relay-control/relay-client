@@ -31,7 +31,8 @@ function parseNumber(str) {
 }
 
 function parse(xml) {
-	let data = collections.includes(xml.nodeName) ? [] : {}
+	let isCollection = collections.includes(xml.nodeName)
+	let data = isCollection ? [] : {}
 
 	let isText = xml.nodeType === 3,
 		isElement = xml.nodeType === 1,
@@ -55,12 +56,16 @@ function parse(xml) {
 		}
 	}
 
+	if (xml.nodeName === 'Action' && xml.attributes.getNamedItem('type').value == 'macro')
+		data.action = []
 	// recursively call #parse over children, adding results to data
 	for (child of xml.children) {
 		let nodeName = child.nodeName
-		if (collections.includes(xml.nodeName)) {
+		if (isCollection) {
 			// certain predetermined tags gets their children populated in an array
 			data.push([parse(child), nodeName])
+		} else if (xml.nodeName === 'Action' && xml.attributes.getNamedItem('type').value == 'macro') {
+			data.action.push(parse(child))
 		} else {
 			// the rest gets added as properties
 			data[firstCharLowerCase(nodeName)] = parse(child)
