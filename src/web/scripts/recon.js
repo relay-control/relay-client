@@ -53,15 +53,21 @@ class Recon extends EventEmitter {
 	}
 	
 	async getPanels() {
+		let controller = {} || new AbortController()
+		this.controller = controller
 		let url = new URL('api/panels', this.url.origin)
-		let response = await fetch(url.href, {cache: 'no-store'})
+		let response = await fetch(url.href, {cache: 'no-store', signal: controller.signal})
 		if (!response.ok)
 			throw new FileNotFoundError()
 		return response.json()
 	}
 	
+	abort() {
+		this.controller.abort()
+	}
+	
 	async getPanel(panel) {
-		let response = await fetch(`${this.url.origin}/panels/${panel}/panel.xml`, {cache: 'no-store'})
+		let response = await fetch(`${this.url.origin}/panels/${panel}/panel.xml`, {cache: 'no-cache'})
 		if (!response.ok)
 			throw new FileNotFoundError()
 		let str = await response.text()
@@ -78,6 +84,7 @@ class Recon extends EventEmitter {
 		this.ws = new Socket(this.address, this.port, devices)
 		
 		this.ws.on('close', (e, previousState) => this.emit('close', e, previousState))
+		// this.ws.on('state', (e) => console.log(e))
 		
 		return new Promise((resolve, reject) => {
 			this.ws.on('open', (status) => {
@@ -100,7 +107,7 @@ class Socket extends EventEmitter {
 		
 		this.address = address
 		this.port = port
-		let url = `ws://${address}:${port}`
+		let url = `ws://${address}:${port}/websocket`
 		if (devices.length > 0)
 			url += '?' + devices.map(e => 'devices=' + e).join('&')
 		this.ws = new WebSocket(url)
@@ -110,7 +117,7 @@ class Socket extends EventEmitter {
 		this.ws.onerror = (err) => this.onerror(err)
 		this.previousState = this.ws.readyState
 		console.log("Opening WebSocket connection")
-		console.log('readyState:', this.ws.readyState)
+		// console.log('readyState:', this.ws.readyState)
 	}
 	
 	connect2() {
@@ -128,7 +135,7 @@ class Socket extends EventEmitter {
 	close(code, reason) {
 		this.ws.close(code, reason)
 		console.log("Closing WebSocket connection")
-		console.log('readyState:', this.ws.readyState)
+		// console.log('readyState:', this.ws.readyState)
 		this.previousState = this.ws.readyState
 		// unbind events?
 	}
@@ -139,14 +146,14 @@ class Socket extends EventEmitter {
 	
 	onmessage(e) {
 		let message = JSON.parse(e.data)
-		console.log(message)
+		// console.log(message)
 		this.emit(message.eventType, message)
 	}
 	
 	onopen(e) {
 		// this.emit('open')
 		console.log('WebSocket connection opened')
-		console.log('readyState:', this.ws.readyState)
+		// console.log('readyState:', this.ws.readyState)
 		this.previousState = this.ws.readyState
 	}
 	
@@ -155,7 +162,7 @@ class Socket extends EventEmitter {
 		let previousState = this.previousState
 		this.previousState = this.ws.readyState
 		console.log('WebSocket connection closed')
-		console.log('readyState:', e.target.readyState)
+		// console.log('readyState:', e.target.readyState)
 		console.log('code:', e.code)
 	}
 	
