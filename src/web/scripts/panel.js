@@ -44,7 +44,7 @@ function parse(xml) {
 	if (isText) { return xml.nodeValue.trim() }
 
 	// if it doesn't have any children or attributes, just return the contents
-	if (!hasChildren && !hasAttributes) { return { } }
+	if (!hasChildren && !hasAttributes) { return data }
 
 	// if it doesn't have children but _does_ have body content, we'll use that
 	if (!hasChildren && body.length) { data.text = body }
@@ -56,8 +56,10 @@ function parse(xml) {
 		}
 	}
 
-	if (xml.nodeName === 'Action' && xml.attributes.getNamedItem('type').value == 'macro')
+	if (xml.nodeName === 'Action' && xml.attributes.getNamedItem('type').value == 'macro') {
 		data.action = []
+	}
+	
 	// recursively call #parse over children, adding results to data
 	for (child of xml.children) {
 		let nodeName = child.nodeName
