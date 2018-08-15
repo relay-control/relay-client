@@ -57,7 +57,10 @@ function connect(address, port) {
 	 .catch(err => {
 		switch (err.constructor) {
 			case FileNotFoundError:
-				console.log("not found")
+				if (menuViewModel.connectDialog.isOpen())
+					menuViewModel.connectDialog.close()
+				menuViewModel.connectDialog.connecting(false)
+				menuViewModel.modalDialog.show("Failed to retrieve panel list")
 				break
 			case TypeError:
 				if (menuViewModel.connectDialog.isOpen())
