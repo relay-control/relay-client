@@ -283,8 +283,10 @@ function buildPanel(panel) {
 				c.setRow(control.row)
 			if (control.column)
 				c.setColumn(control.column)
-			c.setRowSpan(control.rowSpan)
-			c.setColumnSpan(control.columnSpan)
+			if (control.rowSpan)
+				c.setRowSpan(control.rowSpan)
+			if (control.columnSpan)
+				c.setColumnSpan(control.columnSpan)
 			
 			c.addClass(tag.toLowerCase())
 			
