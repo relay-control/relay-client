@@ -1,20 +1,20 @@
-@font-face {
-	font-family: 'Open Sans';
-	src: url("../fonts/OpenSans-Regular.ttf");
-}
-
 #panel {
 	background: #ccc;
+}
+
+.view {
+	--gap: 20px;
+}
+
+.cell {
+	--inset: 0px;
+	--offset-x: 0px;
+	--offset-y: 0px;
 }
 
 .cell button, .label, .text, .icon {
 	font-family: 'Open Sans';
 	font-size: 36px;
-}
-
-.cell {
-	--inset: 10px;
-	padding: var(--inset);
 }
 
 .cell button {

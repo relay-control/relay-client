@@ -1,3 +1,8 @@
+@font-face {
+	font-family: 'Open Sans';
+	src: url("../fonts/OpenSans-Regular.ttf");
+}
+
 #panel {
 	height: 100%;
 	background-position: center;
@@ -10,12 +15,15 @@
 	bottom: 0;
 	right: 0;
 	
+	padding: var(--gap);
+	
 	z-index: -1;
 	
 	display: grid;
 	grid-template-rows: repeat(var(--grid-rows), 1fr);
 	grid-template-columns: repeat(var(--grid-columns), 1fr);
 	grid-auto-rows: 0;
+	grid-gap: var(--gap);
 }
 
 .view.active {
@@ -24,18 +32,19 @@
 
 .cell {
 	position: relative;
-	overflow: hidden;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	
+	padding: var(--inset);
 	
 	grid-row-start: var(--row);
 	grid-row-end: span var(--row-span);
 	grid-column-start: var(--column);
 	grid-column-end: span var(--column-span);
 	
-	--offset-x: 0;
-	--offset-y: 0;
+	min-width: 0;
+	min-height: 0;
 }
 
 .container {
@@ -51,13 +60,13 @@
 }
 
 .adjust-width .container {
-	--size: calc(100vw / var(--grid-columns) - var(--inset) * 2);
+	--size: calc((100vw - var(--gap)) / var(--grid-columns) - var(--gap) - var(--inset) * 2);
 	width: var(--size);
 	height: var(--size);
 }
 
 .adjust-height .container {
-	--size: calc(100vh / var(--grid-rows) - var(--inset) * 2);
+	--size: calc((100vh - var(--gap)) / var(--grid-rows) - var(--gap) - var(--inset) * 2);
 	width: var(--size);
 	height: var(--size);
 }
