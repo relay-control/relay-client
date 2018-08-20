@@ -129,10 +129,12 @@ input[type=range]:focus {
 
 input[type=range]::-webkit-slider-thumb {
 	-webkit-appearance: none;
+	height: var(--thumb-height);
 	/* this needs to be set manually to center the thumb vertically */
 	margin-top: calc(var(--track-height) / 2 - var(--thumb-height) / 2);
 }
 
 input[type=range]::-webkit-slider-runnable-track {
 	box-sizing: content-box;
+	height: var(--track-height);
 }
