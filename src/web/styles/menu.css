@@ -7,7 +7,6 @@ body {
 	height: 100vh;
 	user-select: none;
 	cursor: default;
-	overflow: hidden;
 	--border: 1px solid var(--border-color);
 	--border-color: rgba(34, 36, 38, 0.15);
 	--border-radius: 0.28571429rem;
@@ -48,6 +47,7 @@ header.with-button {
 	margin: auto;
 	justify-content: center;
 	flex-direction: column;
+	overflow: auto;
 }
 
 #menu section header {
