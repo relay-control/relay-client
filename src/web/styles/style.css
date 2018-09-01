@@ -59,23 +59,21 @@
 	transform: translate(var(--offset-x), var(--offset-y));
 }
 
-.adjust-width .container {
-	--size: calc((100vw - var(--gap)) / var(--grid-columns) - var(--gap) - var(--inset) * 2);
-	width: var(--size);
-	height: var(--size);
-}
-
-.adjust-height .container {
-	--size: calc((100vh - var(--gap)) / var(--grid-rows) - var(--gap) - var(--inset) * 2);
-	width: var(--size);
-	height: var(--size);
-}
-
 .cell > .container > button {
 	width: 100%;
 	height: 100%;
 	outline: none;
 	background-position: center;
+}
+
+.cell.circle .container,
+.cell.square .container {
+	--cell-width: calc((100vw - var(--gap)) / var(--grid-columns) - var(--gap) - var(--inset) * 2);
+	--cell-height: calc((100vh - var(--gap)) / var(--grid-rows) - var(--gap) - var(--inset) * 2);
+	width: var(--cell-height);
+	max-width: var(--cell-width);
+	height: var(--cell-width);
+	max-height: var(--cell-height);
 }
 
 .cell.circle button {

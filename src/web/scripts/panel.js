@@ -297,9 +297,6 @@ function buildPanel(panel) {
 			
 			if (control.square) c.addClass('square')
 			if (control.circle) c.addClass('circle')
-			if (control.square || control.circle) {
-				c.addClass('adjust-' + (control.adjustSize || 'height'))
-			}
 			
 			c.apply(control)
 			if (control.active) {
