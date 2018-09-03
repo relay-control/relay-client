@@ -279,14 +279,24 @@ function buildPanel(panel) {
 		for (let [control, tag] of view) {
 			let c = v.createControl(tag, control)
 			
+			let style = {}
+			if (panel.templates) {
+				for (let [template, tag2] of panel.templates) {
+					if ((tag2 === 'Control' || tag2 === tag) && template.name === control.inherits) {
+						Object.assign(style, JSON.parse(JSON.stringify(template)))
+					}
+				}
+			}
+			Object.assign(style, control)
+			
 			if (control.row)
 				c.setRow(control.row)
 			if (control.column)
 				c.setColumn(control.column)
-			if (control.rowSpan)
-				c.setRowSpan(control.rowSpan)
-			if (control.columnSpan)
-				c.setColumnSpan(control.columnSpan)
+			if (style.rowSpan)
+				c.setRowSpan(style.rowSpan)
+			if (style.columnSpan)
+				c.setColumnSpan(style.columnSpan)
 			
 			c.addClass(tag.toLowerCase())
 			
@@ -295,8 +305,8 @@ function buildPanel(panel) {
 			else
 				c.addClass('default')
 			
-			if (control.square) c.addClass('square')
-			if (control.circle) c.addClass('circle')
+			if (style.square) c.addClass('square')
+			if (style.circle) c.addClass('circle')
 			
 			c.apply(control)
 			if (control.active) {
