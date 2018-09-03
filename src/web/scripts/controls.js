@@ -146,38 +146,11 @@ class Slider extends Control {
 	constructor(panel) {
 		super(panel)
 		
-		this.rules = {}
-		
-		let iframe = document.createElement('iframe')
-		iframe.classList.add('control')
-		
-		this.container.appendChild(iframe)
-		
-		iframe.contentDocument.body.addEventListener('keydown', e => {
-			if (menuViewModel.isModalShown())
-				return
-			if (e.code === 'Escape' || e.code === 'Backspace') {
-				goBack()
-			}
-		})
-		
-		let cssLink = document.createElement('link')
-		cssLink.href = 'styles/slider.css'
-		cssLink.rel = 'stylesheet'
-		cssLink.type = 'text/css'
-		iframe.contentDocument.head.appendChild(cssLink)
-		
-		let link = document.createElement('style')
-		iframe.contentDocument.head.appendChild(link)
-		this.stylesheet = link.sheet
-		
-		// slider.style['will-change'] = 'transform'
 		this.control = document.createElement('input')
 		this.control.type = 'range'
 		this.control.id = this.id
 		this.control.classList.add('control')
-		iframe.contentDocument.body.appendChild(this.control)
-		iframe.contentDocument.body.classList.add('default', 'slider')
+		this.container.appendChild(this.control)
 		
 		for (let [event, callback] of Object.entries(this.events)) {
 			this.control.addEventListener(event, callback)
@@ -193,17 +166,6 @@ class Slider extends Control {
 		let option = document.createElement('option')
 		option.value = value
 		datalist.appendChild(option)
-	}
-	
-	getStyleRule(selector) {
-		let rule = this.rules[selector]
-		if (!rule) {
-			let index = this.stylesheet.rules.length
-			this.stylesheet.insertRule(`${selector} {}`, index)
-			rule = this.stylesheet.rules[index].style
-			this.rules[selector] = rule
-		}
-		return rule
 	}
 	
 	apply(style) {
@@ -223,10 +185,6 @@ class Slider extends Control {
 			let trackStyle = new SliderTrackStyle(this)
 			trackStyle.apply(style.track)
 		}
-	}
-	
-	getControlStyle() {
-		return this.getStyleRule(`${this.selector}`)
 	}
 	
 	get events() {
