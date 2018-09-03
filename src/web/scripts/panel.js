@@ -307,6 +307,8 @@ function buildPanel(panel) {
 			
 			if (style.square) c.addClass('square')
 			if (style.circle) c.addClass('circle')
+			if ((style.square || style.circle) && !(style.size || style.width || style.height))
+				c.addClass('auto-size')
 			
 			c.apply(control)
 			if (control.active) {

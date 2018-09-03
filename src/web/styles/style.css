@@ -67,8 +67,8 @@
 	background-position: center;
 }
 
-.cell.circle .container,
-.cell.square .container {
+.cell.circle.auto-size .container,
+.cell.square.auto-size .container {
 	--cell-width: calc((100vw - var(--gap)) / var(--grid-columns) - var(--gap) - var(--inset) * 2);
 	--cell-height: calc((100vh - var(--gap)) / var(--grid-rows) - var(--gap) - var(--inset) * 2);
 	width: var(--cell-height);
