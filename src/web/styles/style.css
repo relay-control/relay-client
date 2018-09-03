@@ -94,6 +94,10 @@
 	--offset-y: 0;
 }
 
+.label.text {
+	z-index: 1;
+}
+
 .slider .label {
 	--parent:container;
 }
