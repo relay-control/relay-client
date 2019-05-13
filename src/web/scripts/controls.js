@@ -63,7 +63,7 @@ class Button extends Control {
 	activate() {
 		this.addClass('active')
 		if (this.action) {
-			if (this.action.type === 'key' || this.action.type === 'button' || this.action.type === 'macro') {
+			if (this.action.type === 'key' || this.action.type === 'button' || this.action.type === 'macro' || this.action.type === 'command') {
 				recon.sendInput({
 					type: this.action.type,
 					deviceID: this.action.device,
@@ -71,6 +71,8 @@ class Button extends Control {
 					button: this.action.button,
 					state: true,
 					actions: this.action.action,
+					command: this.action.command,
+					args: this.action.args,
 				})
 			}
 		}
