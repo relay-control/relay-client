@@ -115,9 +115,9 @@
 
 input[type=range] {
 	-webkit-appearance: none;
-	background: none !important;
-	width: 100% !important;
-	margin: 0 !important;
+	background: none;
+	width: 100%;
+	margin: 0;
 }
 
 input[type=range]:focus {

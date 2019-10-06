@@ -113,7 +113,7 @@ class Panel {
 	}
 	
 	show() {
-		Promise.all(this.assets)
+		Promise.allSettled(this.assets)
 		 .then(() => {
 			let menu = document.getElementById('menu')
 			menu.style.display = 'none'
@@ -145,6 +145,7 @@ class Panel {
 			let img = new Image()
 			img.src = image
 			img.onload = () => resolve()
+			img.onerror = () => reject()
 		}))
 	}
 	
@@ -365,19 +366,6 @@ function buildPanel(panel) {
 					valueLabel.setText("50%")
 					c.valueLabel = valueLabel
 				}
-				
-				if (panel.templates) {
-					for (let [template, tag] of panel.templates) {
-						// map each template to a CSS class
-						let selector = template.name
-						template.tag = tag
-						if (tag !== 'Control') selector += '.' + tag.toLowerCase()
-						let style = new TemplateStyle2(selector, c)
-						style.apply(template)
-					}
-				}
-				
-				// c.apply(control)
 			}
 		}
 	}

@@ -268,37 +268,3 @@ class ControlStyle extends Style {
 		// this.control = control.control
 	}
 }
-
-class TemplateStyle2 extends TemplateStyle {
-	constructor(template, parent) {
-		super(template)
-		this.parent = parent
-	}
-	
-	apply(style) {
-		super.apply(style)
-		
-		if (style.valueLabel) {
-			let valueLabelStyle = new ValueLabelStyle(this)
-			valueLabelStyle.apply(style.valueLabel)
-		}
-		
-		if (style.thumb) {
-			let thumbStyle = new SliderThumbStyle(this.parent)
-			thumbStyle.apply(style.thumb)
-		}
-		
-		if (style.track) {
-			let trackStyle = new SliderTrackStyle(this.parent)
-			trackStyle.apply(style.track)
-		}
-	}
-	
-	getContainerStyle() {
-		return this.parent.getStyleRule(`${this.selector} .container`)
-	}
-	
-	getControlStyle() {
-		return this.parent.getStyleRule(`${this.selector} .control`)
-	}
-}
