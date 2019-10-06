@@ -1,7 +1,5 @@
 class EventEmitter {
-	constructor() {
-		this.events = {}
-	}
+	events = {}
 
 	on(event, listener) {
 		if (typeof this.events[event] !== 'object') {

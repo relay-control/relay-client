@@ -105,11 +105,12 @@ function loadAudio(url) {
 }
 
 class Panel {
+	id = 1
+	views = []
+	assets = []
+	
 	constructor() {
 		this.element = document.getElementById('panel')
-		this.id = 1
-		this.views = []
-		this.assets = []
 	}
 	
 	show() {
