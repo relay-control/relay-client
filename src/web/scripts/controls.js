@@ -24,12 +24,12 @@ class Control extends ControlStyle {
 		this.area.classList.remove(className)
 	}
 	
-	setRow(row) {
-		this.area.style.setProperty('--row', row)
+	set row(row) {
+		this.setAreaStyle('--row', row)
 	}
 	
-	setColumn(column) {
-		this.area.style.setProperty('--column', column)
+	set column(column) {
+		this.setAreaStyle('--column', column)
 	}
 	
 	createTextLabel() {
@@ -49,6 +49,13 @@ class Control extends ControlStyle {
 }
 
 class Button extends Control {
+	static actionTypes = [
+		'key',
+		'button',
+		'macro',
+		'command',
+	]
+	
 	constructor(panel) {
 		super(panel)
 		this.control = document.createElement('button')
@@ -62,38 +69,36 @@ class Button extends Control {
 	
 	activate() {
 		this.addClass('active')
-		if (this.action) {
-			if (this.action.type === 'key' || this.action.type === 'button' || this.action.type === 'macro' || this.action.type === 'command') {
-				recon.sendInput({
-					type: this.action.type,
-					deviceID: this.action.device,
-					key: this.action.key,
-					button: this.action.button,
-					state: true,
-					actions: this.action.action,
-					command: this.action.command,
-					args: this.action.args,
-				})
-			}
+		if (!this.action) return
+		if (Button.actionTypes.includes(this.action.type)) {
+			recon.sendInput({
+				type: this.action.type,
+				deviceID: this.action.device,
+				key: this.action.key,
+				button: this.action.button,
+				state: true,
+				actions: this.action.action,
+				command: this.action.command,
+				args: this.action.args,
+			})
 		}
 	}
 	
 	deactivate() {
 		this.removeClass('active')
-		if (this.action) {
-			if (this.action.type === 'key' || this.action.type === 'button') {
-				recon.sendInput({
-					type: this.action.type,
-					deviceID: this.action.device,
-					key: this.action.key,
-					button: this.action.button,
-					state: false,
-					actions: this.action.action,
-				})
-			}
-			if (this.action.type === 'view') {
-				this.panel.setView(this.action.view)
-			}
+		if (!this.action) return
+		if (this.action.type === 'key' || this.action.type === 'button') {
+			recon.sendInput({
+				type: this.action.type,
+				deviceID: this.action.device,
+				key: this.action.key,
+				button: this.action.button,
+				state: false,
+				actions: this.action.action,
+			})
+		}
+		if (this.action.type === 'view') {
+			this.panel.setView(this.action.view)
 		}
 	}
 	
@@ -235,17 +240,17 @@ class LabelStyle extends SubStyle {
 		])
 	}
 	
-	getContainerStyle() {
+	get containerStyle() {
 		return this.getStyleRule(`${this.selector}`)
 	}
 	
-	getControlStyle() {
+	get controlStyle() {
 		return this.getStyleRule(`${this.selector} span`)
 	}
 	
 	set anchor(anchor) {
 		super.anchor = anchor
-		this.areaStyle.setProperty('--parent', anchor.parent)
+		this.setAreaStyle('--parent', anchor.parent)
 	}
 	
 	set color(color) {
@@ -292,20 +297,14 @@ class ValueLabelStyle extends LabelStyle {
 class ActiveLabelStyle extends SubStyle {
 	constructor(parent) {
 		super('.active .label', parent)
+		// this.containerSelector = `${this.selector}`
+		this.controlSelector = `${this.selector}`
 	}
 	
 	get styleProperties() {
 		return super.styleProperties.concat([
 			'font',
 		])
-	}
-	
-	// getContainerStyle() {
-		// return getStyleRule(`${this.selector}`)
-	// }
-	
-	getControlStyle() {
-		return getStyleRule(`${this.selector}`)
 	}
 	
 	set font(font) {
@@ -326,11 +325,11 @@ class SliderThumbStyle extends SubStyle {
 		super('::-webkit-slider-thumb', parent)
 	}
 	
-	getContainerStyle() {
+	get containerStyle() {
 		return this.parent.getStyleRule(`${this.selector}`)
 	}
 	
-	getControlStyle() {
+	get controlStyle() {
 		return this.parent.getStyleRule(`${this.selector}`)
 	}
 	
@@ -344,11 +343,11 @@ class SliderTrackStyle extends SubStyle {
 		super('::-webkit-slider-runnable-track', parent)
 	}
 	
-	getContainerStyle() {
+	get containerStyle() {
 		return this.parent.getStyleRule(`${this.selector}`)
 	}
 	
-	getControlStyle() {
+	get controlStyle() {
 		return this.parent.getStyleRule(`${this.selector}`)
 	}
 	

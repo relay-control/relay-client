@@ -77,21 +77,6 @@ function parse(xml) {
 	return data
 }
 
-let stylesheet
-
-let rules = {}
-
-function getStyleRule(selector) {
-	let rule = rules[selector]
-	if (!rule) {
-		let index = stylesheet.rules.length
-		stylesheet.insertRule(`${selector} {}`, index)
-		rule = stylesheet.rules[index].style
-		rules[selector] = rule
-	}
-	return rule
-}
-
 
 function loadAudio(url) {
 	return new Promise((resolve, reject) => {
@@ -223,14 +208,28 @@ class View {
 	}
 }
 
-let styleLink
+class Stylesheet {
+	static create() {
+		Stylesheet.sheet = new CSSStyleSheet()
+		document.adoptedStyleSheets = [Stylesheet.sheet]
+		Stylesheet.rules = {}
+	}
+	
+	static getRule(selector) {
+		let rule = Stylesheet.rules[selector]
+		if (!rule) {
+			let index = Stylesheet.sheet.rules.length
+			Stylesheet.sheet.insertRule(`${selector} {}`, index)
+			rule = Stylesheet.sheet.rules[index].style
+			Stylesheet.rules[selector] = rule
+		}
+		return rule
+	}
+}
 
 function buildPanel(panel) {
 	// create a separate stylesheet for dynamic style rules
-	let link = document.createElement('style')
-	document.head.appendChild(link)
-	stylesheet = link.sheet
-	styleLink = link
+	Stylesheet.create()
 	
 	let p = new Panel()
 	p.element.style = null
@@ -291,14 +290,10 @@ function buildPanel(panel) {
 			}
 			Object.assign(style, control)
 			
-			if (control.row)
-				c.setRow(control.row)
-			if (control.column)
-				c.setColumn(control.column)
-			if (style.rowSpan)
-				c.setRowSpan(style.rowSpan)
-			if (style.columnSpan)
-				c.setColumnSpan(style.columnSpan)
+			if (control.row) c.row = control.row
+			if (control.column) c.column = control.column
+			if (style.rowSpan) c.rowSpan = style.rowSpan
+			if (style.columnSpan) c.columnSpan = style.columnSpan
 			
 			c.addClass(tag.toLowerCase())
 			
@@ -412,12 +407,10 @@ function loadPanel(panelName) {
 		let panel = document.getElementById('panel')
 		while (panel.lastChild)
 			panel.lastChild.remove()
-		if (stylesheet) {
-			// while (stylesheet.cssRules.length > 0)
-				// stylesheet.deleteRule(stylesheet.cssRules.length - 1)
-			styleLink.remove()
-		}
-		rules = {}
+		// if (stylesheet) {
+			// document.adoptedStyleSheets = []
+		// }
+		// rules = {}
 	// }
 	
 	menuViewModel.currentPanel(panelName)

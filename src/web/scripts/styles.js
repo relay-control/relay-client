@@ -76,8 +76,22 @@ function setFlexPosition(style, position) {
 }
 
 class Style {
+	get styleProperties() {
+		return [
+			'anchor',
+			'size',
+			'width',
+			'height',
+			'inset',
+			'background',
+			'border',
+			'shadows',
+		]
+	}
+	
 	constructor(selector) {
 		this.selector = selector
+		this.controlSelector = `${this.selector} .control`
 	}
 	
 	apply(style) {
@@ -101,38 +115,20 @@ class Style {
 		activeStyle.apply(style)
 	}
 	
-	get styleProperties() {
-		return [
-			'anchor',
-			'size',
-			'width',
-			'height',
-			'inset',
-			'background',
-			'border',
-			'shadows',
-		]
-	}
-	
 	getStyleRule(selector) {
-		return getStyleRule(selector)
+		return Stylesheet.getRule(selector)
 	}
 	
 	get areaStyle() {
 		return this.getStyleRule(`${this.selector}`)
 	}
 	
-	getContainerStyle() {
+	get containerStyle() {
 		return this.getStyleRule(`${this.selector} .container`)
 	}
 	
 	get controlStyle() {
-		return this.getControlStyle()
-	}
-	
-	getControlStyle() {
-		return this.getStyleRule(`${this.selector} .control`)
-		// return this.controlStyle
+		return this.getStyleRule(this.controlSelector)
 	}
 	
 	setAreaStyle(property, value) {
@@ -140,20 +136,19 @@ class Style {
 	}
 	
 	setContainerStyle(property, value) {
-		let style = this.getContainerStyle()
-		style.setProperty(property, value)
+		this.containerStyle.setProperty(property, value)
 	}
 	
 	setControlStyle(property, value) {
 		this.controlStyle.setProperty(property, value)
 	}
 	
-	setRowSpan(span) {
-		this.area.style.setProperty('--row-span', span)
+	set rowSpan(span) {
+		this.setAreaStyle('--row-span', span)
 	}
 	
-	setColumnSpan(span) {
-		this.area.style.setProperty('--column-span', span)
+	set columnSpan(span) {
+		this.setAreaStyle('--column-span', span)
 	}
 	
 	set anchor(anchor) {
