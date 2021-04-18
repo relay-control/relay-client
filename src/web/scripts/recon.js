@@ -69,8 +69,7 @@ class Recon extends EventEmitter {
 		if (!response.ok)
 			throw new FileNotFoundError()
 		let str = await response.text()
-		let domParser = new window.DOMParser()
-		return domParser.parseFromString(str, 'text/xml')
+		return parseXml(text).panel
 	}
 	
 	getAssetPath(file) {

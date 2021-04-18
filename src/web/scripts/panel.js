@@ -298,15 +298,7 @@ function loadPanel(panelName) {
 	saveSetting('lastPanel', panelName)
 	
 	recon.getPanel(panelName)
-	 .then(response => {
-		if (response.firstChild.nodeName === 'html') {
-			menuViewModel.modalDialog.show("Unable to parse panel XML")
-			menuViewModel.currentPanel(null)
-			return
-		}
-		
-		let {panel} = parse(response)
-		
+	 .then(panel => {
 		// console.log(panel)
 		buildPanel(panel)
 	 })
