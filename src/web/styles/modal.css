@@ -1,0 +1,98 @@
+dialog {
+	font-family: 'Open Sans';
+	border: none;
+	padding: 0;
+	top: 0;
+	bottom: 0;
+	border-radius: var(--border-radius);
+	min-width: 300px;
+}
+
+dialog::backdrop {
+	background: rgba(0, 0, 0, 0.85);
+}
+
+dialog header {
+	font-size: 1.3rem;
+	font-weight: bold;
+	line-height: 1.28571429em;
+	padding: 1.25rem 1.5rem;
+	border-bottom: var(--border);
+}
+
+dialog .content {
+	padding: 1.5rem;
+}
+
+dialog .content p:first-child {
+	margin-top: 0;
+}
+
+dialog .content p:last-child {
+	margin-bottom: 0;
+}
+
+dialog .buttons {
+	background: #f9fafb;
+	padding: 1rem;
+	border-top: var(--border);
+	display: flex;
+	justify-content: flex-end;
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+}
+
+dialog .buttons button {
+	margin-left: 0.75em;
+	position: relative;
+}
+
+dialog div.input {
+	margin-bottom: 1em;
+	
+	font-size: 1em;
+	display: flex;
+	color: rgba(0, 0, 0, 0.87);
+}
+
+dialog div.input:last-child {
+	margin: 0;
+}
+/* 
+dialog label {
+	font-size: 1rem;
+}
+ */
+dialog .input label {
+	line-height: 1;
+	background-color: #e8e8e8;
+	padding: .78571429em .833em;
+	color: rgba(0, 0, 0, 0.6);
+	font-weight: bold;
+	border-top-left-radius: var(--border-radius);
+	border-bottom-left-radius: var(--border-radius);
+
+	flex: 0 0 auto;
+	font-size: 1em;
+	width: 4em;
+}
+
+dialog .input input {
+	margin: 0;
+	flex: 1 0 auto;
+	outline: 0;
+	line-height: 1.21428571em;
+	font-family: inherit;
+	padding: .67857143em 1em;
+	color: rgba(0, 0, 0, 0.87);
+	border: var(--border);
+	border-left-color: transparent;
+	border-top-right-radius: var(--border-radius);
+	border-bottom-right-radius: var(--border-radius);
+	transition: border-color .1s ease;
+}
+
+dialog .input input:focus {
+	border-color: #85b7d9;
+	color: rgba(0, 0, 0, 0.8);
+}
