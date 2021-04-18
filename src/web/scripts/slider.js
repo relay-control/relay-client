@@ -1,7 +1,7 @@
 class Slider extends Control {
-	constructor(panel) {
-		super(panel)
-		
+	connectedCallback() {
+		super.connectedCallback()
+
 		this.control = document.createElement('input')
 		this.control.type = 'range'
 		this.control.id = this.id
@@ -66,3 +66,5 @@ class Slider extends Control {
 		},
 	}
 }
+
+customElements.define('panel-slider', Slider)

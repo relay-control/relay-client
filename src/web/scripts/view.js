@@ -31,8 +31,6 @@ class View extends HTMLElement {
 			if (style.rowSpan) control.rowSpan = style.rowSpan
 			if (style.columnSpan) control.columnSpan = style.columnSpan
 			
-			control.addClass(tag.toLowerCase())
-			
 			if ('inherits' in controlData)
 				control.addClass(controlData.inherits)
 			
@@ -101,14 +99,14 @@ class View extends HTMLElement {
 	createControl(type, data) {
 		switch (type) {
 			case 'Button':
-				var control = new Button(this)
+				var control = document.createElement('panel-button')
 				control.mode = data.mode
 				break
 			case 'Slider':
-				var control = new Slider(this)
+				var control = document.createElement('panel-slider')
 				break
 		}
-		this.appendChild(control.cell)
+		this.appendChild(control)
 		return control
 	}
 	

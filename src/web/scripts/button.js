@@ -6,8 +6,8 @@ class Button extends Control {
 		'command',
 	]
 	
-	constructor(panel) {
-		super(panel)
+	connectedCallback() {
+		super.connectedCallback()
 		this.control = document.createElement('button')
 		this.control.classList.add('control')
 		this.container.appendChild(this.control)
@@ -96,3 +96,5 @@ class Button extends Control {
 		},
 	}
 }
+
+customElements.define('panel-button', Button)

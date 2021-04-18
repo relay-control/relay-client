@@ -6,7 +6,7 @@ class Label extends StylableLabel(Stylable(HTMLElement)) {
 	
 	setParent(parent) {
 		if (parent === 'container') {
-			this.parent.cell.appendChild(this)
+			this.parent.appendChild(this)
 		} else {
 			this.parent.control.appendChild(this)
 		}
