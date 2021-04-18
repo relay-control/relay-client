@@ -251,13 +251,6 @@ class Style {
 	}
 }
 
-class ControlStyle extends Style {
-	constructor(control) {
-		super('#' + control)
-		// this.control = control.control
-	}
-}
-
 class SubStyle extends Style {
 	constructor(selector, parent) {
 		super(parent.selector + selector)

@@ -144,7 +144,7 @@ function buildPanel(panel) {
 			let selector = template.name
 			if (tag !== 'Control') selector += '.' + tag.toLowerCase()
 			let style = new TemplateStyle(selector)
-			style.apply(template)
+			style.apply('.' + template)
 			if (template.active) {
 				style.applyActive(template.active)
 			}

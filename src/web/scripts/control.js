@@ -1,7 +1,7 @@
-class Control extends ControlStyle {
+class Control extends Style {
 	constructor(panel) {
 		let id = panel.getNextID()
-		super(id)
+		super('#' + id)
 		this.id = id
 		
 		this.panel = panel.parent
