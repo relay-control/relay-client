@@ -100,18 +100,18 @@ class Style {
 		}
 		
 		if (style.textLabel) {
-			let labelStyle = new TextLabelStyle(this)
+			let labelStyle = new LabelStyle('.text')
 			labelStyle.apply(style.textLabel)
 		}
 		
 		if (style.iconLabel) {
-			let labelStyle = new IconLabelStyle(this)
+			let labelStyle = new LabelStyle('.icon')
 			labelStyle.apply(style.iconLabel)
 		}
 	}
 	
 	applyActive(style) {
-		let activeStyle = new ActiveStyle(this)
+		let activeStyle = new SubStyle('.active', this)
 		activeStyle.apply(style)
 	}
 	
@@ -251,12 +251,6 @@ class Style {
 	}
 }
 
-class TemplateStyle extends Style {
-	constructor(template) {
-		super('.' + template)
-	}
-}
-
 class ControlStyle extends Style {
 	constructor(control) {
 		super('#' + control)
@@ -320,24 +314,6 @@ class LabelStyle extends SubStyle {
 	}
 }
 
-class TextLabelStyle extends LabelStyle {
-	constructor(parent) {
-		super('.text', parent)
-	}
-}
-
-class IconLabelStyle extends LabelStyle {
-	constructor(parent) {
-		super('.icon', parent)
-	}
-}
-
-class ValueLabelStyle extends LabelStyle {
-	constructor(parent) {
-		super('.value', parent)
-	}
-}
-
 class ActiveLabelStyle extends SubStyle {
 	constructor(parent) {
 		super('.active .label', parent)
@@ -355,12 +331,6 @@ class ActiveLabelStyle extends SubStyle {
 		this.setControlStyle('color', parseColor(font.color, font.alpha))
 		if (font.family) this.setControlStyle('font-family', font.family)
 		this.setControlStyle('font-size', parseLength(font.size))
-	}
-}
-
-class ActiveStyle extends SubStyle {
-	constructor(parent) {
-		super('.active', parent)
 	}
 }
 

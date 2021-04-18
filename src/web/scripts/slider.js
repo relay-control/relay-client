@@ -28,7 +28,7 @@ class Slider extends Control {
 		super.apply(style)
 		
 		if (style.valueLabel) {
-			let valueLabelStyle = new ValueLabelStyle(this)
+			let valueLabelStyle = new LabelStyle('.value')
 			valueLabelStyle.apply(style.valueLabel)
 		}
 		
