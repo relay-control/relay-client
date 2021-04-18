@@ -210,3 +210,71 @@ document.addEventListener('DOMContentLoaded', () => {
 		menuViewModel.connectDialog.show()
 	}
 })
+
+function loadPanel(panelName) {
+	// if (panelName !== currentPanel) {
+		let panel = document.getElementById('panel')
+		while (panel.lastChild)
+			panel.lastChild.remove()
+		// if (stylesheet) {
+			// document.adoptedStyleSheets = []
+		// }
+		// rules = {}
+	// }
+	
+	menuViewModel.currentPanel(panelName)
+	recon.currentPanel = panelName
+	saveSetting('lastPanel', panelName)
+	
+	recon.getPanel(panelName)
+	 .then(panelData => {
+		// console.log(panelData)
+		let panel = new Panel()
+		panel.build(panelData)
+		
+		// request devices
+		recon.connect(Object.keys(panel.usedDeviceResources))
+		 .then(devices => {
+			panel.setView(1)
+			
+			panel.show()
+			
+			let warnings = []
+			for (let device of devices) {
+				if (!device.acquired) {
+					warnings.push(`Unable to acquire device ${device.id}`)
+				} else {
+					if (usedVJoyDeviceButtons[device.id] > device.numButtons) {
+						warnings.push(`Device ${device.id} has ${device.numButtons} buttons but this panel uses ${usedVJoyDeviceButtons[device.id]}`)
+					}
+					if (usedVJoyDeviceAxes[device.id]) {
+						for (let axis of usedVJoyDeviceAxes[device.id]) {
+							if (!device.axes[axis]) {
+								warnings.push(`Requested axis ${axis} not enabled on device ${device.id}`)
+							}
+						}
+					}
+				}
+			}
+			if (warnings.length > 0) {
+				menuViewModel.deviceInfoDialog.data(warnings)
+				menuViewModel.deviceInfoDialog.show()
+			}
+		 })
+		 .catch(err => {
+			console.error(err)
+			menuViewModel.modalDialog.show(`Connection refused`)
+			menuViewModel.currentPanel(null)
+		 })
+	 })
+	 .catch(err => {
+		if (err instanceof FileNotFoundError) {
+			menuViewModel.modalDialog.show(`Unable to load panel ${panelName}.`)
+			menuViewModel.currentPanel(null)
+		} else {
+			console.error(err)
+			menuViewModel.modalDialog.show(`Connection refused`)
+			menuViewModel.currentPanel(null)
+		}
+	 })
+}
