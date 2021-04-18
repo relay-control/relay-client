@@ -32,20 +32,20 @@ class Control extends Style {
 	}
 	
 	createTextLabel() {
-		let textLabel = new TextLabel(this)
-		this.cell.appendChild(textLabel.element)
+		let textLabel = document.createElement('text-label')
+		this.cell.appendChild(textLabel)
 		return textLabel
 	}
 	
 	createIconLabel() {
-		let iconLabel = new IconLabel(this)
-		this.cell.appendChild(iconLabel.element)
+		let iconLabel = document.createElement('icon-label')
+		this.cell.appendChild(iconLabel)
 		return iconLabel
 	}
 	
 	createImageLabel() {
-		let imageLabel = new ImageLabel(this)
-		this.cell.appendChild(imageLabel.element)
+		let imageLabel = document.createElement('image-label')
+		this.cell.appendChild(imageLabel)
 		return imageLabel
 	}
 }

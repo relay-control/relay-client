@@ -1,25 +1,27 @@
-class Label {
-	constructor(parent) {
-		this.element = document.createElement('div')
-		this.element.classList.add('label')
-		this.parent = parent
+class Label extends StylableLabel(Stylable(HTMLElement)) {
+	connectedCallback() {
+		this.classList.add('label')
+		this.parent = this.parentNode
 	}
 	
 	setParent(parent) {
 		if (parent === 'container') {
-			this.parent.cell.appendChild(this.element)
+			this.parent.cell.appendChild(this)
 		} else {
-			this.parent.control.appendChild(this.element)
+			this.parent.control.appendChild(this)
 		}
 	}
 }
 
 class ValueLabel extends Label {
-	constructor(parent) {
-		super(parent)
-		this.element.classList.add('value')
+	constructor() {
+		super()
 		this.span = document.createElement('span')
-		this.element.appendChild(this.span)
+	}
+
+	connectedCallback() {
+		super.connectedCallback()
+		this.appendChild(this.span)
 		parent.value = this
 	}
 	
@@ -28,12 +30,17 @@ class ValueLabel extends Label {
 	}
 }
 
+customElements.define('value-label', ValueLabel)
+
 class TextLabel extends Label {
-	constructor(parent) {
-		super(parent)
-		this.element.classList.add('text')
+	constructor() {
+		super()
 		this.span = document.createElement('span')
-		this.element.appendChild(this.span)
+	}
+
+	connectedCallback() {
+		super.connectedCallback()
+		this.appendChild(this.span)
 	}
 	
 	setText(text) {
@@ -41,13 +48,18 @@ class TextLabel extends Label {
 	}
 }
 
+customElements.define('text-label', TextLabel)
+
 class IconLabel extends Label {
 	constructor(parent) {
 		super(parent)
-		this.element.classList.add('icon')
 		this.icon = document.createElement('span')
 		this.icon.classList.add('fa', 'fa-fw', 'fa-2x')
-		this.element.appendChild(this.icon)
+	}
+
+	connectedCallback() {
+		super.connectedCallback()
+		this.appendChild(this.icon)
 	}
 	
 	setIcon(icon) {
@@ -55,15 +67,22 @@ class IconLabel extends Label {
 	}
 }
 
+customElements.define('icon-label', IconLabel)
+
 class ImageLabel extends Label {
 	constructor(parent) {
 		super(parent)
-		this.element.classList.add('image')
 		this.image = document.createElement('img')
-		this.element.appendChild(this.image)
+	}
+
+	connectedCallback() {
+		super.connectedCallback()
+		this.appendChild(this.image)
 	}
 	
 	setImage(image) {
-		this.image.src = recon.getAssetPath(image)
+		this.image.src = getAssetPath(image)
 	}
 }
+
+customElements.define('image-label', ImageLabel)

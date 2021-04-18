@@ -53,7 +53,7 @@ function parseColor(color, alpha) {
 	return color
 }
 
-class Style {
+Stylable = (base = Object) => class extends base {
 	get styleProperties() {
 		return [
 			'anchor',
@@ -68,6 +68,7 @@ class Style {
 	}
 	
 	constructor(selector) {
+		super()
 		this.selector = selector
 		this.controlSelector = `${this.selector} .control`
 	}
@@ -229,6 +230,8 @@ class Style {
 	}
 }
 
+class Style extends Stylable() { }
+
 class SubStyle extends Style {
 	constructor(selector, parent) {
 		super(parent.selector + selector)
@@ -236,11 +239,7 @@ class SubStyle extends Style {
 	}
 }
 
-class LabelStyle extends SubStyle {
-	constructor(selector, parent) {
-		super(' .label' + selector, parent)
-	}
-	
+StylableLabel = (base = Object) => class extends base {
 	get styleProperties() {
 		return super.styleProperties.concat([
 			'color',
@@ -282,6 +281,12 @@ class LabelStyle extends SubStyle {
 			textShadows.push(textShadow.join(' '))
 		}
 		this.setControlStyle('text-shadow', textShadows.join(', '))
+	}
+}
+
+class LabelStyle extends (StylableLabel(SubStyle)) {
+	constructor(selector, parent) {
+		super(' ' + selector, parent)
 	}
 }
 
