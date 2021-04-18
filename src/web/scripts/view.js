@@ -19,7 +19,7 @@ class View extends HTMLElement {
 			let style = {}
 			if (this.templates) {
 				for (let [template, tag2] of this.templates) {
-					if ((tag2 === 'Control' || tag2 === tag) && template.name === controlData.inherits) {
+					if ((tag2 === 'Control' || tag2 === tag) && (!controlData.inherits || template.name === controlData.inherits)) {
 						Object.assign(style, JSON.parse(JSON.stringify(template)))
 					}
 				}
@@ -35,8 +35,6 @@ class View extends HTMLElement {
 			
 			if ('inherits' in controlData)
 				control.addClass(controlData.inherits)
-			else
-				control.addClass('default')
 			
 			if (style.square) control.addClass('square')
 			if (style.circle) control.addClass('circle')

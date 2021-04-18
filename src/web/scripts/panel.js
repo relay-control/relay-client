@@ -50,10 +50,10 @@ class Panel {
 		// map each template to a CSS class
 		if (panel.templates) {
 			for (let [template, tag] of panel.templates) {
-				let selector = template.name
-				if (tag !== 'Control') selector += '.' + tag.toLowerCase()
-				let style = new TemplateStyle(selector)
-				style.apply('.' + template)
+				let selector = template.name ? '.' + template.name : ''
+				selector = ((tag !== 'Control') ? 'panel-' + tag.toLowerCase() : '.cell') + selector
+				let style = new Style(selector)
+				style.apply(template)
 				if (template.active) {
 					style.applyActive(template.active)
 				}
