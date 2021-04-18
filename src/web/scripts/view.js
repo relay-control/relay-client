@@ -1,11 +1,4 @@
-class View {
-	constructor(panel) {
-		this.element = document.createElement('div')
-		this.element.classList.add('view')
-		panel.element.appendChild(this.element)
-		this.parent = panel
-	}
-	
+class View extends HTMLElement {
 	// show() {
 		// Promise.all(this.assets)
 		 // .then(() => {
@@ -17,13 +10,15 @@ class View {
 	// }
 
 	build(view) {
+		let usedVJoyDevices = {}
+		
 		for (let [controlData, tag] of view) {
-			let control = v.createControl(tag, controlData)
+			let control = this.createControl(tag, controlData)
 			
 			// manually "inherit" properties that won't be applied using CSS from relevant templates
 			let style = {}
-			if (panel.templates) {
-				for (let [template, tag2] of panel.templates) {
+			if (this.templates) {
+				for (let [template, tag2] of this.templates) {
 					if ((tag2 === 'Control' || tag2 === tag) && template.name === controlData.inherits) {
 						Object.assign(style, JSON.parse(JSON.stringify(template)))
 					}
@@ -103,10 +98,6 @@ class View {
 		this.usedDevices = usedVJoyDevices
 	}
 	
-	addControl(control) {
-		this.element.appendChild(control.area)
-	}
-	
 	createControl(type, data) {
 		switch (type) {
 			case 'Button':
@@ -117,6 +108,7 @@ class View {
 				var control = new Slider(this)
 				break
 		}
+		this.appendChild(control.cell)
 		return control
 	}
 	
@@ -124,3 +116,5 @@ class View {
 		return 'control' + this.parent.id++
 	}
 }
+
+customElements.define('panel-view', View)

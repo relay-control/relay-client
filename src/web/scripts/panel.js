@@ -64,10 +64,11 @@ class Panel {
 		let usedVJoyDeviceButtons = {}
 		let usedVJoyDeviceAxes = {}
 		
-		for (let [view] of panel.views) {
-			let v = this.createView(view)
-			v.build()
-			this.usedDeviceResources = v.usedDevices
+		for (let [viewProperties] of panel.views) {
+			let view = this.createView()
+			view.templates = this.templates
+			view.build(viewProperties)
+			this.usedDeviceResources = view.usedDevices
 		}
 		
 		// request devices
@@ -117,7 +118,8 @@ class Panel {
 	}
 	
 	createView() {
-		let view = new View(this)
+		let view = document.createElement('panel-view')
+		this.element.appendChild(view)
 		this.views.push(view)
 		return view
 	}

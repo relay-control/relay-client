@@ -9,7 +9,6 @@ class Control extends Style {
 		this.cell = document.createElement('div')
 		this.cell.classList.add('cell')
 		this.cell.id = this.id
-		panel.addControl(this)
 		
 		this.container = document.createElement('div')
 		this.container.classList.add('container')
