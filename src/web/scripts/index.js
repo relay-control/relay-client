@@ -278,3 +278,5 @@ function loadPanel(panelName) {
 		}
 	 })
 }
+
+window.getAssetPath = (file) => recon.getAssetPath(file)

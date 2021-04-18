@@ -24,15 +24,15 @@ class Panel {
 		
 		this.element.style = null
 		this.element.style.display = 'none'
-		if (panel.background)
-			this.background = panel.background
-		this.rows = panel.grid.rows
-		this.columns = panel.grid.columns
+		if (panelData.background)
+			this.background = panelData.background
+		this.rows = panelData.grid.rows
+		this.columns = panelData.grid.columns
 		
 		/* validate grid size and control placement */
 		
-		if (panel.assets) {
-			for (let [asset, type] of panel.assets) {
+		if (panelData.assets) {
+			for (let [asset, type] of panelData.assets) {
 				switch (type) {
 					case 'Image':
 						this.loadImage(asset.file)
@@ -48,8 +48,8 @@ class Panel {
 		}
 		
 		// map each template to a CSS class
-		if (panel.templates) {
-			for (let [template, tag] of panel.templates) {
+		if (panelData.templates) {
+			for (let [template, tag] of panelData.templates) {
 				let selector = template.name ? '.' + template.name : ''
 				selector = ((tag !== 'Control') ? 'panel-' + tag.toLowerCase() : '.cell') + selector
 				let style = new Style(selector)
@@ -60,7 +60,7 @@ class Panel {
 			}
 		}
 		
-		for (let [viewProperties] of panel.views) {
+		for (let [viewProperties] of panelData.views) {
 			let view = this.createView()
 			view.templates = this.templates
 			view.build(viewProperties)
@@ -68,14 +68,12 @@ class Panel {
 		}
 	}
 	
-	show() {
-		Promise.allSettled(this.assets)
-		 .then(() => {
-			let menu = document.getElementById('menu')
-			menu.style.display = 'none'
-			
-			this.element.style.display = 'block'
-		 })
+	async show() {
+		await Promise.allSettled(this.assets)
+		let menu = document.getElementById('menu')
+		menu.style.display = 'none'
+		
+		this.element.style.display = 'block'
 	}
 	
 	createView() {
@@ -90,12 +88,12 @@ class Panel {
 		view--
 		for (let i = 0; i < this.views.length; i++) {
 			let isViewActive = (i == view)
-			this.views[i].element.classList.toggle('active', isViewActive)
+			this.views[i].classList.toggle('active', isViewActive)
 		}
 	}
 
 	loadImage(file) {
-		let url = recon.getAssetPath(file)
+		let url = getAssetPath(file)
 		this.assets.push(new Promise((resolve, reject) => {
 			let img = new Image()
 			img.src = url
@@ -105,14 +103,14 @@ class Panel {
 	}
 	
 	loadFont(family, file) {
-		let url = recon.getAssetPath(file)
+		let url = getAssetPath(file)
 		let font = new FontFace(family, `url(${url})`)
 		document.fonts.add(font)
 		this.assets.push(font.load())
 	}
 	
 	loadScript(file) {
-		let url = recon.getAssetPath(file)
+		let url = getAssetPath(file)
 		this.assets.push(new Promise((resolve, reject) => {
 			let script = document.createElement('script')
 			script.src = url
@@ -132,7 +130,7 @@ class Panel {
 	set background(background) {
 		this.element.style.backgroundColor = background.color
 		if (background.image) {
-			this.element.style.backgroundImage = `url(${recon.getAssetPath(background.image)})`
+			this.element.style.backgroundImage = `url(${getAssetPath(background.image)})`
 			this.element.style.backgroundSize = 'cover'
 			this.element.style.backgroundPosition = 'center'
 		}

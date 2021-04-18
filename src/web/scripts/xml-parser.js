@@ -1,3 +1,5 @@
+const domParser = new DOMParser()
+
 const collections = [
 	"Assets",
 	"Templates",
