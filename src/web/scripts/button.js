@@ -21,35 +21,24 @@ class Button extends Control {
 		this.addClass('active')
 		if (!this.action) return
 		if (Button.actionTypes.includes(this.action.type)) {
-			recon.sendInput({
-				type: this.action.type,
-				deviceID: this.action.device,
-				key: this.action.key,
-				button: this.action.button,
-				state: true,
-				actions: this.action.action,
-				command: this.action.command,
-				args: this.action.args,
+			let event = new CustomEvent('button-activate', {
+				bubbles: true,
+				detail: this.action,
 			})
+			this.control.dispatchEvent(event)
 		}
 	}
 	
 	deactivate() {
 		this.removeClass('active')
 		if (!this.action) return
-		if (this.action.type === 'key' || this.action.type === 'button') {
-			recon.sendInput({
-				type: this.action.type,
-				deviceID: this.action.device,
-				key: this.action.key,
-				button: this.action.button,
-				state: false,
-				actions: this.action.action,
+		//if (this.action.type === 'key' || this.action.type === 'button') {
+			let event = new CustomEvent('button-deactivate', {
+				bubbles: true,
+				detail: this.action,
 			})
-		}
-		if (this.action.type === 'view') {
-			this.panel.setView(this.action.view)
-		}
+			this.control.dispatchEvent(event)
+		//}
 	}
 	
 	press() {

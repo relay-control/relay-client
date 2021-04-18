@@ -9,7 +9,7 @@ function loadAudio(url) {
 	})
 }
 
-class Panel {
+class Panel extends EventTarget {
 	id = 1
 	views = []
 	assets = []
@@ -59,6 +59,21 @@ class Panel {
 				}
 			}
 		}
+
+		this.element.addEventListener('button-activate', e => {
+			let event = new CustomEvent('button-activate', { detail: e.detail })
+			this.dispatchEvent(event)
+		})
+
+		this.element.addEventListener('button-deactivate', e => {
+			let event = new CustomEvent('button-deactivate', { detail: e.detail })
+			this.dispatchEvent(event)
+		})
+
+		this.element.addEventListener('slider-change', e => {
+			let event = new CustomEvent('slider-change', { detail: e.detail })
+			this.dispatchEvent(event)
+		})
 		
 		for (let [viewProperties] of panelData.views) {
 			let view = this.createView()

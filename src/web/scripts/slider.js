@@ -56,12 +56,11 @@ class Slider extends Control {
 				this.valueLabel.setText(e.currentTarget.value + '%')
 			
 			if (this.action) {
-				recon.sendInput({
-					type: 'axis',
-					device: this.action.device,
-					axis: this.action.axis,
-					value: e.currentTarget.value,
+				let event = new CustomEvent('slider-change', {
+					bubbles: true,
+					detail: this.action,
 				})
+				this.control.dispatchEvent(event)
 			}
 		},
 	}

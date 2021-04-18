@@ -231,6 +231,69 @@ function loadPanel(panelName) {
 		// console.log(panelData)
 		let panel = new Panel()
 		panel.build(panelData)
+	
+		panel.addEventListener('button-activate', e => {
+			let action = e.detail
+			let input = { }
+			switch (action.type) {
+				case 'button':
+					input.type = action.type
+					input.deviceId = action.device
+					input.button = action.button
+					input.isPressed = true
+					break
+				case 'key':
+					input.key = action.key
+					input.isPressed = true
+					break
+				case 'macro':
+					input.actions = action.action
+					break
+				default:
+					input.command = action.command
+					input.args = action.args
+					break
+			}
+			recon.sendInput(input)
+		})
+
+		panel.addEventListener('button-deactivate', e => {
+			let action = e.detail
+			let input = { }
+			switch (action.type) {
+				case 'button':
+					input.type = action.type
+					input.deviceId = action.device
+					input.button = action.button
+					input.isPressed = true
+					break
+				case 'key':
+					input.key = action.key
+					input.isPressed = true
+					break
+				case 'macro':
+					input.actions = action.action
+					break
+				case 'command':
+					input.command = action.command
+					input.args = action.args
+					break
+			}
+			recon.sendInput(input)
+			if (action.type === 'view') {
+				panel.setView(action.view)
+			}
+		})
+
+		panel.addEventListener('slider-change', e => {
+			let action = e.detail
+			recon.sendInput({
+				type: 'axis',
+				device: action.device,
+				axis: action.axis,
+				value: e.currentTarget.value,
+			})
+		})
 		
 		// request devices
 		recon.connect(Object.keys(panel.usedDeviceResources))
