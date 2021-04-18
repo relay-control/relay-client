@@ -1,46 +1,6 @@
-class EventEmitter {
-	events = {}
-
-	on(event, listener) {
-		if (typeof this.events[event] !== 'object') {
-			this.events[event] = []
-		}
-
-		this.events[event].push(listener)
-	}
-
-	removeListener(event, listener) {
-		if (typeof this.events[event] === 'object') {
-			let idx = this.events[event].indexOf(listener)
-
-			if (idx > -1) {
-				this.events[event].splice(idx, 1)
-			}
-		}
-	}
-
-	emit(event, ...args) {
-		if (typeof this.events[event] === 'object') {
-			let listeners = this.events[event].slice()
-
-			for (let i = 0; i < listeners.length; i++) {
-				listeners[i](...args)
-			}
-		}
-	}
-
-	once(event, listener) {
-		let g = (...args) => {
-			this.removeListener(event, g)
-			listener(...args)
-		}
-		this.on(event, g)
-	}
-}
-
 class FileNotFoundError extends Error { }
 
-class Recon extends EventEmitter {
+class Recon extends EventTarget {
 	constructor(address, port) {
 		super()
 		
@@ -80,7 +40,7 @@ class Recon extends EventEmitter {
 	connect(devices) {
 		this.ws = new Socket(this.address, this.port, devices)
 		
-		this.ws.on('close', (e, previousState) => this.emit('close', e, previousState))
+		this.ws.on('close', (e, previousState) => this.dispatchEvent(new CustomEvent('close', { detail: previousState })))
 		// this.ws.on('state', (e) => console.log(e))
 		
 		return new Promise((resolve, reject) => {
@@ -98,7 +58,7 @@ class Recon extends EventEmitter {
 	}
 }
 
-class Socket extends EventEmitter {
+class Socket extends EventTarget {
 	constructor(address, port, devices) {
 		super()
 		
@@ -144,7 +104,7 @@ class Socket extends EventEmitter {
 	onmessage(e) {
 		let message = JSON.parse(e.data)
 		// console.log(message)
-		this.emit(message.eventType, message)
+		this.dispatchEvent(new CustomEvent(message.eventType, { detail: message }))
 	}
 	
 	onopen(e) {
@@ -155,7 +115,7 @@ class Socket extends EventEmitter {
 	}
 	
 	onclose(e) {
-		this.emit('close', e, this.previousState)
+		this.dispatchEvent(new CustomEvent('close', { detail: this.previousState }))
 		let previousState = this.previousState
 		this.previousState = this.ws.readyState
 		console.log('WebSocket connection closed')
