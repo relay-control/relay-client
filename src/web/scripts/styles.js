@@ -46,7 +46,7 @@ function parseColor(color, alpha) {
 		if (color.charAt(0) === '#') {
 			var [r, g, b] = toRgbColor(color)
 		} else {
-			var [r, g, b] = colors[color]
+			var [r, g, b] = Colors[color]
 		}
 		color = `rgba(${r}, ${g}, ${b}, ${alpha})`
 	}
@@ -97,7 +97,7 @@ class Style {
 		return Stylesheet.getRule(selector)
 	}
 	
-	get areaStyle() {
+	get cellStyle() {
 		return this.getStyleRule(`${this.selector}`)
 	}
 	
@@ -109,8 +109,8 @@ class Style {
 		return this.getStyleRule(this.controlSelector)
 	}
 	
-	setAreaStyle(property, value) {
-		this.areaStyle.setProperty(property, value)
+	setCellStyle(property, value) {
+		this.cellStyle.setProperty(property, value)
 	}
 	
 	setContainerStyle(property, value) {
@@ -122,16 +122,16 @@ class Style {
 	}
 	
 	set rowSpan(span) {
-		this.setAreaStyle('--row-span', span)
+		this.setCellStyle('--row-span', span)
 	}
 	
 	set columnSpan(span) {
-		this.setAreaStyle('--column-span', span)
+		this.setCellStyle('--column-span', span)
 	}
 	
 	set anchor(anchor) {
 		if (anchor.point) {
-			let style = this.areaStyle
+			let style = this.cellStyle
 			let [vertical, horizontal] = anchor.point.split(/\s+/)
 			if (vertical && horizontal) {
 				style.alignItems = FlexPositions[vertical]
@@ -170,7 +170,7 @@ class Style {
 	}
 	
 	set inset(inset) {
-		this.setAreaStyle('--inset', parseLength(inset))
+		this.setCellStyle('--inset', parseLength(inset))
 	}
 	
 	set background(background) {

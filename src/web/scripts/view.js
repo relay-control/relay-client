@@ -20,6 +20,7 @@ class View {
 		for (let [controlData, tag] of view) {
 			let control = v.createControl(tag, controlData)
 			
+			// manually "inherit" properties that won't be applied using CSS from relevant templates
 			let style = {}
 			if (panel.templates) {
 				for (let [template, tag2] of panel.templates) {
@@ -70,21 +71,6 @@ class View {
 				imageLabel.setImage(imageLabel2.image)
 			}
 			
-			if (controlData.action) {
-				if (controlData.action.device && !usedVJoyDevices.includes(controlData.action.device)) {
-					usedVJoyDevices.push(controlData.action.device)
-					usedVJoyDeviceButtons[controlData.action.device] = 0
-					usedVJoyDeviceAxes[controlData.action.device] = []
-				}
-				if (controlData.action.type === 'button') {
-					usedVJoyDeviceButtons[controlData.action.device] = Math.max(controlData.action.button, usedVJoyDeviceButtons[controlData.action.device])
-				}
-				if (controlData.action.type === 'axis' && !usedVJoyDeviceAxes[controlData.action.device].includes(controlData.action.axis)) {
-					usedVJoyDeviceAxes[controlData.action.device].push(controlData.action.axis)
-				}
-				control.action = controlData.action
-			}
-			
 			if (tag === 'Slider') {
 				// c.setSnapValue(control.snap)
 				control.setSnapValue(50)
@@ -95,7 +81,26 @@ class View {
 					control.valueLabel = valueLabel
 				}
 			}
+			
+			let action = controlData.action
+			if (action) {
+				if (action.device && !(action.device in usedVJoyDevices)) {
+					usedVJoyDevices[action.device] = {
+						buttons: 0,
+						axes: [],
+					}
+				}
+				if (action.type === 'button') {
+					usedVJoyDevices[action.device].buttons = Math.max(action.button, usedVJoyDevices[action.device].buttons)
+				}
+				if (action.type === 'axis' && !usedVJoyDevices[action.device].axes.includes(action.axis)) {
+					usedVJoyDevices[action.device].axes.push(action.axis)
+				}
+				control.action = action
+			}
 		}
+
+		this.usedDevices = usedVJoyDevices
 	}
 	
 	addControl(control) {

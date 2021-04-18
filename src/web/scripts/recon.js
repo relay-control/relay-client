@@ -28,7 +28,7 @@ class Recon extends EventTarget {
 		let response = await fetch(`${this.url.origin}/panels/${panel}/panel.xml`, {cache: 'no-cache'})
 		if (!response.ok)
 			throw new FileNotFoundError()
-		let str = await response.text()
+		let text = await response.text()
 		return parseXml(text).panel
 	}
 	

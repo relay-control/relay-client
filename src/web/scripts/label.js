@@ -7,11 +7,11 @@ class Label {
 	
 	setParent() {
 		// first append the label to the area so that selectors such as control ID and templates are accounted for
-		this.parent.area.appendChild(this.element)
+		this.parent.cell.appendChild(this.element)
 		let computedStyle = window.getComputedStyle(this.element)
 		let parent = computedStyle.getPropertyValue('--parent')
 		if (parent === 'container') {
-			this.parent.area.appendChild(this.element)
+			this.parent.cell.appendChild(this.element)
 		} else {
 			this.parent.control.appendChild(this.element)
 		}

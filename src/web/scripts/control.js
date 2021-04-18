@@ -6,30 +6,30 @@ class Control extends Style {
 		
 		this.panel = panel.parent
 		
-		this.area = document.createElement('div')
-		this.area.classList.add('cell')
-		this.area.id = this.id
+		this.cell = document.createElement('div')
+		this.cell.classList.add('cell')
+		this.cell.id = this.id
 		panel.addControl(this)
 		
 		this.container = document.createElement('div')
 		this.container.classList.add('container')
-		this.area.appendChild(this.container)
+		this.cell.appendChild(this.container)
 	}
 	
 	addClass(className) {
-		this.area.classList.add(className)
+		this.cell.classList.add(className)
 	}
 	
 	removeClass(className) {
-		this.area.classList.remove(className)
+		this.cell.classList.remove(className)
 	}
 	
 	set row(row) {
-		this.setAreaStyle('--row', row)
+		this.setCellStyle('--row', row)
 	}
 	
 	set column(column) {
-		this.setAreaStyle('--column', column)
+		this.setCellStyle('--column', column)
 	}
 	
 	createTextLabel() {

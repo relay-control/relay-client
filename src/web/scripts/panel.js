@@ -33,24 +33,23 @@ class Panel {
 		
 		if (panel.assets) {
 			for (let [asset, type] of panel.assets) {
-				let file = recon.getAssetPath(asset.file)
 				switch (type) {
 					case 'Image':
-						this.loadImage(file)
+						this.loadImage(asset.file)
 						break
 					case 'Font':
-						this.loadFont(asset.family, file)
+						this.loadFont(asset.family, asset.file)
 						break
 					case 'Script':
-						this.loadScript(file)
+						this.loadScript(asset.file)
 						break
 				}
 			}
 		}
 		
+		// map each template to a CSS class
 		if (panel.templates) {
 			for (let [template, tag] of panel.templates) {
-				// map each template to a CSS class
 				let selector = template.name
 				if (tag !== 'Control') selector += '.' + tag.toLowerCase()
 				let style = new TemplateStyle(selector)
@@ -68,10 +67,11 @@ class Panel {
 		for (let [view] of panel.views) {
 			let v = this.createView(view)
 			v.build()
+			this.usedDeviceResources = v.usedDevices
 		}
 		
 		// request devices
-		recon.connect(usedVJoyDevices)
+		recon.connect(Object.keys(this.usedDeviceResources))
 		 .then(devices => {
 			this.setView(1)
 			
@@ -126,33 +126,33 @@ class Panel {
 		// decrement to translate human index to 0 index
 		view--
 		for (let i = 0; i < this.views.length; i++) {
-			if (i == view) {
-				this.views[i].element.classList.add('active')
-			} else {
-				this.views[i].element.classList.remove('active')
-			}
+			let isViewActive = (i == view)
+			this.views[i].element.classList.toggle('active', isViewActive)
 		}
 	}
-	
-	loadImage(image) {
+
+	loadImage(file) {
+		let url = recon.getAssetPath(file)
 		this.assets.push(new Promise((resolve, reject) => {
 			let img = new Image()
-			img.src = image
+			img.src = url
 			img.onload = () => resolve()
 			img.onerror = () => reject()
 		}))
 	}
 	
 	loadFont(family, file) {
-		let font = new FontFace(family, `url(${file})`)
+		let url = recon.getAssetPath(file)
+		let font = new FontFace(family, `url(${url})`)
 		document.fonts.add(font)
 		this.assets.push(font.load())
 	}
 	
 	loadScript(file) {
+		let url = recon.getAssetPath(file)
 		this.assets.push(new Promise((resolve, reject) => {
 			let script = document.createElement('script')
-			script.src = file
+			script.src = url
 			script.onload = () => resolve()
 			this.element.appendChild(script)
 		}))
