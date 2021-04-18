@@ -50,12 +50,14 @@ class View extends HTMLElement {
 			if (textLabel2) {
 				let textLabel = control.createTextLabel()
 				textLabel.setText(textLabel2.text)
+				textLabel.setParent(textLabel2.anchor?.parent)
 			}
 			
 			let iconLabel2 = controlData.iconLabel
 			if (iconLabel2) {
 				let iconLabel = control.createIconLabel()
 				iconLabel.setIcon(iconLabel2.icon)
+				iconLabel.setParent(iconLabel.anchor?.parent)
 			}
 			
 			let imageLabel2 = controlData.imageLabel

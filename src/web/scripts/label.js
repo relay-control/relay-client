@@ -5,11 +5,7 @@ class Label {
 		this.parent = parent
 	}
 	
-	setParent() {
-		// first append the label to the area so that selectors such as control ID and templates are accounted for
-		this.parent.cell.appendChild(this.element)
-		let computedStyle = window.getComputedStyle(this.element)
-		let parent = computedStyle.getPropertyValue('--parent')
+	setParent(parent) {
 		if (parent === 'container') {
 			this.parent.cell.appendChild(this.element)
 		} else {
@@ -24,7 +20,6 @@ class ValueLabel extends Label {
 		this.element.classList.add('value')
 		this.span = document.createElement('span')
 		this.element.appendChild(this.span)
-		this.setParent()
 		parent.value = this
 	}
 	
@@ -39,7 +34,6 @@ class TextLabel extends Label {
 		this.element.classList.add('text')
 		this.span = document.createElement('span')
 		this.element.appendChild(this.span)
-		this.setParent()
 	}
 	
 	setText(text) {
@@ -54,7 +48,6 @@ class IconLabel extends Label {
 		this.icon = document.createElement('span')
 		this.icon.classList.add('fa', 'fa-fw', 'fa-2x')
 		this.element.appendChild(this.icon)
-		this.setParent()
 	}
 	
 	setIcon(icon) {
@@ -68,7 +61,6 @@ class ImageLabel extends Label {
 		this.element.classList.add('image')
 		this.image = document.createElement('img')
 		this.element.appendChild(this.image)
-		this.setParent()
 	}
 	
 	setImage(image) {

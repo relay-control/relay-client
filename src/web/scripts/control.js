@@ -33,16 +33,19 @@ class Control extends Style {
 	
 	createTextLabel() {
 		let textLabel = new TextLabel(this)
+		this.cell.appendChild(textLabel.element)
 		return textLabel
 	}
 	
 	createIconLabel() {
 		let iconLabel = new IconLabel(this)
+		this.cell.appendChild(iconLabel.element)
 		return iconLabel
 	}
 	
 	createImageLabel() {
 		let imageLabel = new ImageLabel(this)
+		this.cell.appendChild(imageLabel.element)
 		return imageLabel
 	}
 }
