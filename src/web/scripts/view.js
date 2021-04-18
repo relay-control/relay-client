@@ -28,8 +28,6 @@ class View extends HTMLElement {
 			
 			if (controlData.row) control.row = controlData.row
 			if (controlData.column) control.column = controlData.column
-			if (style.rowSpan) control.rowSpan = style.rowSpan
-			if (style.columnSpan) control.columnSpan = style.columnSpan
 			
 			if ('inherits' in controlData)
 				control.addClass(controlData.inherits)

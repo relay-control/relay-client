@@ -56,6 +56,8 @@ function parseColor(color, alpha) {
 Stylable = (base = Object) => class extends base {
 	get styleProperties() {
 		return [
+			'rowSpan',
+			'columnSpan',
 			'anchor',
 			'size',
 			'width',
