@@ -17,90 +17,82 @@ class View {
 	// }
 
 	build(view) {
-		for (let [control, tag] of view) {
-			let c = v.createControl(tag, control)
+		for (let [controlData, tag] of view) {
+			let control = v.createControl(tag, controlData)
 			
 			let style = {}
 			if (panel.templates) {
 				for (let [template, tag2] of panel.templates) {
-					if ((tag2 === 'Control' || tag2 === tag) && template.name === control.inherits) {
+					if ((tag2 === 'Control' || tag2 === tag) && template.name === controlData.inherits) {
 						Object.assign(style, JSON.parse(JSON.stringify(template)))
 					}
 				}
 			}
-			Object.assign(style, control)
+			Object.assign(style, controlData)
 			
-			if (control.row) c.row = control.row
-			if (control.column) c.column = control.column
-			if (style.rowSpan) c.rowSpan = style.rowSpan
-			if (style.columnSpan) c.columnSpan = style.columnSpan
+			if (controlData.row) control.row = controlData.row
+			if (controlData.column) control.column = controlData.column
+			if (style.rowSpan) control.rowSpan = style.rowSpan
+			if (style.columnSpan) control.columnSpan = style.columnSpan
 			
-			c.addClass(tag.toLowerCase())
+			control.addClass(tag.toLowerCase())
 			
-			if ('inherits' in control)
-				c.addClass(control.inherits)
+			if ('inherits' in controlData)
+				control.addClass(controlData.inherits)
 			else
-				c.addClass('default')
+				control.addClass('default')
 			
-			if (style.square) c.addClass('square')
-			if (style.circle) c.addClass('circle')
+			if (style.square) control.addClass('square')
+			if (style.circle) control.addClass('circle')
 			if ((style.square || style.circle) && !(style.size || style.width || style.height))
-				c.addClass('auto-size')
+				control.addClass('auto-size')
 			
-			c.apply(control)
-			if (control.active) {
-				c.applyActive(control.active)
+			control.apply(controlData)
+			if (controlData.active) {
+				control.applyActive(controlData.active)
 			}
 			
-			let textLabel2 = control.textLabel
+			let textLabel2 = controlData.textLabel
 			if (textLabel2) {
-				let textLabel = c.createTextLabel()
+				let textLabel = control.createTextLabel()
 				textLabel.setText(textLabel2.text)
-				// textLabel.setPosition(textLabel2.position)
-				// textLabel.setAnchor(textLabel2.anchor)
 			}
 			
-			let iconLabel2 = control.iconLabel
+			let iconLabel2 = controlData.iconLabel
 			if (iconLabel2) {
-				let iconLabel = c.createIconLabel()
+				let iconLabel = control.createIconLabel()
 				iconLabel.setIcon(iconLabel2.icon)
-				// iconLabel.setPosition(iconLabel2.position)
-				// iconLabel.setAnchor(iconLabel2.anchor)
 			}
 			
-			let imageLabel2 = control.imageLabel
+			let imageLabel2 = controlData.imageLabel
 			if (imageLabel2) {
-				let imageLabel = c.createImageLabel()
+				let imageLabel = control.createImageLabel()
 				imageLabel.setImage(imageLabel2.image)
-				// iconLabel.setPosition(iconLabel2.position)
-				// imageLabel.setAnchor(imageLabel2.anchor)
 			}
 			
-			if (control.action) {
-				if (control.action.device && !usedVJoyDevices.includes(control.action.device)) {
-					usedVJoyDevices.push(control.action.device)
-					usedVJoyDeviceButtons[control.action.device] = 0
-					usedVJoyDeviceAxes[control.action.device] = []
+			if (controlData.action) {
+				if (controlData.action.device && !usedVJoyDevices.includes(controlData.action.device)) {
+					usedVJoyDevices.push(controlData.action.device)
+					usedVJoyDeviceButtons[controlData.action.device] = 0
+					usedVJoyDeviceAxes[controlData.action.device] = []
 				}
-				if (control.action.type === 'button') {
-					usedVJoyDeviceButtons[control.action.device] = Math.max(control.action.button, usedVJoyDeviceButtons[control.action.device])
+				if (controlData.action.type === 'button') {
+					usedVJoyDeviceButtons[controlData.action.device] = Math.max(controlData.action.button, usedVJoyDeviceButtons[controlData.action.device])
 				}
-				if (control.action.type === 'axis' && !usedVJoyDeviceAxes[control.action.device].includes(control.action.axis)) {
-					usedVJoyDeviceAxes[control.action.device].push(control.action.axis)
+				if (controlData.action.type === 'axis' && !usedVJoyDeviceAxes[controlData.action.device].includes(controlData.action.axis)) {
+					usedVJoyDeviceAxes[controlData.action.device].push(controlData.action.axis)
 				}
-				c.action = control.action
+				control.action = controlData.action
 			}
 			
 			if (tag === 'Slider') {
 				// c.setSnapValue(control.snap)
-				c.setSnapValue(50)
+				control.setSnapValue(50)
 				
-				if (control.valueLabel) {
-					let valueLabel = new ValueLabel(c)
-					// valueLabel.setPosition(control.valueLabel.position)
-					// valueLabel.setAnchor('container')
+				if (controlData.valueLabel) {
+					let valueLabel = new ValueLabel(control)
 					valueLabel.setText("50%")
-					c.valueLabel = valueLabel
+					control.valueLabel = valueLabel
 				}
 			}
 		}

@@ -1,3 +1,10 @@
+const FlexPositions = {
+	top: 'flex-start',
+	left: 'flex-start',
+	bottom: 'flex-end',
+	right: 'flex-end',
+}
+
 function parseLength(length) {
 	if (length && (typeof length == "number" || !length.endsWith('%'))) {
 		length += 'px'
@@ -14,7 +21,7 @@ function parseLength(length) {
 	// return '000000'.substring(string.length) + string;
 // }
 
-function toRGBColor(args) {
+function toRgbColor(args) {
 	let match = args.toString(16).match(/[a-f0-9]{6}|[a-f0-9]{3}/i)
 	if (!match) {
 		return [0, 0, 0]
@@ -37,42 +44,13 @@ function toRGBColor(args) {
 function parseColor(color, alpha) {
 	if (color && alpha) {
 		if (color.charAt(0) === '#') {
-			var [r, g, b] = toRGBColor(color)
+			var [r, g, b] = toRgbColor(color)
 		} else {
 			var [r, g, b] = colors[color]
 		}
 		color = `rgba(${r}, ${g}, ${b}, ${alpha})`
 	}
 	return color
-}
-
-const flexPositions = {
-	top: 'flex-start',
-	left: 'flex-start',
-	bottom: 'flex-end',
-	right: 'flex-end',
-}
-
-function setFlexPosition(style, position) {
-	let [vertical, horizontal] = position.split(/\s+/)
-	if (vertical && horizontal) {
-		style.alignItems = flexPositions[vertical]
-		style.justifyContent = flexPositions[horizontal]
-	} else if (position === 'center') {
-		style.alignItems = 'center'
-		style.justifyContent = 'center'
-	} else {
-		switch (position) {
-			case 'top':
-			case 'bottom':
-				style.alignItems = flexPositions[position]
-				break
-			case 'left':
-			case 'right':
-				style.justifyContent = flexPositions[position]
-				break
-		}
-	}
 }
 
 class Style {
@@ -156,8 +134,8 @@ class Style {
 			let style = this.areaStyle
 			let [vertical, horizontal] = anchor.point.split(/\s+/)
 			if (vertical && horizontal) {
-				style.alignItems = flexPositions[vertical]
-				style.justifyContent = flexPositions[horizontal]
+				style.alignItems = FlexPositions[vertical]
+				style.justifyContent = FlexPositions[horizontal]
 			} else if (anchor.point === 'center') {
 				style.alignItems = 'center'
 				style.justifyContent = 'center'
@@ -165,11 +143,11 @@ class Style {
 				switch (anchor.point) {
 					case 'top':
 					case 'bottom':
-						style.alignItems = flexPositions[anchor.point]
+						style.alignItems = FlexPositions[anchor.point]
 						break
 					case 'left':
 					case 'right':
-						style.justifyContent = flexPositions[anchor.point]
+						style.justifyContent = FlexPositions[anchor.point]
 						break
 				}
 			}

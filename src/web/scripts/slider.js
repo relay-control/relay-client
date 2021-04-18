@@ -43,28 +43,26 @@ class Slider extends Control {
 		}
 	}
 	
-	get events() {
-		return {
-			input: e => {
-				if (45 < e.currentTarget.value && e.currentTarget.value < 55)
-					e.currentTarget.value = 50
-				
-				// avoid sending input if value is unchanged
-				if (e.currentTarget.value === this.previousValue) return
-				this.previousValue = e.currentTarget.value
-				
-				if (this.valueLabel)
-					this.valueLabel.setText(e.currentTarget.value + '%')
-				
-				if (this.action) {
-					recon.sendInput({
-						type: 'axis',
-						device: this.action.device,
-						axis: this.action.axis,
-						value: e.currentTarget.value,
-					})
-				}
-			},
-		}
+	events = {
+		input: e => {
+			if (45 < e.currentTarget.value && e.currentTarget.value < 55)
+				e.currentTarget.value = 50
+			
+			// avoid sending input if value is unchanged
+			if (e.currentTarget.value === this.previousValue) return
+			this.previousValue = e.currentTarget.value
+			
+			if (this.valueLabel)
+				this.valueLabel.setText(e.currentTarget.value + '%')
+			
+			if (this.action) {
+				recon.sendInput({
+					type: 'axis',
+					device: this.action.device,
+					axis: this.action.axis,
+					value: e.currentTarget.value,
+				})
+			}
+		},
 	}
 }

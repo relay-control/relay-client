@@ -40,18 +40,18 @@ function parse(xml) {
 		hasChildren = xml.children && xml.children.length,
 		hasAttributes = xml.attributes && xml.attributes.length
 
-	// if it's text just return it
+	// if it's text, just return it
 	if (isText) { return xml.nodeValue.trim() }
 
 	// if it doesn't have any children or attributes, just return the contents
 	if (!hasChildren && !hasAttributes) { return data }
 
-	// if it doesn't have children but _does_ have body content, we'll use that
+	// if it doesn't have children but _does_ have body content, use that
 	if (!hasChildren && body.length) { data.text = body }
 
 	// if it's an element with attributes, add them to data.attributes
 	if (isElement && hasAttributes) {
-		for (attribute of xml.attributes) {
+		for (let attribute of xml.attributes) {
 			data[attribute.name.replace(/-(\w)/, (m, s) => s.toUpperCase())] = parseNumber(attribute.value)
 		}
 	}
@@ -61,7 +61,7 @@ function parse(xml) {
 	}
 	
 	// recursively call #parse over children, adding results to data
-	for (child of xml.children) {
+	for (let child of xml.children) {
 		let nodeName = child.nodeName
 		if (isCollection) {
 			// certain predetermined tags gets their children populated in an array

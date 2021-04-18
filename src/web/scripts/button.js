@@ -74,27 +74,25 @@ class Button extends Control {
 		this.pressed = false
 	}
 	
-	get events() {
-		return {
-			mousedown: e => {
-				this.press()
-			},
-			mouseup: e => {
+	events = {
+		mousedown: e => {
+			this.press()
+		},
+		mouseup: e => {
+			this.release()
+		},
+		mouseout: e => {
+			if (this.pressed) {
 				this.release()
-			},
-			mouseout: e => {
-				if (this.pressed) {
-					this.release()
-				}
-			},
-			touchstart: e => {
-				// e.preventDefault()
-				this.press()
-			},
-			touchend: e => {
-				e.preventDefault()
-				this.release()
-			},
-		}
+			}
+		},
+		touchstart: e => {
+			// e.preventDefault()
+			this.press()
+		},
+		touchend: e => {
+			e.preventDefault()
+			this.release()
+		},
 	}
 }
