@@ -79,12 +79,14 @@ function parse(xml) {
 	return data
 }
 
+const errorDoc = domParser.parseFromString('INVALID', 'text/xml')
+const parsererrorNs = errorDoc.getElementsByTagName("parsererror")[0].namespaceURI
+
 export default function parseXml(xml) {
 	let xmlDocument = domParser.parseFromString(xml, 'text/xml')
-	if (xmlDocument.firstChild.nodeName === 'html') {
-		menuViewModel.modalDialog.show("Unable to parse panel XML")
-		menuViewModel.currentPanel(null)
-		return
+	let parserErrors = xmlDocument.getElementsByTagNameNS(parsererrorNs, 'parsererror')
+	if (parserErrors.length > 0) {
+		throw new Error(parserErrors[0].textContent)
 	}
 	return parse(xmlDocument)
 }

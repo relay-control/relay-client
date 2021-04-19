@@ -12,6 +12,10 @@ body {
 	--border-radius: 0.28571429rem;
 }
 
+#app {
+	height: 100%;
+}
+
 #menu {
 	display: flex;
 	flex-flow: column;
@@ -59,7 +63,7 @@ header.with-button {
 }
 
 #menu button,
-dialog button {
+.modal-content button {
 	font-size: 1rem;
 	
 	min-height: 1em;
