@@ -1,6 +1,5 @@
 let recon = new Recon()
 
-
 function isAndroid() {
 	return typeof Android !== 'undefined'
 }
@@ -34,6 +33,21 @@ ko.bindingHandlers.modal = {
 }
 
 // recon.on('open', () => console.log('open'))
+
+function setCookie(name, value, maxAge = new Date(8.64e15)) {
+	value = encodeURIComponent(value)
+	document.cookie = `${name}=${value}; Max-Age=${maxAge.toUTCString()}; SameSite=Strict`
+}
+
+function getCookie(name) {
+	let cookies = new Map(document.cookie.split('; ').map(e => e.split('=')))
+	let cookie = cookies.get(name)
+	return cookie ? decodeURIComponent(cookie) : null
+}
+
+function eraseCookie(name) {   
+	setCookie(name, '', new Date(0))
+}
 
 function connect(address, port) {
 	try {
@@ -140,8 +154,8 @@ function MenuViewModel() {
 		port: ko.observable('32155'),
 		connecting: ko.observable(false),
 		submit: (form) => {
-			saveSetting('address', form.elements.address.value)
-			saveSetting('port', form.elements.port.value)
+			setCookie('address', form.elements.address.value)
+			setCookie('port', form.elements.port.value)
 			this.connectDialog.connecting(true)
 			connect(form.elements.address.value, form.elements.port.value)
 		},
@@ -191,7 +205,7 @@ function MenuViewModel() {
 		
 		this.currentPanel(panelName)
 		recon.currentPanel = panelName
-		saveSetting('lastPanel', panelName)
+		setCookie('lastPanel', panelName)
 		
 		recon.getPanel(panelName)
 		 .then(panelData => {
@@ -318,20 +332,13 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	})
 	
-	if (isElectron()) {
-		// var settings2 = require('electron-settings')
-		settings = settings2.getAll()
+	let address = getCookie('address')
+	let port = getCookie('port')
+	if (address) {
+		menuViewModel.connectDialog.address(address)
+		menuViewModel.connectDialog.port(port)
 		
-		// document.addEventListener('DOMContentLoaded', () => {
-			// setup()
-		// })
-	}
-	
-	if (settings.address) {
-		menuViewModel.connectDialog.address(settings.address)
-		menuViewModel.connectDialog.port(settings.port)
-		
-		connect(settings.address, settings.port)
+		connect(address, port)
 	} else {
 		menuViewModel.connectDialog.show()
 	}
