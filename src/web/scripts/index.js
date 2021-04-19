@@ -1,4 +1,4 @@
-let recon
+let recon = new Recon()
 
 
 function isAndroid() {
@@ -37,7 +37,7 @@ ko.bindingHandlers.modal = {
 
 function connect(address, port) {
 	try {
-		recon = new Recon(address, port)
+		recon.connect(address, port)
 	} catch (err) {
 		menuViewModel.modalDialog.show("Invalid URL")
 		return
@@ -296,7 +296,7 @@ function loadPanel(panelName) {
 		})
 		
 		// request devices
-		recon.connect(Object.keys(panel.usedDeviceResources))
+		recon.acquireDevices(Object.keys(panel.usedDeviceResources))
 		 .then(devices => {
 			panel.setView(1)
 			
@@ -323,11 +323,6 @@ function loadPanel(panelName) {
 				menuViewModel.deviceInfoDialog.data(warnings)
 				menuViewModel.deviceInfoDialog.show()
 			}
-		 })
-		 .catch(err => {
-			console.error(err)
-			menuViewModel.modalDialog.show(`Connection refused`)
-			menuViewModel.currentPanel(null)
 		 })
 	 })
 	 .catch(err => {

@@ -1,29 +1,64 @@
-class FileNotFoundError extends Error { }
-
 class Recon extends EventTarget {
-	constructor(address, port) {
-		super()
-		
+	static modifiers = {}
+	static ConnectionState = signalR.HubConnectionState
+
+	connect(address, port) {
 		this.address = address
 		this.port = port
-		
 		this.url = new URL(`http://${address}:${port}`)
+
+		let connection = new signalR.HubConnectionBuilder()
+			.withUrl(`${this.url.origin}/inputhub`, {
+				skipNegotiation: true,
+				transport: signalR.HttpTransportType.WebSockets,
+			})
+			.withAutomaticReconnect()
+			.configureLogging(signalR.LogLevel.Information)
+			.build()
+
+		connection.onreconnecting(this.onReconnecting)
+		connection.onreconnected(this.onReconnected)
+		connection.onclose(this.onClose)
+		connection.on('RecieveMessage', this.onMessage)
+
+		this.connection = connection
+
+		return this.connection.start()
+	}
+
+	get connectionState() {
+		return this.connection?.state
+	}
+
+	on(event, eventHandler) {
+		this.addEventListener(event, e => {
+			eventHandler(e.detail)
+		})
+	}
+
+	onReconnecting(error) {
+		console.assert(this.connection.state === signalR.HubConnectionState.Reconnecting)
+		let event = new CustomEvent('reconnecting', { detail: error })
+		this.dispatchEvent(event)
+	}
+
+	onReconnected(connectionId) {
+		console.assert(this.connection.state === signalR.HubConnectionState.Connected)
+		let event = new CustomEvent('reconnected', { detail: connectionId })
+		this.dispatchEvent(event)
 	}
 	
+	onClose(error) {
+		console.assert(this.connection.state === signalR.HubConnectionState.Disconnected)
+		let event = new CustomEvent('close', { detail: error })
+		this.dispatchEvent(event)
+	}
+
 	async getPanels() {
-		let controller = {} || new AbortController()
-		this.controller = controller
-		let url = new URL('api/panels', this.url.origin)
-		let response = await fetch(url.href, {cache: 'no-store', signal: controller.signal})
-		if (!response.ok)
-			throw new FileNotFoundError()
-		return response.json()
+		let res = await fetch(`http://${this.address}:${this.port}/api/panels`)
+		return res.json()
 	}
-	
-	abort() {
-		this.controller.abort()
-	}
-	
+
 	async getPanel(panel) {
 		let response = await fetch(`${this.url.origin}/panels/${panel}/panel.xml`, {cache: 'no-cache'})
 		if (!response.ok)
@@ -36,96 +71,17 @@ class Recon extends EventTarget {
 		// return encodeURI(new URL(`panels/${this.currentPanel}/assets/${file}`, this.url.origin).href)
 		return new URL(`panels/${this.currentPanel}/assets/${file}`, this.url.origin).href
 	}
-	
-	connect(devices) {
-		this.ws = new Socket(this.address, this.port, devices)
-		
-		this.ws.on('close', (e, previousState) => this.dispatchEvent(new CustomEvent('close', { detail: previousState })))
-		// this.ws.on('state', (e) => console.log(e))
-		
-		return new Promise((resolve, reject) => {
-			this.ws.on('open', (status) => {
-				resolve(status.devices)
-			})
-			this.ws.on('close', () => {
-				reject()
-			})
-		})
-	}
-	
-	sendInput(input) {
-		this.ws.ws.send(JSON.stringify(input))
-	}
-}
 
-class Socket extends EventTarget {
-	constructor(address, port, devices) {
-		super()
-		
-		this.address = address
-		this.port = port
-		let url = `ws://${address}:${port}/websocket`
-		if (devices.length > 0)
-			url += '?' + devices.map(e => 'devices=' + e).join('&')
-		this.ws = new WebSocket(url)
-		this.ws.onmessage = (e) => this.onmessage(e)
-		this.ws.onopen = (e) => this.onopen(e)
-		this.ws.onclose = (e) => this.onclose(e)
-		this.ws.onerror = (err) => this.onerror(err)
-		this.previousState = this.ws.readyState
-		console.log("Opening WebSocket connection")
-		// console.log('readyState:', this.ws.readyState)
+	async sendInput(input) {
+		this.connection.invoke("SendInput", input)
 	}
-	
-	connect2() {
-		if (this.isConnected()) {
-			this.close(4001)
-			return
-		}
-		// console.log('readyState:', this.ws.readyState)
-		let url = new URL(`http://${address}:${port}`)
-		let ws = new WebSocket('ws://' + address + ':' + port)
-		this.ws = ws
-		this.server = url.origin
+
+	async acquireDevice(deviceId) {
+		this.connection.invoke("AcquireDevice", deviceId)
 	}
-	
-	close(code, reason) {
-		this.ws.close(code, reason)
-		console.log("Closing WebSocket connection")
-		// console.log('readyState:', this.ws.readyState)
-		this.previousState = this.ws.readyState
-		// unbind events?
-	}
-	
-	isConnected() {
-		return this.ws && this.ws.readyState === WebSocket.OPEN
-	}
-	
-	onmessage(e) {
-		let message = JSON.parse(e.data)
-		// console.log(message)
-		this.dispatchEvent(new CustomEvent(message.eventType, { detail: message }))
-	}
-	
-	onopen(e) {
-		// this.emit('open')
-		console.log('WebSocket connection opened')
-		// console.log('readyState:', this.ws.readyState)
-		this.previousState = this.ws.readyState
-	}
-	
-	onclose(e) {
-		this.dispatchEvent(new CustomEvent('close', { detail: this.previousState }))
-		let previousState = this.previousState
-		this.previousState = this.ws.readyState
-		console.log('WebSocket connection closed')
-		// console.log('readyState:', e.target.readyState)
-		console.log('code:', e.code)
-	}
-	
-	onerror(err) {
-		// modal.show("Unable to connect to Relay server")
-		// console.dir(err)
-		// console.log('readyState:', err.target.readyState)
+
+	onMessage(message) {
+		let event = new CustomEvent('close', { detail: message })
+		this.dispatchEvent(event)
 	}
 }
