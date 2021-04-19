@@ -79,7 +79,7 @@ function parse(xml) {
 	return data
 }
 
-function parseXml(xml) {
+export default function parseXml(xml) {
 	let xmlDocument = domParser.parseFromString(xml, 'text/xml')
 	if (xmlDocument.firstChild.nodeName === 'html') {
 		menuViewModel.modalDialog.show("Unable to parse panel XML")

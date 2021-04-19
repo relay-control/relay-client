@@ -1,3 +1,5 @@
+import { ValueLabel } from '/scripts/label.js'
+
 class View extends HTMLElement {
 	// show() {
 		// Promise.all(this.assets)

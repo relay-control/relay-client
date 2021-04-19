@@ -1,4 +1,6 @@
-class Recon extends EventTarget {
+import parseXml from '/scripts/xml-parser.js'
+
+export default class Recon extends EventTarget {
 	static modifiers = {}
 	static ConnectionState = signalR.HubConnectionState
 

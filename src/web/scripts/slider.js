@@ -1,3 +1,6 @@
+import Control from '/scripts/control.js'
+import { LabelStyle, SliderThumbStyle, SliderTrackStyle } from '/scripts/styles.js'
+
 class Slider extends Control {
 	connectedCallback() {
 		super.connectedCallback()

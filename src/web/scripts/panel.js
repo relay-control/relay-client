@@ -1,3 +1,5 @@
+import Style from '/scripts/styles.js'
+
 function loadAudio(url) {
 	return new Promise((resolve, reject) => {
 		let audio = new Audio()
@@ -9,7 +11,7 @@ function loadAudio(url) {
 	})
 }
 
-class Panel extends EventTarget {
+export default class Panel extends EventTarget {
 	id = 1
 	views = []
 	assets = []
@@ -158,7 +160,7 @@ class Panel extends EventTarget {
 	}
 }
 
-class Stylesheet {
+export class Stylesheet {
 	static create() {
 		Stylesheet.sheet = new CSSStyleSheet()
 		document.adoptedStyleSheets = [Stylesheet.sheet]

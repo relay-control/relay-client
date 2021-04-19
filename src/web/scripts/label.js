@@ -1,3 +1,5 @@
+import { Stylable, StylableLabel } from '/scripts/styles.js'
+
 class Label extends StylableLabel(Stylable(HTMLElement)) {
 	connectedCallback() {
 		this.classList.add('label')
@@ -86,3 +88,5 @@ class ImageLabel extends Label {
 }
 
 customElements.define('image-label', ImageLabel)
+
+export { ValueLabel, TextLabel }

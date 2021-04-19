@@ -1,3 +1,5 @@
+import Control from '/scripts/control.js'
+
 class Button extends Control {
 	static actionTypes = [
 		'key',

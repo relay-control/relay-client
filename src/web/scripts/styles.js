@@ -1,3 +1,6 @@
+import { Stylesheet } from '/scripts/panel.js'
+import Colors from '/scripts/colors.js'
+
 const FlexPositions = {
 	top: 'flex-start',
 	left: 'flex-start',
@@ -53,7 +56,7 @@ function parseColor(color, alpha) {
 	return color
 }
 
-Stylable = (base = Object) => class extends base {
+const Stylable = (base = Object) => class extends base {
 	get styleProperties() {
 		return [
 			'rowSpan',
@@ -241,7 +244,7 @@ class SubStyle extends Style {
 	}
 }
 
-StylableLabel = (base = Object) => class extends base {
+const StylableLabel = (base = Object) => class extends base {
 	get styleProperties() {
 		return super.styleProperties.concat([
 			'color',
@@ -286,7 +289,7 @@ StylableLabel = (base = Object) => class extends base {
 	}
 }
 
-class LabelStyle extends (StylableLabel(SubStyle)) {
+export class LabelStyle extends (StylableLabel(SubStyle)) {
 	constructor(selector, parent) {
 		super(' ' + selector, parent)
 	}
@@ -347,3 +350,5 @@ class SliderTrackStyle extends SubStyle {
 		this.parent.setControlStyle('--track-height', parseLength(height))
 	}
 }
+
+export { Style as default, Stylable, StylableLabel, SliderThumbStyle, SliderTrackStyle }

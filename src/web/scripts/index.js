@@ -1,3 +1,7 @@
+import Recon from '/scripts/recon.js'
+import Panel from '/scripts/panel.js'
+import { createApp } from '/scripts/vue.esm-browser.js'
+
 let recon = new Recon()
 
 function setCookie(name, value, maxAge = new Date(8.64e15)) {
