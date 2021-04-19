@@ -14,14 +14,18 @@ class Panel extends EventTarget {
 	views = []
 	assets = []
 	
-	constructor() {
+	constructor(panelData) {
+		super()
 		this.element = document.getElementById('panel')
+		this.panelData = panelData
+		panel.panel = this
 	}
 
-	build(panelData) {
+	build() {
 		// create a separate stylesheet for dynamic style rules
 		Stylesheet.create()
 		
+		let panelData = this.panelData
 		this.element.style = null
 		this.element.style.display = 'none'
 		if (panelData.background)
@@ -81,12 +85,14 @@ class Panel extends EventTarget {
 			view.build(viewProperties)
 			this.usedDeviceResources = view.usedDevices
 		}
+
+		this.setView(1)
+		
+		this.show()
 	}
 	
 	async show() {
 		await Promise.allSettled(this.assets)
-		let menu = document.getElementById('menu')
-		menu.style.display = 'none'
 		
 		this.element.style.display = 'block'
 	}

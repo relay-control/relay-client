@@ -9,7 +9,7 @@
 	<link rel="stylesheet" href="styles/defaults.css">
 	<link rel="stylesheet" href="styles/modal.css">
 	
-	<script src="scripts/knockout-3.4.2.js"></script>
+	<script src="scripts/vue.global.js"></script>
 	<script src="scripts/xml-parser.js"></script>
 	<script src="scripts/signalr.js"></script>
 	
@@ -23,75 +23,68 @@
 	<script src="scripts/slider.js"></script>
 	<script src="scripts/label.js"></script>
 	
-	<script src="scripts/settings.js"></script>
 	<script src="scripts/index.js"></script>
 </head>
 
 <body>
 
-<div id="menu">
+<div id="app">
+
+<div id="menu" v-if="!currentPanel">
 	<header>
 		<h1>Recon</h1>
 	</header>
 	<section>
 		<header class="with-button">
-			<h1 id="connection-status" data-bind="text: connected() ? `Connected to ${currentServer()}` : 'Not connected'"></h1>
-			<button data-bind="click: connect">Connect</button>
+			<h1> {{ connected() ? `Connected to ${currentServer}` : 'Not connected' }} </h1>
+			<button @click="showModal = true">Connect</button>
 		</header>
-		<div data-bind="visible: connected">
+		<div v-if="connected()">
 			<header class="with-button">
 				<h3>Available panels</h3>
-				<button data-bind="click: updatePanels"><i class="fa fa-refresh fa-fw"></i></button>
+				<button @click="updatePanels"><i class="fa fa-refresh fa-fw"></i></button>
 			</header>
 			
-			<ul id="panel-list" data-bind="foreach: {data: panels, as: 'panel'}, visible: panels().length > 0">
-				<li data-bind="click: loadPanel">
-					<span data-bind="text: panel"></span>
-					<i class="fa fa-circle-o-notch fa-spin fa-fw" data-bind="visible: $parent.currentPanel() == panel"></i>
+			<ul id="panel-list" v-if="panels.length > 0">
+				<li v-for="panel in panels" @click="loadPanel(panel)">
+					<span> {{ panel }} </span>
+					<i class="far fa-circle-o-notch fa-spin fa-fw" v-if="panel === currentPanel"></i>
 				</li>
 			</ul>
-			<p data-bind="visible: panels().length === 0" style="text-align: center; margin-top: 4em">No panels found</p>
+			<p v-if="panels.length === 0" style="text-align: center; margin-top: 4em">No panels found</p>
 		</div>
 	</section>
 </div>
 
 <div id="panel" style="display: none"></div>
 
-<div class="modal-mask" data-bind="with: connectDialog, modal: true">
+<div class="modal-mask" v-if="showModal">
 	<div class="modal-content">
-	<header>Connect to Recon server</header>
-	<form data-bind="submit: submit">
-		<div class="content">
-			<div class="input">
-				<label>Address</label>
-				<input name="address" required pattern="[\d.]+" data-bind="value: address">
+		<header>Connect to Recon server</header>
+		<form @submit.prevent="submit">
+			<div class="content">
+				<div class="input">
+					<label>Address</label>
+					<input name="address" required pattern="[\d.]+" v-model="address">
+				</div>
+				<div class="input">
+					<label>Port</label>
+					<input name="port" required pattern="\d+" v-model="port">
+				</div>
 			</div>
-			<div class="input">
-				<label>Port</label>
-				<input name="port" required pattern="\d+" data-bind="value: port">
+			<div class="buttons">
+				<button type="button" @click="showModal = false">Cancel</button>
+				<button type="submit" class="primary">
+					<span class="loading" v-if="connecting()"></span>
+					<span v-if="!connecting()">Connect</span>
+				</button>
 			</div>
-		</div>
-		<div class="buttons">
-			<button type="button" data-bind="click: close">Cancel</button>
-			<button type="submit" class="primary">
-				<span class="loading" data-bind="visible: connecting"></span>
-				<span data-bind="css: {hidden: connecting}">Connect</span>
-			</button>
-		</div>
-	</form>
-</div>
+		</form>
+	</div>
 </div>
 
-<div class="modal-mask" data-bind="with: modalDialog, modal: true, event: {close: modalDialog.onClose}">
-	<div class="modal-content">
-		<header data-bind="text: title"></header>
-		<div class="content">
-			<p data-bind="text: content"></p>
-		</div>
-		<div class="buttons">
-			<button class="primary" data-bind="click: close">OK</button>
-		</div>
-	</div>
+<modal ref="modal"></modal>
+
 </div>
 
 </body>

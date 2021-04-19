@@ -1,39 +1,5 @@
 let recon = new Recon()
 
-function isAndroid() {
-	return typeof Android !== 'undefined'
-}
-
-function isElectron() {
-	return typeof Electron !== 'undefined'
-}
-
-function goBack() {
-	recon.ws.close()
-	closePanel()
-}
-
-function closePanel() {
-	let panel = document.getElementById('panel')
-	let style = window.getComputedStyle(panel)
-	if (style.display === 'block') {
-		panel.style.display = 'none'
-		menuViewModel.currentPanel(null)
-		let menu = document.getElementById('menu')
-		menu.style.display = 'flex'
-	}
-}
-
-
-ko.bindingHandlers.modal = {
-	init: (element, valueAccessor, allBindings, viewModel, bindingContext) => {
-		allBindings.get('with').element = element
-		bindingContext.$data.modals.push(allBindings.get('with'))
-	}
-}
-
-// recon.on('open', () => console.log('open'))
-
 function setCookie(name, value, maxAge = new Date(8.64e15)) {
 	value = encodeURIComponent(value)
 	document.cookie = `${name}=${value}; Max-Age=${maxAge.toUTCString()}; SameSite=Strict`
@@ -49,170 +15,88 @@ function eraseCookie(name) {
 	setCookie(name, '', new Date(0))
 }
 
-function connect(address, port) {
-	try {
-		recon.connect(address, port)
-	} catch (err) {
-		menuViewModel.modalDialog.show("Invalid URL")
-		return
-	}
-	
-	recon.getPanels()
-	 .then(panels => {
-		menuViewModel.panels(panels)
-		menuViewModel.connected(true)
-		menuViewModel.currentServer(recon.address)
-		menuViewModel.connectDialog.connecting(false)
-		if (menuViewModel.connectDialog.isOpen())
-			menuViewModel.connectDialog.close()
-		
-		menuViewModel.loadLastPanel()
-	})
-	 .catch(err => {
-		switch (err.constructor) {
-			case FileNotFoundError:
-				if (menuViewModel.connectDialog.isOpen())
-					menuViewModel.connectDialog.close()
-				menuViewModel.connectDialog.connecting(false)
-				menuViewModel.modalDialog.show("Failed to retrieve panel list")
-				break
-			case TypeError:
-				if (menuViewModel.connectDialog.isOpen())
-					menuViewModel.connectDialog.close()
-				menuViewModel.connectDialog.connecting(false)
-				menuViewModel.modalDialog.show("Unable to connect to Recon server")
-				break
-			default:
-				throw err
-		}
-	 })
-
-	recon.on('close', (e, previousState) => {
-		// menuViewModel.connected(false)
-		// menuViewModel.currentServer(null)
-		// closing existing websocket before opening new
-		if (e.code === 4001) {
-			this.connect2(this.address, this.port)
-			return
-		}
-		if (previousState === WebSocket.CONNECTING) {
-			// if (menuViewModel.connectDialog.isOpen())
-				// menuViewModel.connectDialog.close()
-			menuViewModel.connectDialog.connecting(false)
-			// menuViewModel.modalDialog.show("Unable to connect to Recon server", previousState)
-		}
-		if (previousState === WebSocket.OPEN) {
-			// try to reconnect?
-			closePanel()
-			menuViewModel.modalDialog.show("Disconnected from Recon server")
-		}
-	})
+const modal = {
+	data: () => ({
+		show: false,
+		title: '',
+		message: '',
+	}),
+	template: `
+		<div class="modal-mask" v-if="show">
+			<div class="modal-content">
+				<header> {{ title }} </header>
+				<div class="content">
+					<p> {{ message }} </p>
+				</div>
+				<div class="buttons">
+					<button class="primary" @click="show = false">OK</button>
+				</div>
+			</div>
+		</div>
+	`,
 }
 
-function MenuViewModel() {
-    this.connected = ko.observable(false)
-	this.currentServer = ko.observable()
-	this.currentPanel = ko.observable()
-	this.panels = ko.observableArray()
-	this.connect = () => {
-		this.connectDialog.show()
-	}
-	this.updatePanels = async () => {
-		try {
-			let panels = await recon.getPanels()
-			this.panels(panels)
-		} catch (err) {
-			switch (err.constructor) {
-				case FileNotFoundError:
-					console.log("not found")
-					break
-				case TypeError:
-					if (menuViewModel.connectDialog.isOpen())
-						menuViewModel.connectDialog.close()
-					menuViewModel.connectDialog.connecting(false)
-					menuViewModel.modalDialog.show("Unable to connect to Recon server")
-					break
-				default:
-					throw err
-			}
-		}
-	}
-	this.loadLastPanel = function() {
-		if (!settings.rememberPanel && settings.lastPanel) {
-			loadPanel(settings.lastPanel)
-		}
-	}
-	
-	this.modals = []
-	
-	this.isModalShown = () => {
-		return this.modals.some(e => e.isOpen())
-	}
-	
-	this.connectDialog = {
-		address: ko.observable(),
-		port: ko.observable('32155'),
-		connecting: ko.observable(false),
-		submit: (form) => {
-			setCookie('address', form.elements.address.value)
-			setCookie('port', form.elements.port.value)
-			this.connectDialog.connecting(true)
-			connect(form.elements.address.value, form.elements.port.value)
-		},
-		show: () => this.connectDialog.element.showModal(),
-		close: () => {
-			// if (this.connectDialog.connecting())
-				// recon.abort()
-			this.connectDialog.element.close()
-		},
-		isOpen: () => this.connectDialog.element.open,
-	}
-	
-	this.deviceInfoDialog = {
-		data: ko.observableArray(),
-		show: () => this.deviceInfoDialog.element.showModal(),
-		close: () => this.deviceInfoDialog.element.close(),
-		isOpen: () => this.deviceInfoDialog.element.open,
-	}
-	
-	this.modalDialog = {
-		show: (text, returnValue) => {
-			this.modalDialog.text(text)
-			// this.button1.textContent = "OK"
-			this.modalDialog.connectionStatus = returnValue
-			this.modalDialog.element.showModal()
-		},
-		text: ko.observable(),
-		close: () => this.modalDialog.element.close(),
-		isOpen: () => this.modalDialog.element.open,
-		onClose: (a, b) => {
-			if (this.modalDialog.connectionStatus === WebSocket.CONNECTING)
-				this.connectDialog.show()
-			delete this.modalDialog.connectionStatus
-		},
-	}
+const Counter = {
+	data: () => ({
+		showModal: false,
+		address: '',
+		port: 32155,
+		currentServer: '',
+		panels: [],
+		currentPanel: null,
+	}),
 
-	this.loadPanel = (panelName) => {
-		// if (panelName !== currentPanel) {
-			let panel = document.getElementById('panel')
-			while (panel.lastChild)
-				panel.lastChild.remove()
-			// if (stylesheet) {
-				// document.adoptedStyleSheets = []
-			// }
-			// rules = {}
-		// }
-		
-		this.currentPanel(panelName)
-		recon.currentPanel = panelName
-		setCookie('lastPanel', panelName)
-		
-		recon.getPanel(panelName)
-		 .then(panelData => {
-			// console.log(panelData)
-			let panel = new Panel()
-			panel.build(panelData)
-		
+	methods: {
+		async submit(e) {
+			let address = e.target.elements.address.value
+			let port = e.target.elements.port.value
+
+			setCookie('address', address)
+			setCookie('port', port)
+
+			await recon.connect(address, port)
+			await this.updatePanels()
+			this.currentServer = recon.address
+			this.showModal = false
+			
+			let lastPanel = getCookie('lastPanel')
+			if (lastPanel) {
+				this.loadPanel(lastPanel)
+			}
+		},
+
+		async updatePanels() {
+			let panels = await recon.getPanels()
+			this.panels = panels
+		},
+
+		async loadPanel(panelName) {
+			{
+			// if (panelName !== currentPanel) {
+				let panel = document.getElementById('panel')
+				while (panel.lastChild)
+					panel.lastChild.remove()
+				// if (stylesheet) {
+					// document.adoptedStyleSheets = []
+				// }
+				// rules = {}
+			}
+			
+			let panelData = null
+			try {
+				panelData = await recon.getPanel(panelName)
+			} catch (err) {
+				this.showModalDialog(`Unable to load panel ${panelName}.`, err)
+				return
+			}
+			
+			this.currentPanel = panelName
+			recon.currentPanel = panelName
+			setCookie('lastPanel', panelName)
+
+			let panel = new Panel(panelData)
+			panel.build()
+	
 			panel.addEventListener('button-activate', e => {
 				let action = e.detail
 				let input = { }
@@ -265,7 +149,7 @@ function MenuViewModel() {
 					panel.setView(action.view)
 				}
 			})
-	
+
 			panel.addEventListener('slider-change', e => {
 				let action = e.detail
 				recon.sendInput({
@@ -275,73 +159,78 @@ function MenuViewModel() {
 					value: e.currentTarget.value,
 				})
 			})
-			
+
 			// request devices
-			recon.acquireDevices(Object.keys(panel.usedDeviceResources))
-			 .then(devices => {
-				panel.setView(1)
-				
-				panel.show()
-				
-				let warnings = []
-				for (let device of devices) {
-					if (!device.acquired) {
-						warnings.push(`Unable to acquire device ${device.id}`)
-					} else {
-						if (usedVJoyDeviceButtons[device.id] > device.numButtons) {
-							warnings.push(`Device ${device.id} has ${device.numButtons} buttons but this panel uses ${usedVJoyDeviceButtons[device.id]}`)
-						}
-						if (usedVJoyDeviceAxes[device.id]) {
-							for (let axis of usedVJoyDeviceAxes[device.id]) {
-								if (!device.axes[axis]) {
-									warnings.push(`Requested axis ${axis} not enabled on device ${device.id}`)
-								}
+			let devices = await Promise.allSettled(Object.keys(panel.usedDeviceResources).map(e => recon.acquireDevice(parseInt(e))))
+			let warnings = []
+			for (let device of devices) {
+				if (!device.acquired) {
+					warnings.push(`Unable to acquire device ${device.id}`)
+				} else {
+					if (usedVJoyDeviceButtons[device.id] > device.numButtons) {
+						warnings.push(`Device ${device.id} has ${device.numButtons} buttons but this panel uses ${usedVJoyDeviceButtons[device.id]}`)
+					}
+					if (usedVJoyDeviceAxes[device.id]) {
+						for (let axis of usedVJoyDeviceAxes[device.id]) {
+							if (!device.axes[axis]) {
+								warnings.push(`Requested axis ${axis} not enabled on device ${device.id}`)
 							}
 						}
 					}
 				}
-				if (warnings.length > 0) {
-					this.deviceInfoDialog.data(warnings)
-					this.deviceInfoDialog.show()
-				}
-			 })
-		 })
-		 .catch(err => {
-			if (err instanceof FileNotFoundError) {
-				this.modalDialog.show(`Unable to load panel ${panelName}.`)
-				this.currentPanel(null)
-			} else {
-				console.error(err)
-				this.modalDialog.show(`Connection refused`)
-				this.currentPanel(null)
 			}
-		 })
-	}
+			if (warnings.length > 0) {
+				this.showModalDialog("Device info", warnings)
+			}
+		},
+
+		closePanel() {
+			let panel = document.getElementById('panel')
+			this.currentPanel = null
+			eraseCookie('lastPanel')
+			panel.style.display = 'none'
+		},
+		
+		connected() {
+			return recon.connectionState === Recon.ConnectionState.Connected
+		},
+
+		connecting() {
+			return recon.connectionState === Recon.ConnectionState.Connecting
+		},
+
+		showModalDialog(title, message) {
+			let modal = this.$refs.modal
+			modal.title = title
+			modal.message = message
+			modal.show = true
+		},
+	},
+
+	async created() {
+		if (getCookie('address')) {
+			this.address = getCookie('address')
+			this.port = getCookie('port')
+			
+			await recon.connect(this.address, this.port)
+			await this.updatePanels()
+			this.currentServer = recon.address
+			
+			let lastPanel = getCookie('lastPanel')
+			if (lastPanel) {
+				this.loadPanel(lastPanel)
+			}
+		} else {
+			this.showModal = true
+		}
+	},
 }
 
-var menuViewModel = new MenuViewModel()
 
-document.addEventListener('DOMContentLoaded', () => {
-	ko.applyBindings(menuViewModel)
-	
-	document.addEventListener('keydown', e => {
-		if (menuViewModel.isModalShown())
-			return
-		if (e.code === 'Escape' || e.code === 'Backspace') {
-			goBack()
-		}
-	})
-	
-	let address = getCookie('address')
-	let port = getCookie('port')
-	if (address) {
-		menuViewModel.connectDialog.address(address)
-		menuViewModel.connectDialog.port(port)
-		
-		connect(address, port)
-	} else {
-		menuViewModel.connectDialog.show()
-	}
-})
+let app = createApp(Counter)
+
+app.component('modal', modal)
+
+let vm = app.mount('#app')
 
 window.getAssetPath = (file) => recon.getAssetPath(file)
