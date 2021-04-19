@@ -57,7 +57,8 @@
 
 <div id="panel" style="display: none"></div>
 
-<dialog data-bind="with: connectDialog, modal: true">
+<div class="modal-mask" data-bind="with: connectDialog, modal: true">
+	<div class="modal-content">
 	<header>Connect to Recon server</header>
 	<form data-bind="submit: submit">
 		<div class="content">
@@ -78,31 +79,20 @@
 			</button>
 		</div>
 	</form>
-</dialog>
+</div>
+</div>
 
-<dialog data-bind="with: deviceInfoDialog, modal: true">
-	<header>Device info</header>
-	<div class="content" data-bind="foreach: data">
-		<p data-bind="text: $data"></p>
+<div class="modal-mask" data-bind="with: modalDialog, modal: true, event: {close: modalDialog.onClose}">
+	<div class="modal-content">
+		<header data-bind="text: title"></header>
+		<div class="content">
+			<p data-bind="text: content"></p>
+		</div>
+		<div class="buttons">
+			<button class="primary" data-bind="click: close">OK</button>
+		</div>
 	</div>
-	<div class="buttons">
-		<div class="checkbox">
-          <input type="checkbox">
-          <label>Stop this</label>
-        </div>
-		<button class="primary" data-bind="click: close">OK</button>
-	</div>
-</dialog>
-
-<dialog data-bind="with: modalDialog, modal: true, event: {close: modalDialog.onClose}">
-	<header data-bind="text: text"></header>
-	<div class="content">
-		<p data-bind="text: text"></p>
-	</div>
-	<div class="buttons">
-		<button class="primary" data-bind="click: close">OK</button>
-	</div>
-</dialog>
+</div>
 
 </body>
 
