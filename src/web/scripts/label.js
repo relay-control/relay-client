@@ -80,5 +80,3 @@ class ImageLabel extends Label {
 }
 
 customElements.define('image-label', ImageLabel)
-
-export { ValueLabel, TextLabel }

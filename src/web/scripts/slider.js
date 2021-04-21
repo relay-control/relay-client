@@ -31,7 +31,7 @@ class Slider extends Control {
 		super.setStyle(style)
 		
 		if (style.valueLabel) {
-			let valueLabelStyle = new LabelStyle('.value')
+			let valueLabelStyle = new LabelStyle('value-label', this)
 			valueLabelStyle.setStyle(style.valueLabel)
 		}
 		
@@ -44,6 +44,13 @@ class Slider extends Control {
 			let trackStyle = new SliderTrackStyle(this)
 			trackStyle.setStyle(style.track)
 		}
+	}
+	
+	createValueLabel() {
+		let valueLabel = document.createElement('value-label')
+		this.appendChild(valueLabel)
+		this.valueLabel = valueLabel
+		return valueLabel
 	}
 	
 	events = {

@@ -1,5 +1,4 @@
 import { Stylable } from '/scripts/styles.js'
-import { TextLabel } from '/scripts/label.js'
 
 export default class Control extends Stylable(HTMLElement) {
 	connectedCallback() {

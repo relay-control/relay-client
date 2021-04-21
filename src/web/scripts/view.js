@@ -1,5 +1,3 @@
-import { ValueLabel } from '/scripts/label.js'
-
 class View extends HTMLElement {
 	// show() {
 		// Promise.all(this.assets)
@@ -48,7 +46,7 @@ class View extends HTMLElement {
 			if (textLabel2) {
 				let textLabel = control.createTextLabel()
 				textLabel.setText(textLabel2.text)
-				if (textLabel.anchor?.parent === 'container') {
+				if (textLabel2.anchor?.parent === 'container') {
 					control.appendChild(textLabel)
 				} else {
 					control.control.appendChild(textLabel)
@@ -59,7 +57,7 @@ class View extends HTMLElement {
 			if (iconLabel2) {
 				let iconLabel = control.createIconLabel()
 				iconLabel.setIcon(iconLabel2.icon)
-				if (iconLabel.anchor?.parent === 'container') {
+				if (iconLabel2.anchor?.parent === 'container') {
 					control.appendChild(iconLabel)
 				} else {
 					control.control.appendChild(iconLabel)
@@ -77,9 +75,8 @@ class View extends HTMLElement {
 				control.setSnapValue(50)
 				
 				if (controlData.valueLabel) {
-					let valueLabel = new ValueLabel(control)
+					let valueLabel = control.createValueLabel()
 					valueLabel.setText("50%")
-					control.valueLabel = valueLabel
 				}
 			}
 			
