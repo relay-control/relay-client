@@ -5,14 +5,6 @@ class Label extends StylableLabel(Stylable(HTMLElement)) {
 		this.classList.add('label')
 		this.parent = this.parentNode
 	}
-	
-	setParent(parent) {
-		if (parent === 'container') {
-			this.parent.appendChild(this)
-		} else {
-			this.parent.control.appendChild(this)
-		}
-	}
 }
 
 class ValueLabel extends Label {
