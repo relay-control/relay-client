@@ -84,12 +84,12 @@ const Stylable = (base = Object) => class extends base {
 		}
 		
 		if (style.textLabel) {
-			let labelStyle = new LabelStyle('.text')
+			let labelStyle = new LabelStyle('text-label', this)
 			labelStyle.apply(style.textLabel)
 		}
 		
 		if (style.iconLabel) {
-			let labelStyle = new LabelStyle('.icon')
+			let labelStyle = new LabelStyle('icon-label', this)
 			labelStyle.apply(style.iconLabel)
 		}
 	}
