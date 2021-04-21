@@ -27,22 +27,22 @@ class Slider extends Control {
 		datalist.appendChild(option)
 	}
 	
-	apply(style) {
-		super.apply(style)
+	setStyle(style) {
+		super.setStyle(style)
 		
 		if (style.valueLabel) {
 			let valueLabelStyle = new LabelStyle('.value')
-			valueLabelStyle.apply(style.valueLabel)
+			valueLabelStyle.setStyle(style.valueLabel)
 		}
 		
 		if (style.thumb) {
 			let thumbStyle = new SliderThumbStyle(this)
-			thumbStyle.apply(style.thumb)
+			thumbStyle.setStyle(style.thumb)
 		}
 		
 		if (style.track) {
 			let trackStyle = new SliderTrackStyle(this)
-			trackStyle.apply(style.track)
+			trackStyle.setStyle(style.track)
 		}
 	}
 	

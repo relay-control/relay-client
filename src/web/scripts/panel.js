@@ -59,9 +59,9 @@ export default class Panel extends EventTarget {
 				let selector = template.name ? '.' + template.name : ''
 				selector = ((tag !== 'Control') ? 'panel-' + tag.toLowerCase() : '.cell') + selector
 				let style = new Style(selector)
-				style.apply(template)
+				style.setStyle(template)
 				if (template.active) {
-					style.applyActive(template.active)
+					style.setActiveStyle(template.active)
 				}
 			}
 		}

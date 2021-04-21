@@ -39,9 +39,9 @@ class View extends HTMLElement {
 			if ((style.square || style.circle) && !(style.size || style.width || style.height))
 				control.addClass('auto-size')
 			
-			control.apply(controlData)
+			control.setBaseStyle(controlData)
 			if (controlData.active) {
-				control.applyActive(controlData.active)
+				control.setActiveStyle(controlData.active)
 			}
 			
 			let textLabel2 = controlData.textLabel

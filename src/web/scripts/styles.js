@@ -78,25 +78,25 @@ const Stylable = (base = Object) => class extends base {
 		this.controlSelector = `${this.selector} .control`
 	}
 	
-	apply(style) {
+	setStyle(style) {
 		for (let property of this.styleProperties) {
 			if (property in style) this[property] = style[property]
 		}
 		
 		if (style.textLabel) {
 			let labelStyle = new LabelStyle('text-label', this)
-			labelStyle.apply(style.textLabel)
+			labelStyle.setStyle(style.textLabel)
 		}
 		
 		if (style.iconLabel) {
 			let labelStyle = new LabelStyle('icon-label', this)
-			labelStyle.apply(style.iconLabel)
+			labelStyle.setStyle(style.iconLabel)
 		}
 	}
 	
-	applyActive(style) {
+	setActiveStyle(style) {
 		let activeStyle = new SubStyle('.active', this)
-		activeStyle.apply(style)
+		activeStyle.setStyle(style)
 	}
 	
 	getStyleRule(selector) {
@@ -259,11 +259,6 @@ const StylableLabel = (base = Object) => class extends base {
 	
 	get controlStyle() {
 		return this.getStyleRule(`${this.selector} span`)
-	}
-	
-	set anchor(anchor) {
-		super.anchor = anchor
-		this.setAreaStyle('--parent', anchor.parent)
 	}
 	
 	set color(color) {
