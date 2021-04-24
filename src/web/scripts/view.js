@@ -68,6 +68,11 @@ class View extends HTMLElement {
 			if (imageLabel2) {
 				let imageLabel = control.createImageLabel()
 				imageLabel.setImage(imageLabel2.image)
+				if (imageLabel2.anchor?.parent === 'container') {
+					control.appendChild(imageLabel)
+				} else {
+					control.control.appendChild(imageLabel)
+				}
 			}
 			
 			if (tag === 'Slider') {
