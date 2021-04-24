@@ -1,14 +1,17 @@
 import Control from '/scripts/control.js'
-import { LabelStyle, SliderThumbStyle, SliderTrackStyle } from '/scripts/styles.js'
+import { SliderThumbStyle, SliderTrackStyle } from '/scripts/styles.js'
 
 class Slider extends Control {
-	connectedCallback() {
-		super.connectedCallback()
-
+	constructor() {
+		super()
 		this.control = document.createElement('input')
 		this.control.type = 'range'
 		this.control.id = this.id
 		this.control.classList.add('control')
+	}
+
+	connectedCallback() {
+		super.connectedCallback()
 		this.container.appendChild(this.control)
 		
 		for (let [event, callback] of Object.entries(this.events)) {
@@ -30,9 +33,8 @@ class Slider extends Control {
 	setStyle(style) {
 		super.setStyle(style)
 		
-		if (style.valueLabel) {
-			let valueLabelStyle = new LabelStyle('value-label', this)
-			valueLabelStyle.setStyle(style.valueLabel)
+		if (style.valueLabel && this.valueLabel) {
+			this.valueLabel.setStyle(style.valueLabel)
 		}
 		
 		if (style.thumb) {

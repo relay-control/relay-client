@@ -1,18 +1,25 @@
-import { Stylable } from '/scripts/styles.js'
+import { ControlStyle, Stylable, StyleElement } from '/scripts/styles.js'
 
-export default class Control extends Stylable(HTMLElement) {
-	connectedCallback() {
-		let id = panel.getNextID()
-		super('#' + id)
-		this.id = id
-		
-		this.panel = panel.parent
-		
-		this.classList.add('cell')
-		
+export default class Control extends ControlStyle(Stylable(StyleElement)) {
+	constructor() {
+		super()
 		this.container = document.createElement('div')
 		this.container.classList.add('container')
+		this.cellStyle = this.style
+		this.containerStyle = this.container.style
+	}
+
+	connectedCallback() {
+		this.classList.add('cell')
 		this.appendChild(this.container)
+	}
+
+	setBaseStyle(style) {
+		this.baseStyle = style
+	}
+
+	setActiveStyle(style) {
+		this.activeStyle = style
 	}
 	
 	addClass(className) {
@@ -24,28 +31,31 @@ export default class Control extends Stylable(HTMLElement) {
 	}
 	
 	set row(row) {
-		this.setCellStyle('--row', row)
+		this.cellStyle.setProperty('--row', row)
 	}
 	
 	set column(column) {
-		this.setCellStyle('--column', column)
+		this.cellStyle.setProperty('--column', column)
 	}
 	
 	createTextLabel() {
 		let textLabel = document.createElement('text-label')
 		this.appendChild(textLabel)
+		this.textLabel = textLabel
 		return textLabel
 	}
 	
 	createIconLabel() {
 		let iconLabel = document.createElement('icon-label')
 		this.appendChild(iconLabel)
+		this.iconLabel = iconLabel
 		return iconLabel
 	}
 	
 	createImageLabel() {
 		let imageLabel = document.createElement('image-label')
 		this.appendChild(imageLabel)
+		this.imageLabel = imageLabel
 		return imageLabel
 	}
 }

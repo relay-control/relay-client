@@ -8,21 +8,16 @@ const FlexPositions = {
 	right: 'flex-end',
 }
 
+function mixin(base, ...extend) {
+	return base(extend.length > 0 ? mixin(...extend) : Object)
+}
+
 function parseLength(length) {
 	if (length && (typeof length == "number" || !length.endsWith('%'))) {
 		length += 'px'
 	}
 	return length
 }
-
-// convert.rgb.hex = function (args) {
-	// var integer = ((Math.round(args[0]) & 0xFF) << 16)
-		// + ((Math.round(args[1]) & 0xFF) << 8)
-		// + (Math.round(args[2]) & 0xFF);
-
-	// var string = integer.toString(16).toUpperCase();
-	// return '000000'.substring(string.length) + string;
-// }
 
 function toRgbColor(args) {
 	let match = args.toString(16).match(/[a-f0-9]{6}|[a-f0-9]{3}/i)
@@ -57,82 +52,21 @@ function parseColor(color, alpha) {
 }
 
 const Stylable = (base = Object) => class extends base {
-	get styleProperties() {
-		return [
-			'rowSpan',
-			'columnSpan',
-			'anchor',
-			'size',
-			'width',
-			'height',
-			'inset',
-			'background',
-			'border',
-			'shadows',
-		]
-	}
-	
-	constructor(selector) {
-		super()
-		this.selector = selector
-		this.controlSelector = `${this.selector} .control`
-	}
+	styleProperties = [
+		'anchor',
+		'size',
+		'width',
+		'height',
+		'inset',
+		'background',
+		'border',
+		'shadows',
+	]
 	
 	setStyle(style) {
 		for (let property of this.styleProperties) {
 			if (property in style) this[property] = style[property]
 		}
-		
-		if (style.textLabel) {
-			let labelStyle = new LabelStyle('text-label', this)
-			labelStyle.setStyle(style.textLabel)
-		}
-		
-		if (style.iconLabel) {
-			let labelStyle = new LabelStyle('icon-label', this)
-			labelStyle.setStyle(style.iconLabel)
-		}
-	}
-	
-	setActiveStyle(style) {
-		let activeStyle = new SubStyle('.active', this)
-		activeStyle.setStyle(style)
-	}
-	
-	getStyleRule(selector) {
-		return Stylesheet.getRule(selector)
-	}
-	
-	get cellStyle() {
-		return this.getStyleRule(`${this.selector}`)
-	}
-	
-	get containerStyle() {
-		return this.getStyleRule(`${this.selector} .container`)
-	}
-	
-	get controlStyle() {
-		return this.getStyleRule(this.controlSelector)
-	}
-	
-	setCellStyle(property, value) {
-		this.cellStyle.setProperty(property, value)
-	}
-	
-	setContainerStyle(property, value) {
-		this.containerStyle.setProperty(property, value)
-	}
-	
-	setControlStyle(property, value) {
-		this.controlStyle.setProperty(property, value)
-	}
-	
-	set rowSpan(span) {
-		this.setCellStyle('--row-span', span)
-	}
-	
-	set columnSpan(span) {
-		this.setCellStyle('--column-span', span)
 	}
 	
 	set anchor(anchor) {
@@ -158,35 +92,35 @@ const Stylable = (base = Object) => class extends base {
 				}
 			}
 		}
-		this.setContainerStyle('--offset-x', parseLength(anchor.offsetX))
-		this.setContainerStyle('--offset-y', parseLength(anchor.offsetY))
+		this.containerStyle.setProperty('--offset-x', parseLength(anchor.offsetX))
+		this.containerStyle.setProperty('--offset-y', parseLength(anchor.offsetY))
 	}
 	
 	set size(size) {
-		this.setContainerStyle('width', parseLength(size))
-		this.setContainerStyle('height', parseLength(size))
+		this.width = size
+		this.height = size
 	}
 	
 	set width(width) {
-		this.setContainerStyle('width', parseLength(width))
+		this.containerStyle.setProperty('width', parseLength(width))
 	}
 	
 	set height(height) {
-		this.setContainerStyle('height', parseLength(height))
+		this.containerStyle.setProperty('height', parseLength(height))
 	}
 	
 	set inset(inset) {
-		this.setCellStyle('--inset', parseLength(inset))
+		this.cellStyle.setProperty('--inset', parseLength(inset))
 	}
 	
 	set background(background) {
 		if (background.color) {
-			this.setControlStyle('background-color', parseColor(background.color, background.alpha))
-			this.setControlStyle('background-image', 'unset')
+			this.elementStyle.setProperty('background-color', parseColor(background.color, background.alpha))
+			this.elementStyle.removeProperty('background-image')
 		}
 		if (background.image) {
-			this.setControlStyle('background-image', `url(${getAssetPath(background.image)})`)
-			this.setControlStyle('background-size', 'cover')
+			this.elementStyle.setProperty('background-image', `url(${getAssetPath(background.image)})`)
+			this.elementStyle.setProperty('background-size', 'cover')
 		}
 		if (background.gradient) {
 			let gradient = []
@@ -200,24 +134,24 @@ const Stylable = (base = Object) => class extends base {
 			if (background.gradient.type === 'radial') {
 				if (background.gradient.position)
 					gradient = 'circle at ' + background.gradient.position + ', ' + gradient
-				this.setControlStyle('background-image', `radial-gradient(${gradient})`)
+				this.elementStyle.setProperty('background-image', `radial-gradient(${gradient})`)
 			} else {
 				let direction = background.gradient.direction
 				if (direction && !direction.match(/\d+deg/))
 					direction = 'to ' + direction
 				if (direction)
 					gradient = direction + ', ' + gradient
-				this.setControlStyle('background-image', `linear-gradient(${gradient})`)
+				this.elementStyle.setProperty('background-image', `linear-gradient(${gradient})`)
 			}
 		}
 	}
 	
 	set border(border) {
-		this.setControlStyle('border-style', border.style)
-		this.setControlStyle('border-width', parseLength(border.width))
-		this.setControlStyle('border-color', border.color)
+		this.elementStyle.setProperty('border-style', border.style)
+		this.elementStyle.setProperty('border-width', parseLength(border.width))
+		this.elementStyle.setProperty('border-color', border.color)
 		// if (!control.circle) style.borderRadius = parseLength(border.radius)
-		this.setControlStyle('border-radius', parseLength(border.radius))
+		this.elementStyle.setProperty('border-radius', parseLength(border.radius))
 	}
 	
 	set shadows(shadows) {
@@ -231,44 +165,155 @@ const Stylable = (base = Object) => class extends base {
 			if (shadow.color) boxShadow.push(parseColor(shadow.color, shadow.alpha))
 			boxShadows.push(boxShadow.join(' '))
 		}
-		this.setControlStyle('box-shadow', boxShadows.join(', '))
+		this.elementStyle.setProperty('box-shadow', boxShadows.join(', '))
 	}
 }
 
-class Style extends Stylable() { }
-
-class SubStyle extends Style {
-	constructor(selector, parent) {
-		super(parent.selector + selector)
-		this.parent = parent
+class Style extends Stylable() {
+	constructor(selector) {
+		super()
+		this.selector = selector
 	}
+	
+	createStyleRule(selector = '') {
+		return Stylesheet.createRule(this.selector + selector)
+	}
+}
+
+const ControlStyle = (base = Object) => class extends base {
+	styleProperties = [
+		'rowSpan',
+		'columnSpan',
+		'anchor',
+		'size',
+		'width',
+		'height',
+		'inset',
+		'background',
+		'border',
+		'shadows',
+	]
+	
+	setStyle(style) {
+		super.setStyle(style)
+
+		if (style.textLabel && this.textLabel) {
+			this.textLabel.setStyle(style.textLabel)
+		}
+		
+		if (style.iconLabel && this.iconLabel) {
+			this.iconLabel.setStyle(style.iconLabel)
+		}
+		
+		if (style.imageLabel && this.imageLabel) {
+			this.imageLabel.setStyle(style.imageLabel)
+		}
+		
+		if (style.valueLabel && this.valueLabel) {
+			this.valueLabel.setStyle(style.valueLabel)
+		}
+	}
+	
+	set rowSpan(span) {
+		this.cellStyle.setProperty('--row-span', span)
+	}
+	
+	set columnSpan(span) {
+		this.cellStyle.setProperty('--column-span', span)
+	}
+}
+
+class ControlStyleTemplate extends ControlStyle(Style) {
+	constructor(selector) {
+		super(selector)
+		this.cellStyle = this.createStyleRule()
+		this.containerStyle = this.createStyleRule(' .container')
+		this.elementStyle = this.createStyleRule(' .control')
+		this.textLabel = this.createTextLabel()
+		this.iconLabel = this.createIconLabel()
+		this.imageLabel = this.createImageLabel()
+	}
+	
+	setActiveStyle(style) {
+		let activeStyle = this.createSubStyle('.active')
+		activeStyle.setStyle(style)
+	}
+
+	createSubStyle(selector) {
+		let style = new Style(this.selector + selector)
+		style.parent = this
+		style.elementStyle = style.createStyleRule(' .control')
+		return style
+	}
+	
+	createTextLabel() {
+		let textLabel = new LabelStyle('text-label', this)
+		return textLabel
+	}
+	
+	createIconLabel() {
+		let iconLabel = new LabelStyle('icon-label', this)
+		return iconLabel
+	}
+	
+	createImageLabel() {
+		let imageLabel = new LabelStyle('image-label', this)
+		imageLabel.elementStyle = this.createStyleRule(' img')
+		return imageLabel
+	}
+}
+
+class SliderStyle extends Style {
+	constructor(selector) {
+		super(selector)
+		this.track = new SliderTrackStyle(this)
+	}
+	
+	setStyle(style) {
+		super.setStyle(style)
+		
+		if (style.track && this.track) {
+			// this.track.setStyle(style.track)
+		}
+	}
+}
+
+class StyleElement extends Stylable(HTMLElement) {
+	cssProperties = [
+		'alignItems',
+		'justifyContent',
+		'background',
+		'box-shadow',
+		'color',
+		'--offset-x',
+		'--offset-y',
+	]
+	
 }
 
 const StylableLabel = (base = Object) => class extends base {
-	get styleProperties() {
-		return super.styleProperties.concat([
-			'color',
-			'font',
-			'textShadow',
-		])
-	}
-	
-	get containerStyle() {
-		return this.getStyleRule(`${this.selector}`)
-	}
-	
-	get controlStyle() {
-		return this.getStyleRule(`${this.selector} span`)
-	}
+	styleProperties = [
+		'anchor',
+		'size',
+		'width',
+		'height',
+		'inset',
+		'background',
+		'border',
+		'shadows',
+		'color',
+		'font',
+		'textShadow',
+	]
 	
 	set color(color) {
-		this.setControlStyle('color', color)
+		this.elementStyle.setProperty('color', color)
 	}
 	
 	set font(font) {
-		// this.setControlStyle('color', parseColor(font.color, font.alpha))
-		if (font.family) this.setControlStyle('font-family', font.family)
-		this.setControlStyle('font-size', parseLength(font.size))
+		// this.elementStyle.setProperty('color', parseColor(font.color, font.alpha))
+		if (font.family) this.elementStyle.setProperty('font-family', font.family)
+		this.elementStyle.setProperty('font-size', parseLength(font.size))
 	}
 	
 	set textShadow(shadows) {
@@ -280,70 +325,41 @@ const StylableLabel = (base = Object) => class extends base {
 			if (shadow.color) textShadow.push(parseColor(shadow.color, shadow.alpha))
 			textShadows.push(textShadow.join(' '))
 		}
-		this.setControlStyle('text-shadow', textShadows.join(', '))
+		this.elementStyle.setProperty('text-shadow', textShadows.join(', '))
 	}
 }
 
-export class LabelStyle extends (StylableLabel(SubStyle)) {
+class LabelStyle extends StylableLabel(Style) {
 	constructor(selector, parent) {
-		super(' ' + selector, parent)
+		super(parent.selector + ' ' + selector)
+		this.parent = parent
+		this.containerStyle = this.createStyleRule()
+		this.elementStyle = this.createStyleRule(' span')
 	}
 }
 
-class ActiveLabelStyle extends SubStyle {
+class SliderThumbStyle extends Style {
 	constructor(parent) {
-		super('.active .label', parent)
-		// this.containerSelector = `${this.selector}`
-		this.controlSelector = `${this.selector}`
-	}
-	
-	get styleProperties() {
-		return super.styleProperties.concat([
-			'font',
-		])
-	}
-	
-	set font(font) {
-		this.setControlStyle('color', parseColor(font.color, font.alpha))
-		if (font.family) this.setControlStyle('font-family', font.family)
-		this.setControlStyle('font-size', parseLength(font.size))
-	}
-}
-
-class SliderThumbStyle extends SubStyle {
-	constructor(parent) {
-		super('::-webkit-slider-thumb', parent)
-	}
-	
-	get containerStyle() {
-		return this.parent.getStyleRule(`${this.selector}`)
-	}
-	
-	get controlStyle() {
-		return this.parent.getStyleRule(`${this.selector}`)
+		super('panel-slider .control::-webkit-slider-thumb', parent)
+		this.containerStyle = this.createStyleRule()
+		this.elementStyle = this.createStyleRule()
 	}
 	
 	set height(height) {
-		this.parent.setControlStyle('--thumb-height', parseLength(height))
+		this.elementStyle.setProperty('--thumb-height', parseLength(height))
 	}
 }
 
-class SliderTrackStyle extends SubStyle {
+class SliderTrackStyle extends Style {
 	constructor(parent) {
-		super('::-webkit-slider-runnable-track', parent)
-	}
-	
-	get containerStyle() {
-		return this.parent.getStyleRule(`${this.selector}`)
-	}
-	
-	get controlStyle() {
-		return this.parent.getStyleRule(`${this.selector}`)
+		super('panel-slider  .control::-webkit-slider-runnable-track', parent)
+		this.containerStyle = this.createStyleRule()
+		this.elementStyle = this.createStyleRule()
 	}
 	
 	set height(height) {
-		this.parent.setControlStyle('--track-height', parseLength(height))
+		this.elementStyle.setProperty('--track-height', parseLength(height))
 	}
 }
 
-export { Style as default, Stylable, StylableLabel, SliderThumbStyle, SliderTrackStyle }
+export { ControlStyle, ControlStyleTemplate, SliderStyle, Stylable, StylableLabel, StyleElement, SliderThumbStyle, SliderTrackStyle }

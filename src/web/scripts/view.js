@@ -8,7 +8,7 @@ class View extends HTMLElement {
 			// this.element.style.display = 'grid'
 		 // })
 	// }
-
+	
 	build(view) {
 		let usedVJoyDevices = {}
 		
@@ -42,33 +42,33 @@ class View extends HTMLElement {
 				control.setActiveStyle(controlData.active)
 			}
 			
-			let textLabel2 = controlData.textLabel
-			if (textLabel2) {
+			let textLabelData = controlData.textLabel
+			if (textLabelData) {
 				let textLabel = control.createTextLabel()
-				textLabel.setText(textLabel2.text)
-				if (textLabel2.anchor?.parent === 'container') {
+				textLabel.setText(textLabelData.text)
+				if (textLabelData.anchor?.parent === 'container') {
 					control.appendChild(textLabel)
 				} else {
 					control.control.appendChild(textLabel)
 				}
 			}
 			
-			let iconLabel2 = controlData.iconLabel
-			if (iconLabel2) {
+			let iconLabelData = controlData.iconLabel
+			if (iconLabelData) {
 				let iconLabel = control.createIconLabel()
-				iconLabel.setIcon(iconLabel2.icon)
-				if (iconLabel2.anchor?.parent === 'container') {
+				iconLabel.setIcon(iconLabelData.icon)
+				if (iconLabelData.anchor?.parent === 'container') {
 					control.appendChild(iconLabel)
 				} else {
 					control.control.appendChild(iconLabel)
 				}
 			}
 			
-			let imageLabel2 = controlData.imageLabel
-			if (imageLabel2) {
+			let imageLabelData = controlData.imageLabel
+			if (imageLabelData) {
 				let imageLabel = control.createImageLabel()
-				imageLabel.setImage(imageLabel2.image)
-				if (imageLabel2.anchor?.parent === 'container') {
+				imageLabel.setImage(imageLabelData.image)
+				if (imageLabelData.anchor?.parent === 'container') {
 					control.appendChild(imageLabel)
 				} else {
 					control.control.appendChild(imageLabel)
@@ -84,6 +84,8 @@ class View extends HTMLElement {
 					valueLabel.setText("50%")
 				}
 			}
+
+			control.setStyle(controlData)
 			
 			let action = controlData.action
 			if (action) {
@@ -118,10 +120,6 @@ class View extends HTMLElement {
 		}
 		this.appendChild(control)
 		return control
-	}
-	
-	getNextID() {
-		return 'control' + this.parent.id++
 	}
 }
 

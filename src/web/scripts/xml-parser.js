@@ -54,6 +54,7 @@ function parse(xml) {
 	// if it's an element with attributes, add them to data.attributes
 	if (isElement && hasAttributes) {
 		for (let attribute of xml.attributes) {
+			// also convert kebab case to camel case
 			data[attribute.name.replace(/-(\w)/, (m, s) => s.toUpperCase())] = parseNumber(attribute.value)
 		}
 	}

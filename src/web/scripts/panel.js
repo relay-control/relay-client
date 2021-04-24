@@ -1,4 +1,4 @@
-import Style from '/scripts/styles.js'
+import { ControlStyleTemplate, SliderStyle } from '/scripts/styles.js'
 
 function loadAudio(url) {
 	return new Promise((resolve, reject) => {
@@ -12,7 +12,6 @@ function loadAudio(url) {
 }
 
 export default class Panel extends EventTarget {
-	id = 1
 	views = []
 	assets = []
 	
@@ -58,7 +57,14 @@ export default class Panel extends EventTarget {
 			for (let [template, tag] of panelData.templates) {
 				let selector = template.name ? '.' + template.name : ''
 				selector = ((tag !== 'Control') ? 'panel-' + tag.toLowerCase() : '.cell') + selector
-				let style = new Style(selector)
+				let style = null
+				switch (tag) {
+					case 'Slider':
+						style = new SliderStyle(selector)
+						break
+					default:
+						style = new ControlStyleTemplate(selector)
+				}
 				style.setStyle(template)
 				if (template.active) {
 					style.setActiveStyle(template.active)
@@ -164,17 +170,12 @@ export class Stylesheet {
 	static create() {
 		Stylesheet.sheet = new CSSStyleSheet()
 		document.adoptedStyleSheets = [Stylesheet.sheet]
-		Stylesheet.rules = {}
 	}
 	
-	static getRule(selector) {
-		let rule = Stylesheet.rules[selector]
-		if (!rule) {
-			let index = Stylesheet.sheet.rules.length
-			Stylesheet.sheet.insertRule(`${selector} {}`, index)
-			rule = Stylesheet.sheet.rules[index].style
-			Stylesheet.rules[selector] = rule
-		}
+	static createRule(selector) {
+		let index = Stylesheet.sheet.rules.length
+		Stylesheet.sheet.insertRule(`${selector} {}`, index)
+		let rule = Stylesheet.sheet.rules[index].style
 		return rule
 	}
 }

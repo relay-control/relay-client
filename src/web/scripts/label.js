@@ -1,26 +1,40 @@
-import { Stylable, StylableLabel } from '/scripts/styles.js'
+import { StylableLabel, StyleElement } from '/scripts/styles.js'
 
-class Label extends StylableLabel(Stylable(HTMLElement)) {
+class Label extends StylableLabel(StyleElement) {
+	constructor() {
+		super()
+		this.cellStyle = this.style
+		this.containerStyle = this.style
+	}
+
 	connectedCallback() {
 		this.classList.add('label')
 		this.parent = this.parentNode
+	}
+	
+	resetStyle() {
+		for (let property of this.cssProperties) {
+			this.style.removeProperty(property)
+			this.label.style.removeProperty(property)
+		}
 	}
 }
 
 class ValueLabel extends Label {
 	constructor() {
 		super()
-		this.span = document.createElement('span')
+		this.label = document.createElement('span')
+		this.elementStyle = this.label.style
 	}
 
 	connectedCallback() {
 		super.connectedCallback()
-		this.appendChild(this.span)
+		this.appendChild(this.label)
 		parent.value = this
 	}
 	
 	setText(text) {
-		this.span.textContent = text
+		this.label.textContent = text
 	}
 }
 
@@ -29,16 +43,17 @@ customElements.define('value-label', ValueLabel)
 class TextLabel extends Label {
 	constructor() {
 		super()
-		this.span = document.createElement('span')
+		this.label = document.createElement('span')
+		this.elementStyle = this.label.style
 	}
 
 	connectedCallback() {
 		super.connectedCallback()
-		this.appendChild(this.span)
+		this.appendChild(this.label)
 	}
 	
 	setText(text) {
-		this.span.textContent = text
+		this.label.textContent = text
 	}
 }
 
@@ -47,17 +62,18 @@ customElements.define('text-label', TextLabel)
 class IconLabel extends Label {
 	constructor(parent) {
 		super(parent)
-		this.icon = document.createElement('span')
-		this.icon.classList.add('fa', 'fa-fw', 'fa-2x')
+		this.label = document.createElement('span')
+		this.label.classList.add('fa', 'fa-fw', 'fa-2x')
+		this.elementStyle = this.label.style
 	}
 
 	connectedCallback() {
 		super.connectedCallback()
-		this.appendChild(this.icon)
+		this.appendChild(this.label)
 	}
 	
 	setIcon(icon) {
-		this.icon.classList.add('fa-' + icon)
+		this.label.classList.add('fa-' + icon)
 	}
 }
 
@@ -66,16 +82,17 @@ customElements.define('icon-label', IconLabel)
 class ImageLabel extends Label {
 	constructor(parent) {
 		super(parent)
-		this.image = document.createElement('img')
+		this.label = document.createElement('img')
+		this.elementStyle = this.label.style
 	}
 
 	connectedCallback() {
 		super.connectedCallback()
-		this.appendChild(this.image)
+		this.appendChild(this.label)
 	}
 	
 	setImage(image) {
-		this.image.src = getAssetPath(image)
+		this.label.src = getAssetPath(image)
 	}
 }
 
