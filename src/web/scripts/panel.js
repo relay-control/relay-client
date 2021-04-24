@@ -83,7 +83,7 @@ export default class Panel extends EventTarget {
 		
 		for (let [viewProperties] of panelData.views) {
 			let view = this.createView()
-			view.templates = this.templates
+			view.templates = panelData.templates
 			view.build(viewProperties)
 			this.usedDeviceResources = view.usedDevices
 		}
