@@ -12,7 +12,6 @@ class Button extends Control {
 		super()
 		this.control = document.createElement('button')
 		this.control.classList.add('control')
-		this.elementStyle = this.control.style
 	}
 
 	connectedCallback() {
@@ -25,10 +24,7 @@ class Button extends Control {
 	}
 
 	resetStyle() {
-		for (let property of this.cssProperties) {
-			this.container.style.removeProperty(property)
-			this.control.style.removeProperty(property)
-		}
+		super.resetStyle()
 		
 		if (this.textLabel) {
 			this.textLabel.resetStyle()

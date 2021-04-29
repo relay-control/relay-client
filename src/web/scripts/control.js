@@ -5,8 +5,6 @@ export default class Control extends ControlStyle(Stylable(StyleElement)) {
 		super()
 		this.container = document.createElement('div')
 		this.container.classList.add('container')
-		this.cellStyle = this.style
-		this.containerStyle = this.container.style
 	}
 
 	connectedCallback() {
@@ -31,11 +29,11 @@ export default class Control extends ControlStyle(Stylable(StyleElement)) {
 	}
 	
 	set row(row) {
-		this.cellStyle.setProperty('--row', row)
+		this.setStyleProperty('row', row)
 	}
 	
 	set column(column) {
-		this.cellStyle.setProperty('--column', column)
+		this.setStyleProperty('column', column)
 	}
 	
 	createTextLabel() {
