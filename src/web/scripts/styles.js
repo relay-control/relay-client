@@ -178,8 +178,8 @@ const Stylable = (base = Object) => class extends base {
 class Style extends Stylable() {
 	constructor(selector) {
 		super()
+		this.style = Stylesheet.createRule(selector)
 		this.selector = selector
-		this.style = Stylesheet.createRule(this.selector)
 	}
 }
 
@@ -229,35 +229,19 @@ const ControlStyle = (base = Object) => class extends base {
 class ControlStyleTemplate extends ControlStyle(Style) {
 	constructor(selector) {
 		super(selector)
-		this.textLabel = this.createTextLabel()
-		this.iconLabel = this.createIconLabel()
-		this.imageLabel = this.createImageLabel()
+		this.textLabel = this.createLabel('text')
+		this.iconLabel = this.createLabel('icon')
+		this.imageLabel = this.createLabel('image')
 	}
 	
 	setActiveStyle(style) {
-		let activeStyle = this.createSubStyle('.active')
+		let activeStyle = new ControlStyleTemplate(this.selector + '.active')
+		activeStyle.parent = this
 		activeStyle.setStyle(style)
 	}
 
-	createSubStyle(selector) {
-		let style = new Style(this.selector + selector)
-		style.parent = this
-		return style
-	}
-	
-	createTextLabel() {
-		let textLabel = new LabelStyle(this.selector + ' ' + 'text-label', this)
-		return textLabel
-	}
-	
-	createIconLabel() {
-		let iconLabel = new LabelStyle(this.selector + ' ' + 'icon-label', this)
-		return iconLabel
-	}
-	
-	createImageLabel() {
-		let imageLabel = new LabelStyle(this.selector + ' ' + 'image-label', this)
-		return imageLabel
+	createLabel(labelType) {
+		return new LabelStyle(`${this.selector} ${labelType}-label`, this)
 	}
 }
 
@@ -286,8 +270,7 @@ class SliderStyle extends Style {
 	}
 	
 	createValueLabel() {
-		let valueLabel = new LabelStyle(this.selector + ' ' + 'value-label', this)
-		return valueLabel
+		return new LabelStyle(this.selector + ' value-label', this)
 	}
 }
 
