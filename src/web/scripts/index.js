@@ -1,8 +1,9 @@
 import Recon from '/scripts/recon.js'
-import Panel from '/scripts/panel.js'
 import { createApp } from '/scripts/vue.esm-browser.js'
 
 let recon = new Recon()
+
+window.getAssetPath = (file) => recon.getAssetPath(file)
 
 function setCookie(name, value, maxAge = new Date(8.64e15)) {
 	value = encodeURIComponent(value)
@@ -18,6 +19,8 @@ function getCookie(name) {
 function eraseCookie(name) {   
 	setCookie(name, '', new Date(0))
 }
+
+let panel = document.createElement('panel-container')
 
 const Modal = {
 	data: () => ({
@@ -75,16 +78,9 @@ const PanelApp = {
 		},
 
 		async loadPanel(panelName) {
-			{
 			// if (panelName !== currentPanel) {
-				let panel = document.getElementById('panel')
-				while (panel.lastChild)
-					panel.lastChild.remove()
-				// if (stylesheet) {
-					// document.adoptedStyleSheets = []
-				// }
-				// rules = {}
-			}
+				panel.removeViews()
+			// }
 			
 			let panelData = null
 			try {
@@ -103,12 +99,7 @@ const PanelApp = {
 			recon.currentPanel = panelName
 			setCookie('lastPanel', panelName)
 
-			let panel = new Panel(panelData)
-			panel.build()
-	
-			panel.addEventListener('button-activate', this.onButtonActivate)
-			panel.addEventListener('button-deactivate', this.onButtonDeactivate)
-			panel.addEventListener('slider-change', this.onSliderChange)
+			panel.build(panelData)
 
 			// request devices
 			let devices = await Promise.allSettled(Object.keys(panel.usedDeviceResources).map(e => recon.acquireDevice(parseInt(e))))
@@ -136,7 +127,6 @@ const PanelApp = {
 		},
 
 		closePanel() {
-			let panel = document.getElementById('panel')
 			this.currentPanel = null
 			eraseCookie('lastPanel')
 			panel.style.display = 'none'
@@ -237,6 +227,12 @@ const PanelApp = {
 		} else {
 			this.showModal = true
 		}
+		
+		document.getElementById('app').appendChild(panel)
+
+		panel.addEventListener('button-activate', this.onButtonActivate)
+		panel.addEventListener('button-deactivate', this.onButtonDeactivate)
+		panel.addEventListener('slider-change', this.onSliderChange)
 
 		window.addEventListener('keydown', e => {
 			if (e.code === 'Escape' || e.code === 'Backspace') {

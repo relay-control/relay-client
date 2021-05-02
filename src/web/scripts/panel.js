@@ -11,24 +11,16 @@ function loadAudio(url) {
 	})
 }
 
-export default class Panel extends EventTarget {
+class PanelContainer extends HTMLElement {
 	views = []
 	assets = []
 	
-	constructor(panelData) {
-		super()
-		this.element = document.getElementById('panel')
-		this.panelData = panelData
-		panel.panel = this
-	}
-
-	build() {
+	build(panelData) {
 		// create a separate stylesheet for dynamic style rules
 		Stylesheet.create()
 		
-		let panelData = this.panelData
-		this.element.style = null
-		this.element.style.display = 'none'
+		this.style = null
+		this.style.display = 'none'
 		if (panelData.background)
 			this.background = panelData.background
 		this.rows = panelData.grid.rows
@@ -72,21 +64,6 @@ export default class Panel extends EventTarget {
 			}
 		}
 
-		this.element.addEventListener('button-activate', e => {
-			let event = new CustomEvent('button-activate', { detail: e.detail })
-			this.dispatchEvent(event)
-		})
-
-		this.element.addEventListener('button-deactivate', e => {
-			let event = new CustomEvent('button-deactivate', { detail: e.detail })
-			this.dispatchEvent(event)
-		})
-
-		this.element.addEventListener('slider-change', e => {
-			let event = new CustomEvent('slider-change', { detail: e.detail })
-			this.dispatchEvent(event)
-		})
-		
 		for (let [viewProperties] of panelData.views) {
 			let view = this.createView()
 			view.templates = panelData.templates
@@ -102,14 +79,21 @@ export default class Panel extends EventTarget {
 	async show() {
 		await Promise.allSettled(this.assets)
 		
-		this.element.style.display = 'block'
+		this.style.display = 'block'
 	}
 	
 	createView() {
 		let view = document.createElement('panel-view')
-		this.element.appendChild(view)
+		this.appendChild(view)
 		this.views.push(view)
 		return view
+	}
+	
+	removeViews() {
+		while (this.lastChild) {
+			this.lastChild.remove()
+			this.views.pop()
+		}
 	}
 	
 	setView(view) {
@@ -144,27 +128,29 @@ export default class Panel extends EventTarget {
 			let script = document.createElement('script')
 			script.src = url
 			script.onload = () => resolve()
-			this.element.appendChild(script)
+			this.appendChild(script)
 		}))
 	}
 	
 	set rows(rows) {
-		this.element.style.setProperty('--grid-rows', rows)
+		this.style.setProperty('--grid-rows', rows)
 	}
 	
 	set columns(columns) {
-		this.element.style.setProperty('--grid-columns', columns)
+		this.style.setProperty('--grid-columns', columns)
 	}
 	
 	set background(background) {
-		this.element.style.backgroundColor = background.color
+		this.style.backgroundColor = background.color
 		if (background.image) {
-			this.element.style.backgroundImage = `url(${getAssetPath(background.image)})`
-			this.element.style.backgroundSize = 'cover'
-			this.element.style.backgroundPosition = 'center'
+			this.style.backgroundImage = `url(${getAssetPath(background.image)})`
+			this.style.backgroundSize = 'cover'
+			this.style.backgroundPosition = 'center'
 		}
 	}
 }
+
+customElements.define('panel-container', PanelContainer)
 
 export class Stylesheet {
 	static create() {
