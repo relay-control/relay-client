@@ -19,7 +19,7 @@ function eraseCookie(name) {
 	setCookie(name, '', new Date(0))
 }
 
-const modal = {
+const Modal = {
 	data: () => ({
 		show: false,
 		title: '',
@@ -40,7 +40,7 @@ const modal = {
 	`,
 }
 
-const Counter = {
+const PanelApp = {
 	data: () => ({
 		showModal: false,
 		address: '',
@@ -101,68 +101,9 @@ const Counter = {
 			let panel = new Panel(panelData)
 			panel.build()
 	
-			panel.addEventListener('button-activate', e => {
-				let action = e.detail
-				let input = { }
-				switch (action.type) {
-					case 'button':
-						input.type = action.type
-						input.deviceId = action.device
-						input.button = action.button
-						input.isPressed = true
-						break
-					case 'key':
-						input.key = action.key
-						input.isPressed = true
-						break
-					case 'macro':
-						input.actions = action.action
-						break
-					default:
-						input.command = action.command
-						input.args = action.args
-						break
-				}
-				recon.sendInput(input)
-			})
-	
-			panel.addEventListener('button-deactivate', e => {
-				let action = e.detail
-				let input = { }
-				switch (action.type) {
-					case 'button':
-						input.type = action.type
-						input.deviceId = action.device
-						input.button = action.button
-						input.isPressed = true
-						break
-					case 'key':
-						input.key = action.key
-						input.isPressed = true
-						break
-					case 'macro':
-						input.actions = action.action
-						break
-					case 'command':
-						input.command = action.command
-						input.args = action.args
-						break
-				}
-				recon.sendInput(input)
-				if (action.type === 'view') {
-					panel.setView(action.view)
-				}
-			})
-
-			panel.addEventListener('slider-change', e => {
-				let action = e.detail
-				recon.sendInput({
-					type: 'axis',
-					device: action.device,
-					axis: action.axis,
-					value: e.currentTarget.value,
-				})
-			})
+			panel.addEventListener('button-activate', this.onButtonActivate)
+			panel.addEventListener('button-deactivate', this.onButtonDeactivate)
+			panel.addEventListener('slider-change', this.onSliderChange)
 
 			// request devices
 			let devices = await Promise.allSettled(Object.keys(panel.usedDeviceResources).map(e => recon.acquireDevice(parseInt(e))))
@@ -209,6 +150,69 @@ const Counter = {
 			modal.message = message
 			modal.show = true
 		},
+
+		onButtonActivate(e) {
+			let action = e.detail
+			let input = { }
+			switch (action.type) {
+				case 'button':
+					input.type = action.type
+					input.deviceId = action.device
+					input.button = action.button
+					input.isPressed = true
+					break
+				case 'key':
+					input.key = action.key
+					input.isPressed = true
+					break
+				case 'macro':
+					input.actions = action.action
+					break
+				default:
+					input.command = action.command
+					input.args = action.args
+					break
+			}
+			recon.sendInput(input)
+		},
+
+		onButtonDeactivate(e) {
+			let action = e.detail
+			let input = { }
+			switch (action.type) {
+				case 'button':
+					input.type = action.type
+					input.deviceId = action.device
+					input.button = action.button
+					input.isPressed = true
+					break
+				case 'key':
+					input.key = action.key
+					input.isPressed = true
+					break
+				case 'macro':
+					input.actions = action.action
+					break
+				case 'command':
+					input.command = action.command
+					input.args = action.args
+					break
+			}
+			recon.sendInput(input)
+			if (action.type === 'view') {
+				panel.setView(action.view)
+			}
+		},
+
+		onSliderChange(e) {
+			let action = e.detail
+			recon.sendInput({
+				type: 'axis',
+				device: action.device,
+				axis: action.axis,
+				value: e.currentTarget.value,
+			})
+		},
 	},
 
 	async created() {
@@ -227,14 +231,17 @@ const Counter = {
 		} else {
 			this.showModal = true
 		}
+
+		window.addEventListener('keydown', e => {
+			if (e.code === 'Escape' || e.code === 'Backspace') {
+				this.closePanel()
+			}
+		})
 	},
 }
 
+let app = createApp(PanelApp)
 
-let app = createApp(Counter)
+app.component('modal', Modal)
 
-app.component('modal', modal)
-
-let vm = app.mount('#app')
-
-window.getAssetPath = (file) => recon.getAssetPath(file)
+app.mount('#app')
