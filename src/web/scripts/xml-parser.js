@@ -87,7 +87,16 @@ export default function parseXml(xml) {
 	let xmlDocument = domParser.parseFromString(xml, 'text/xml')
 	let parserErrors = xmlDocument.getElementsByTagNameNS(parsererrorNs, 'parsererror')
 	if (parserErrors.length > 0) {
-		throw new Error(parserErrors[0].textContent)
+		let matches = parserErrors[0].children[1].textContent.match(/error on line (\d+) at column (\d+): (.+)/)
+		if (matches) {
+			let error = new SyntaxError()
+			error.lineNumber = matches[1]
+			error.columnNumber = matches[2]
+			error.message = matches[3]
+			throw error
+		} else {
+			throw new Error(parserErrors[0].textContent)
+		}
 	}
 	return parse(xmlDocument)
 }

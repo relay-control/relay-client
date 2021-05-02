@@ -23,14 +23,14 @@ const Modal = {
 	data: () => ({
 		show: false,
 		title: '',
-		message: '',
+		message: [],
 	}),
 	template: `
 		<div class="modal-mask" v-if="show">
 			<div class="modal-content">
 				<header> {{ title }} </header>
 				<div class="content">
-					<p> {{ message }} </p>
+					<p v-for="line in message"> {{ line }} </p>
 				</div>
 				<div class="buttons">
 					<button class="primary" @click="show = false">OK</button>
@@ -90,7 +90,12 @@ const PanelApp = {
 			try {
 				panelData = await recon.getPanel(panelName)
 			} catch (err) {
-				this.showModalDialog(`Unable to load panel ${panelName}.`, err)
+				let message = []
+				if (err instanceof SyntaxError) {
+					message.push(`Error on line ${err.lineNumber} at column ${err.columnNumber}:`)
+				}
+				message.push(err.message)
+				this.showModalDialog(`Unable to load panel ${panelName}`, message)
 				return
 			}
 			
