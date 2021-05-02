@@ -108,15 +108,16 @@ const PanelApp = {
 			// request devices
 			let devices = await Promise.allSettled(Object.keys(panel.usedDeviceResources).map(e => recon.acquireDevice(parseInt(e))))
 			let warnings = []
-			for (let device of devices) {
-				if (!device.acquired) {
+			for (let { value: device } of devices) {
+				if (!device.isAcquired) {
 					warnings.push(`Unable to acquire device ${device.id}`)
 				} else {
-					if (usedVJoyDeviceButtons[device.id] > device.numButtons) {
-						warnings.push(`Device ${device.id} has ${device.numButtons} buttons but this panel uses ${usedVJoyDeviceButtons[device.id]}`)
+					let requestedDevice = panel.usedDeviceResources[device.id]
+					if (requestedDevice.buttons > device.numButtons) {
+						warnings.push(`Device ${device.id} has ${device.numButtons} buttons but this panel uses ${requestedDevice.buttons}`)
 					}
-					if (usedVJoyDeviceAxes[device.id]) {
-						for (let axis of usedVJoyDeviceAxes[device.id]) {
+					if (requestedDevice.axes) {
+						for (let axis of requestedDevice.axes) {
 							if (!device.axes[axis]) {
 								warnings.push(`Requested axis ${axis} not enabled on device ${device.id}`)
 							}

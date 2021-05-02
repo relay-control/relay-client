@@ -74,12 +74,12 @@ export default class Recon extends EventTarget {
 		return new URL(`panels/${this.currentPanel}/assets/${file}`, this.url.origin).href
 	}
 
-	async sendInput(input) {
-		this.connection.invoke("SendInput", input)
+	sendInput(input) {
+		return this.connection.invoke("SendInput", input)
 	}
 
-	async acquireDevice(deviceId) {
-		this.connection.invoke("AcquireDevice", deviceId)
+	acquireDevice(deviceId) {
+		return this.connection.invoke("AcquireDevice", deviceId)
 	}
 
 	onMessage(message) {

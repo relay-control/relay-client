@@ -95,11 +95,12 @@ class View extends HTMLElement {
 						axes: [],
 					}
 				}
+				let device = usedVJoyDevices[action.device]
 				if (action.type === 'button') {
-					usedVJoyDevices[action.device].buttons = Math.max(action.button, usedVJoyDevices[action.device].buttons)
+					device.buttons = Math.max(action.button, device.buttons)
 				}
-				if (action.type === 'axis' && !usedVJoyDevices[action.device].axes.includes(action.axis)) {
-					usedVJoyDevices[action.device].axes.push(action.axis)
+				if (action.type === 'axis' && !device.axes.includes(action.axis)) {
+					device.axes.push(action.axis)
 				}
 				control.action = action
 			}
