@@ -28,7 +28,6 @@ panel-button {
 }
 
 text-label,
-value-label,
 icon-label {
 	--font-family: 'Open Sans';
 	--font-size: 36px;

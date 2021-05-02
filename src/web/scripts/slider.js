@@ -49,7 +49,7 @@ class Slider extends Control {
 	}
 	
 	createValueLabel() {
-		let valueLabel = document.createElement('value-label')
+		let valueLabel = document.createElement('text-label')
 		this.appendChild(valueLabel)
 		this.valueLabel = valueLabel
 		return valueLabel

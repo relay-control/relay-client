@@ -270,7 +270,7 @@ class SliderStyle extends Style {
 	}
 	
 	createValueLabel() {
-		return new LabelStyle(this.selector + ' value-label', this)
+		return new LabelStyle(this.selector + ' text-label', this)
 	}
 }
 

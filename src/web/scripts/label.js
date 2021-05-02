@@ -7,19 +7,6 @@ class Label extends StylableLabel(StyleElement) {
 	}
 }
 
-class ValueLabel extends Label {
-	constructor() {
-		super()
-		this.label = document.createElement('span')
-	}
-
-	setText(text) {
-		this.label.textContent = text
-	}
-}
-
-customElements.define('value-label', ValueLabel)
-
 class TextLabel extends Label {
 	constructor() {
 		super()
