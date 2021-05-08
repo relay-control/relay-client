@@ -1,9 +1,8 @@
 import Recon from '/scripts/recon.js'
 import { createApp } from '/scripts/vue.esm-browser.js'
+import { Dialog, DialogButton } from '/scripts/modal.js'
 
 let recon = new Recon()
-
-window.getAssetPath = (file) => recon.getAssetPath(file)
 
 function setCookie(name, value, maxAge = new Date(8.64e15)) {
 	value = encodeURIComponent(value)
@@ -22,36 +21,30 @@ function eraseCookie(name) {
 
 let panel = document.createElement('panel-container')
 
-const Modal = {
-	data: () => ({
-		show: false,
-		title: '',
-		message: [],
-	}),
-	template: `
-		<div class="modal-mask" v-if="show">
-			<div class="modal-content">
-				<header> {{ title }} </header>
-				<div class="content">
-					<p v-for="line in message"> {{ line }} </p>
-				</div>
-				<div class="buttons">
-					<button class="primary" @click="show = false">OK</button>
-				</div>
-			</div>
-		</div>
-	`,
-}
-
 const PanelApp = {
 	data: () => ({
-		showModal: false,
+		dialogs: {
+			connect: { show: false },
+			alert: { show: false },
+			reconnecting: { show: false },
+		},
 		address: '',
 		port: 32155,
 		currentServer: '',
 		panels: [],
 		currentPanel: null,
+		connectionState: Recon.ConnectionState.Disconnected,
 	}),
+
+	computed: {
+		connected() {
+			return this.connectionState === Recon.ConnectionState.Connected
+		},
+
+		connecting() {
+			return this.connectionState === Recon.ConnectionState.Connecting
+		},
+	},
 
 	methods: {
 		async submit(e) {
@@ -61,10 +54,24 @@ const PanelApp = {
 			setCookie('address', address)
 			setCookie('port', port)
 
-			await recon.connect(address, port)
+			await this.connect(address, port)
+			this.dialogs.connect.show = false
+		},
+
+		async connect(address, port) {
+			try {
+				let promiseConnect = recon.connect(address, port)
+				this.connectionState = recon.connectionState
+				await promiseConnect
+			} catch (err) {
+				this.showAlertDialog("Connection error", [`Unable to connect to server ${address}:${port}.`, err.message])
+				this.dialogs.alert.connectAfterClose = true
+				return
+			} finally {
+				this.connectionState = recon.connectionState
+			}
 			await this.updatePanels()
 			this.currentServer = recon.address
-			this.showModal = false
 			
 			let lastPanel = getCookie('lastPanel')
 			if (lastPanel) {
@@ -91,12 +98,11 @@ const PanelApp = {
 					message.push(`Error on line ${err.lineNumber} at column ${err.columnNumber}:`)
 				}
 				message.push(err.message)
-				this.showModalDialog(`Unable to load panel ${panelName}`, message)
+				this.showAlertDialog(`Unable to load panel ${panelName}`, message)
 				return
 			}
 			
 			this.currentPanel = panelName
-			recon.currentPanel = panelName
 			setCookie('lastPanel', panelName)
 
 			panel.build(panelData)
@@ -122,7 +128,7 @@ const PanelApp = {
 				}
 			}
 			if (warnings.length > 0) {
-				this.showModalDialog("Device info", warnings)
+				this.showAlertDialog("Device info", warnings)
 			}
 		},
 
@@ -132,27 +138,30 @@ const PanelApp = {
 			panel.style.display = 'none'
 		},
 		
-		connected() {
-			return recon.connectionState === Recon.ConnectionState.Connected
+		reconnectingDialogClose() {
+			this.dialogs.reconnecting.show = false
+			this.dialogs.reconnecting.cancelled = true
+			recon.disconnect()
 		},
 
-		connecting() {
-			return recon.connectionState === Recon.ConnectionState.Connecting
+		showAlertDialog(title, message) {
+			this.dialogs.alert.title = title
+			this.dialogs.alert.message = message
+			this.dialogs.alert.show = true
 		},
 
-		showModalDialog(title, message) {
-			let modal = this.$refs.modal
-			modal.title = title
-			modal.message = message
-			modal.show = true
+		alertDialogClose(event) {
+			this.dialogs.alert.show = false
+			if (this.dialogs.alert.connectAfterClose) this.showConnectDialog = true
+			this.dialogs.alert.connectAfterClose = false
 		},
 
-		onButtonActivate(e) {
+		async onButtonActivate(e) {
 			let action = e.detail
 			let input = { }
 			switch (action.type) {
 				case 'button':
-					input.type = action.type
+					input.inputType = action.type
 					input.deviceId = action.device
 					input.button = action.button
 					input.isPressed = true
@@ -169,15 +178,19 @@ const PanelApp = {
 					input.args = action.args
 					break
 			}
-			recon.sendInput(input)
+			try {
+				await recon.sendInput(input)
+			} catch (err) {
+				this.showAlertDialog("Input error", ["Error sending input.", err.message])
+			}
 		},
 
-		onButtonDeactivate(e) {
+		async onButtonDeactivate(e) {
 			let action = e.detail
 			let input = { }
 			switch (action.type) {
 				case 'button':
-					input.type = action.type
+					input.inputType = action.type
 					input.deviceId = action.device
 					input.button = action.button
 					input.isPressed = true
@@ -194,7 +207,11 @@ const PanelApp = {
 					input.args = action.args
 					break
 			}
-			recon.sendInput(input)
+			try {
+				await recon.sendInput(input)
+			} catch (err) {
+				this.showAlertDialog("Input error", ["Error sending input.", err.message])
+			}
 			if (action.type === 'view') {
 				panel.setView(action.view)
 			}
@@ -216,17 +233,34 @@ const PanelApp = {
 			this.address = getCookie('address')
 			this.port = getCookie('port')
 			
-			await recon.connect(this.address, this.port)
-			await this.updatePanels()
-			this.currentServer = recon.address
-			
-			let lastPanel = getCookie('lastPanel')
-			if (lastPanel) {
-				this.loadPanel(lastPanel)
-			}
+			this.connect(this.address, this.port)
 		} else {
-			this.showModal = true
+			this.showConnectDialog = true
 		}
+
+		window.getAssetPath = (file) => recon.getAssetPath(this.currentPanel, file)
+
+		recon.addEventListener('reconnecting', e => {
+			this.connectionState = recon.connectionState
+			this.dialogs.reconnecting.show = true
+			this.dialogs.reconnecting.cancelled = false
+		})
+		
+		recon.addEventListener('reconnected', e => {
+			this.connectionState = recon.connectionState
+			this.dialogs.reconnecting.show = false
+		})
+		
+		recon.addEventListener('close', e => {
+			this.connectionState = recon.connectionState
+			this.closePanel()
+			this.dialogs.reconnecting.show = false
+			if (!this.dialogs.reconnecting.cancelled) {
+				this.dialogs.reconnecting.cancelled = false
+				this.showAlertDialog("Connection error", ["Server connection lost.", e.detail?.message])
+				this.dialogs.alert.connectAfterClose = true
+			}
+		})
 		
 		document.getElementById('app').appendChild(panel)
 
@@ -240,10 +274,13 @@ const PanelApp = {
 			}
 		})
 	},
+
+	components: {
+		'modal-dialog': Dialog,
+		'dialog-button': DialogButton,
+	},
 }
 
 let app = createApp(PanelApp)
-
-app.component('modal', Modal)
 
 app.mount('#app')

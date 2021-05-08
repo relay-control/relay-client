@@ -102,3 +102,27 @@ dialog label {
 	border-color: #85b7d9;
 	color: rgba(0, 0, 0, 0.8);
 }
+
+#reconnecting-dialog > .modal-content > .content {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100px;
+	width: 350px;
+}
+
+div.loading {
+	padding-top: 3.5rem;
+	font-size: .9em;
+}
+
+div.loading::before {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	width: 3rem;
+	height: 3rem;
+	margin-left: -1.5rem;
+	border-width: 0.3em;
+	border-top-color: #767676;
+}

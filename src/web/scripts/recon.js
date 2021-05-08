@@ -18,9 +18,9 @@ export default class Recon extends EventTarget {
 			.configureLogging(signalR.LogLevel.Information)
 			.build()
 
-		connection.onreconnecting(this.onReconnecting)
-		connection.onreconnected(this.onReconnected)
-		connection.onclose(this.onClose)
+		connection.onreconnecting(error => this.onReconnecting(error))
+		connection.onreconnected(connectionId => this.onReconnected(connectionId))
+		connection.onclose(error => this.onClose(error))
 		connection.on('RecieveMessage', this.onMessage)
 
 		this.connection = connection
@@ -28,14 +28,12 @@ export default class Recon extends EventTarget {
 		return this.connection.start()
 	}
 
-	get connectionState() {
-		return this.connection?.state
+	disconnect() {
+		return this.connection.stop()
 	}
 
-	on(event, eventHandler) {
-		this.addEventListener(event, e => {
-			eventHandler(e.detail)
-		})
+	get connectionState() {
+		return this.connection?.state
 	}
 
 	onReconnecting(error) {
@@ -64,14 +62,14 @@ export default class Recon extends EventTarget {
 	async getPanel(panel) {
 		let response = await fetch(`${this.url.origin}/panels/${panel}/panel.xml`, {cache: 'no-cache'})
 		if (!response.ok)
-			throw new FileNotFoundError()
+			throw new Error()
 		let text = await response.text()
 		return parseXml(text).panel
 	}
 	
-	getAssetPath(file) {
-		// return encodeURI(new URL(`panels/${this.currentPanel}/assets/${file}`, this.url.origin).href)
-		return new URL(`panels/${this.currentPanel}/assets/${file}`, this.url.origin).href
+	getAssetPath(panel, file) {
+		// return encodeURI(new URL(`panels/${panel}/assets/${file}`, this.url.origin).href)
+		return new URL(`panels/${panel}/assets/${file}`, this.url.origin).href
 	}
 
 	sendInput(input) {

@@ -17,6 +17,7 @@
 	<script src="/scripts/signalr.js"></script>
 
 	<script type="module" src="/scripts/recon.js"></script>
+	<script type="module" src="/scripts/modal.js"></script>
 	<script type="module" src="/scripts/panel.js"></script>
 	<script type="module" src="/scripts/view.js"></script>
 	<script type="module" src="/scripts/styles.js"></script>
@@ -39,10 +40,10 @@
 	</header>
 	<section>
 		<header class="with-button">
-			<h1> {{ connected() ? `Connected to ${currentServer}` : 'Not connected' }} </h1>
-			<button @click="showModal = true">Connect</button>
+			<h1> {{ connected ? `Connected to ${currentServer}` : 'Not connected' }} </h1>
+			<button @click="dialogs.connect.show = true">Connect</button>
 		</header>
-		<div v-if="connected()">
+		<div v-if="connected">
 			<header class="with-button">
 				<h3>Available panels</h3>
 				<button @click="updatePanels"><i class="fa fa-refresh fa-fw"></i></button>
@@ -59,7 +60,7 @@
 	</section>
 </div>
 
-<div class="modal-mask" v-if="showModal">
+<div class="modal-mask" v-if="dialogs.connect.show">
 	<div class="modal-content">
 		<header>Connect to Recon server</header>
 		<form @submit.prevent="submit">
@@ -74,17 +75,31 @@
 				</div>
 			</div>
 			<div class="buttons">
-				<button type="button" @click="showModal = false">Cancel</button>
-				<button type="submit" class="primary">
-					<span class="loading" v-if="connecting()"></span>
-					<span v-if="!connecting()">Connect</span>
+				<button type="button" :disabled="connecting" @click="dialogs.connect.show = false">Cancel</button>
+				<button type="submit" :disabled="connecting" class="primary">
+					<span class="loading" v-if="connecting"></span>
+					<span :style="{ visibility: connecting ? 'hidden' : 'visible' }">Connect</span>
 				</button>
 			</div>
 		</form>
 	</div>
 </div>
 
-<modal ref="modal"></modal>
+<modal-dialog v-if="dialogs.alert.show">
+	<template #header> {{ dialogs.alert.title }} </template>
+	<template #content>
+		<p v-for="line in dialogs.alert.message"> {{ line }} </p>
+	</template>
+	<dialog-button primary @click="alertDialogClose">OK</dialog-button>
+</modal-dialog>
+
+<modal-dialog id="reconnecting-dialog" v-if="dialogs.reconnecting.show">
+	<template #header>Disconnected from server</template>
+	<template #content>
+		<div class="loading">Reconnecting</div>
+	</template>
+	<dialog-button @click="reconnectingDialogClose">Cancel</dialog-button>
+</modal-dialog>
 
 </div>
 

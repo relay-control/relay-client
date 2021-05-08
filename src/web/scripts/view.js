@@ -88,8 +88,8 @@ class View extends HTMLElement {
 			control.setStyle(controlData)
 			
 			let action = controlData.action
-			if (action) {
-				if (action.device && !(action.device in usedVJoyDevices)) {
+			if (action && action.device) {
+				if (!(action.device in usedVJoyDevices)) {
 					usedVJoyDevices[action.device] = {
 						buttons: 0,
 						axes: [],

@@ -86,23 +86,23 @@ header.with-button {
 }
 
 #menu button:active,
-dialog button:active {
+.modal-content button:active {
 	background-color: #babbbc;
 	color: rgba(0, 0, 0, 0.9);
 }
 
 #menu button.primary,
-dialog button.primary {
+.modal-content button.primary {
 	background-color: #2185D0;
 	color: white;
 }
 
-#menu button.primary:active,
-dialog button.primary:active {
+#menu button.primary:enabled:active,
+.modal-content button.primary:enabled:active {
 	background-color: #1a69a4;
 }
 
-dialog button[disabled] {
+.modal-content button:disabled {
 	color: #ccc;
 }
 
@@ -140,8 +140,8 @@ h3 {
 
 #panel-list li:first-child {
 	border-top: none;
-    border-top-left-radius: var(--border-radius);
-    border-top-right-radius: var(--border-radius);
+	border-top-left-radius: var(--border-radius);
+	border-top-right-radius: var(--border-radius);
 }
 
 #panel-list li:last-child {
@@ -159,6 +159,17 @@ h3 {
 
 .loading {
 	position: absolute;
+}
+
+.loading::before {
+	content: '';
+	border: 0.2em solid rgba(0, 0, 0, 0.15);
+	border-radius: 50%;
+	animation: rotate 0.6s linear infinite;
+	box-sizing: border-box;
+}
+
+button span.loading {
 	top: 0;
 	bottom: 0;
 	left: 0;
@@ -168,15 +179,10 @@ h3 {
 	align-items: center;
 }
 
-.loading::before {
-	content: '';
+button span.loading::before {
 	width: 24px;
 	height: 24px;
-	border: 0.2em solid rgba(0, 0, 0, 0.5);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: rotate 0.6s linear infinite;
-	box-sizing: border-box;
+	border-top-color: white;
 }
 
 @keyframes rotate {
@@ -245,11 +251,11 @@ input[type=checkbox]:checked::before {
 }
 
 .checkbox label {
-    padding-left: calc(1.85714em - 17px);
-    font-size: 1em;
+	padding-left: calc(1.85714em - 17px);
+	font-size: 1em;
 }
 
 .checkbox label {
-    color: rgba(0,0,0,.87);
-    transition: color .1s ease;
+	color: rgba(0,0,0,.87);
+	transition: color .1s ease;
 }
