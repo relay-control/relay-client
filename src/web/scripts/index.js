@@ -152,7 +152,7 @@ const PanelApp = {
 
 		alertDialogClose(event) {
 			this.dialogs.alert.show = false
-			if (this.dialogs.alert.connectAfterClose) this.showConnectDialog = true
+			if (this.dialogs.alert.connectAfterClose) this.dialogs.connect.show = true
 			this.dialogs.alert.connectAfterClose = false
 		},
 
