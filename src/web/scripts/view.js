@@ -102,8 +102,8 @@ class View extends HTMLElement {
 				if (action.type === 'axis' && !device.axes.includes(action.axis)) {
 					device.axes.push(action.axis)
 				}
-				control.action = action
 			}
+			control.action = action
 		}
 
 		this.usedDevices = usedVJoyDevices

@@ -167,6 +167,7 @@ const PanelApp = {
 					input.isPressed = true
 					break
 				case 'key':
+					input.inputType = action.type
 					input.key = action.key
 					input.isPressed = true
 					break
@@ -193,11 +194,12 @@ const PanelApp = {
 					input.inputType = action.type
 					input.deviceId = action.device
 					input.button = action.button
-					input.isPressed = true
+					input.isPressed = false
 					break
 				case 'key':
+					input.inputType = action.type
 					input.key = action.key
-					input.isPressed = true
+					input.isPressed = false
 					break
 				case 'macro':
 					input.actions = action.action
