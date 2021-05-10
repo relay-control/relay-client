@@ -170,9 +170,13 @@ const PanelApp = {
 
 		onButtonChange(e) {
 			let action = e.detail
-			if (action.type === 'view' && !action.isPressed) {
-				panel.setView(action.view)
-				return
+			switch (action.type) {
+				case 'command':
+					if (action.isPressed) return
+					break
+				case 'view':
+					if (!action.isPressed) panel.setView(action.view)
+					return
 			}
 			this.sendInput(action)
 		},
