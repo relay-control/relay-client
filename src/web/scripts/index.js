@@ -108,7 +108,7 @@ const PanelApp = {
 			panel.build(panelData)
 
 			// request devices
-			let devices = await Promise.allSettled(Object.keys(panel.usedDeviceResources).map(e => recon.acquireDevice(parseInt(e))))
+			let devices = await this.acquireDevices()
 			let warnings = []
 			for (let { value: device } of devices) {
 				if (!device.isAcquired) {
@@ -130,6 +130,10 @@ const PanelApp = {
 			if (warnings.length > 0) {
 				this.showAlertDialog("Device info", warnings)
 			}
+		},
+
+		acquireDevices() {
+			return Promise.allSettled(Object.keys(panel.usedDeviceResources).map(e => recon.acquireDevice(parseInt(e))))
 		},
 
 		closePanel() {
@@ -251,6 +255,7 @@ const PanelApp = {
 		recon.addEventListener('reconnected', e => {
 			this.connectionState = recon.connectionState
 			this.dialogs.reconnecting.show = false
+			this.acquireDevices()
 		})
 		
 		recon.addEventListener('close', e => {
