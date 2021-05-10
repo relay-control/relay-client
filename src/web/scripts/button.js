@@ -6,6 +6,7 @@ class Button extends Control {
 		'button',
 		'command',
 		'macro',
+		'view',
 	]
 	
 	constructor() {
@@ -47,31 +48,29 @@ class Button extends Control {
 	applyActiveStyle() {
 		if (this.activeStyle) this.setStyle(this.activeStyle)
 	}
+
+	dispatchEvent(eventName, detail = { }) {
+		if (!this.action) return
+		if (!Button.actionTypes.includes(this.action.type)) return
+		let event = new CustomEvent(eventName, {
+			bubbles: true,
+			detail: Object.assign(detail, this.action),
+		})
+		this.control.dispatchEvent(event)
+	}
 	
 	activate() {
 		this.addClass('active')
 		this.applyActiveStyle()
-		if (!this.action) return
-		if (Button.actionTypes.includes(this.action.type)) {
-			let event = new CustomEvent('button-activate', {
-				bubbles: true,
-				detail: this.action,
-			})
-			this.control.dispatchEvent(event)
-		}
+		this.dispatchEvent('button-activate')
+		this.dispatchEvent('button-change', { isPressed: true })
 	}
 	
 	deactivate() {
 		this.removeClass('active')
 		this.applyBaseStyle()
-		if (!this.action) return
-		//if (this.action.type === 'key' || this.action.type === 'button') {
-			let event = new CustomEvent('button-deactivate', {
-				bubbles: true,
-				detail: this.action,
-			})
-			this.control.dispatchEvent(event)
-		//}
+		this.dispatchEvent('button-deactivate')
+		this.dispatchEvent('button-change', { isPressed: false })
 	}
 	
 	press() {

@@ -88,14 +88,14 @@ class View extends HTMLElement {
 			control.setStyle(controlData)
 			
 			let action = controlData.action
-			if (action && action.device) {
+			if (action && action.deviceId) {
 				if (!(action.device in usedVJoyDevices)) {
-					usedVJoyDevices[action.device] = {
+					usedVJoyDevices[action.deviceId] = {
 						buttons: 0,
 						axes: [],
 					}
 				}
-				let device = usedVJoyDevices[action.device]
+				let device = usedVJoyDevices[action.deviceId]
 				if (action.type === 'button') {
 					device.buttons = Math.max(action.button, device.buttons)
 				}

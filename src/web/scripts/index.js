@@ -160,29 +160,7 @@ const PanelApp = {
 			this.dialogs.alert.connectAfterClose = false
 		},
 
-		async onButtonActivate(e) {
-			let action = e.detail
-			let input = { }
-			switch (action.type) {
-				case 'button':
-					input.inputType = action.type
-					input.deviceId = action.device
-					input.button = action.button
-					input.isPressed = true
-					break
-				case 'key':
-					input.inputType = action.type
-					input.key = action.key
-					input.isPressed = true
-					break
-				case 'macro':
-					input.actions = action.action
-					break
-				default:
-					input.command = action.command
-					input.args = action.args
-					break
-			}
+		async sendInput(input) {
 			try {
 				await recon.sendInput(input)
 			} catch (err) {
@@ -190,42 +168,18 @@ const PanelApp = {
 			}
 		},
 
-		async onButtonDeactivate(e) {
+		onButtonChange(e) {
 			let action = e.detail
-			let input = { }
-			switch (action.type) {
-				case 'button':
-					input.inputType = action.type
-					input.deviceId = action.device
-					input.button = action.button
-					input.isPressed = false
-					break
-				case 'key':
-					input.inputType = action.type
-					input.key = action.key
-					input.isPressed = false
-					break
-				case 'macro':
-					input.actions = action.action
-					break
-				case 'command':
-					input.command = action.command
-					input.args = action.args
-					break
-			}
-			try {
-				await recon.sendInput(input)
-			} catch (err) {
-				this.showAlertDialog("Input error", ["Error sending input.", err.message])
-			}
-			if (action.type === 'view') {
+			if (action.type === 'view' && !action.isPressed) {
 				panel.setView(action.view)
+				return
 			}
+			this.sendInput(action)
 		},
 
 		onSliderChange(e) {
 			let action = e.detail
-			recon.sendInput({
+			this.sendInput({
 				type: 'axis',
 				device: action.device,
 				axis: action.axis,
@@ -271,8 +225,7 @@ const PanelApp = {
 		
 		document.getElementById('app').appendChild(panel)
 
-		panel.addEventListener('button-activate', this.onButtonActivate)
-		panel.addEventListener('button-deactivate', this.onButtonDeactivate)
+		panel.addEventListener('button-change', this.onButtonChange)
 		panel.addEventListener('slider-change', this.onSliderChange)
 
 		window.addEventListener('keydown', e => {
