@@ -171,6 +171,10 @@ const PanelApp = {
 		onButtonChange(e) {
 			let action = e.detail
 			switch (action.type) {
+				case 'macro':
+					if (action.isPressed) return
+					action.actions = action.action
+					break
 				case 'command':
 					if (action.isPressed) return
 					break
