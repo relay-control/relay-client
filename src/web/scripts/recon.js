@@ -1,7 +1,16 @@
 import parseXml from '/scripts/xml-parser.js'
 
 export default class Recon extends EventTarget {
-	static modifiers = {}
+	static InputType = {
+		key: 1,
+		button: 2,
+		axis: 3,
+		command: 4,
+		macro: 5,
+		delay: 6,
+		view: 7,
+	}
+	static Modifiers = {}
 	static ConnectionState = signalR.HubConnectionState
 
 	connect(address, port) {

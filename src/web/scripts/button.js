@@ -1,12 +1,13 @@
 import Control from '/scripts/control.js'
+import Recon from '/scripts/recon.js'
 
 class Button extends Control {
 	static actionTypes = [
-		'key',
-		'button',
-		'command',
-		'macro',
-		'view',
+		Recon.InputType.key,
+		Recon.InputType.button,
+		Recon.InputType.command,
+		Recon.InputType.macro,
+		Recon.InputType.view,
 	]
 	
 	constructor() {
@@ -81,7 +82,7 @@ class Button extends Control {
 		} else {
 			this.activate()
 		}
-		this.pressed = true
+		this.isPressed = true
 	}
 	
 	release() {
@@ -92,7 +93,7 @@ class Button extends Control {
 		} else {
 			this.deactivate()
 		}
-		this.pressed = false
+		this.isPressed = false
 	}
 	
 	events = {
@@ -103,7 +104,7 @@ class Button extends Control {
 			this.release()
 		},
 		mouseout: e => {
-			if (this.pressed) {
+			if (this.isPressed) {
 				this.release()
 			}
 		},

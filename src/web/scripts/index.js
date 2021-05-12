@@ -171,14 +171,13 @@ const PanelApp = {
 		onButtonChange(e) {
 			let action = e.detail
 			switch (action.type) {
-				case 'macro':
-					if (action.isPressed) return
-					action.actions = action.action
-					break
-				case 'command':
+				case Recon.InputType.macro:
 					if (action.isPressed) return
 					break
-				case 'view':
+				case Recon.InputType.command:
+					if (action.isPressed) return
+					break
+				case Recon.InputType.view:
 					if (!action.isPressed) panel.setView(action.view)
 					return
 			}
@@ -188,7 +187,7 @@ const PanelApp = {
 		onSliderChange(e) {
 			let action = e.detail
 			this.sendInput({
-				type: 'axis',
+				type: Recon.InputType.axis,
 				device: action.device,
 				axis: action.axis,
 				value: e.currentTarget.value,

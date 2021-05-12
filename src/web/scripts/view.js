@@ -1,4 +1,8 @@
+import Recon from '/scripts/recon.js'
+
 class View extends HTMLElement {
+	usedDevices = {}
+
 	// show() {
 		// Promise.all(this.assets)
 		 // .then(() => {
@@ -10,8 +14,6 @@ class View extends HTMLElement {
 	// }
 	
 	build(view) {
-		let usedVJoyDevices = {}
-		
 		for (let [controlData, tag] of view) {
 			let control = this.createControl(tag, controlData)
 			
@@ -88,25 +90,11 @@ class View extends HTMLElement {
 			control.setStyle(controlData)
 			
 			let action = controlData.action
-			if (action && action.deviceId) {
-				if (!(action.device in usedVJoyDevices)) {
-					usedVJoyDevices[action.deviceId] = {
-						buttons: 0,
-						axes: [],
-					}
-				}
-				let device = usedVJoyDevices[action.deviceId]
-				if (action.type === 'button') {
-					device.buttons = Math.max(action.button, device.buttons)
-				}
-				if (action.type === 'axis' && !device.axes.includes(action.axis)) {
-					device.axes.push(action.axis)
-				}
+			if (action) {
+				this.addAction(controlData.action)
 			}
 			control.action = action
 		}
-
-		this.usedDevices = usedVJoyDevices
 	}
 	
 	createControl(type, data) {
@@ -121,6 +109,33 @@ class View extends HTMLElement {
 		}
 		this.appendChild(control)
 		return control
+	}
+
+	addAction(action) {
+		action.type = Recon.InputType[action.type]
+
+		if (action.type === Recon.InputType.macro) {
+			action.actions = action.action
+			for (let macroAction of action.actions) {
+				this.addAction(macroAction)
+			}
+		}
+
+		if (action.deviceId) {
+			if (!(action.device in this.usedDevices)) {
+				this.usedDevices[action.deviceId] = {
+					buttons: 0,
+					axes: [],
+				}
+			}
+			let device = this.usedDevices[action.deviceId]
+			if (action.type === Recon.InputType.button) {
+				device.buttons = Math.max(action.button, device.buttons)
+			}
+			if (action.type === Recon.InputType.axis && !device.axes.includes(action.axis)) {
+				device.axes.push(action.axis)
+			}
+		}
 	}
 }
 
