@@ -185,13 +185,7 @@ const PanelApp = {
 		},
 
 		onSliderChange(e) {
-			let action = e.detail
-			this.sendInput({
-				type: Recon.InputType.axis,
-				device: action.device,
-				axis: action.axis,
-				value: e.currentTarget.value,
-			})
+			this.sendInput(e.detail)
 		},
 	},
 

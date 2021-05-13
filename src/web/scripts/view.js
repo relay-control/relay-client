@@ -94,6 +94,7 @@ class View extends HTMLElement {
 			for (let macroAction of action.actions) {
 				this.addAction(macroAction)
 			}
+			return
 		}
 
 		if (action.deviceId) {

@@ -50,20 +50,21 @@ class Slider extends Control {
 	
 	events = {
 		input: e => {
-			if (45 < e.currentTarget.value && e.currentTarget.value < 55)
-				e.currentTarget.value = 50
+			let value = e.currentTarget.value
+			if (45 < value && value < 55)
+			value = 50
 			
 			// avoid sending input if value is unchanged
-			if (e.currentTarget.value === this.previousValue) return
-			this.previousValue = e.currentTarget.value
+			if (value === this.previousValue) return
+			this.previousValue = value
 			
 			if (this.valueLabel)
-				this.valueLabel.setText(e.currentTarget.value + '%')
+				this.valueLabel.setText(value + '%')
 			
 			if (this.action) {
 				let event = new CustomEvent('slider-change', {
 					bubbles: true,
-					detail: this.action,
+					detail: Object.assign({ value }, this.action),
 				})
 				this.control.dispatchEvent(event)
 			}
