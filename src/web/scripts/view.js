@@ -97,7 +97,7 @@ class View extends HTMLElement {
 		}
 
 		if (action.deviceId) {
-			if (!(action.device in this.usedDevices)) {
+			if (!(action.deviceId in this.usedDevices)) {
 				this.usedDevices[action.deviceId] = {
 					buttons: 0,
 					axes: [],
