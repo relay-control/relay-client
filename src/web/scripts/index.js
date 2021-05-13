@@ -4,21 +4,6 @@ import { Dialog, DialogButton } from '/scripts/modal.js'
 
 let recon = new Recon()
 
-function setCookie(name, value, maxAge = new Date(8.64e15)) {
-	value = encodeURIComponent(value)
-	document.cookie = `${name}=${value}; Max-Age=${maxAge.toUTCString()}; SameSite=Strict`
-}
-
-function getCookie(name) {
-	let cookies = new Map(document.cookie.split('; ').map(e => e.split('=')))
-	let cookie = cookies.get(name)
-	return cookie ? decodeURIComponent(cookie) : null
-}
-
-function eraseCookie(name) {   
-	setCookie(name, '', new Date(0))
-}
-
 let panel = document.createElement('panel-container')
 
 const PanelApp = {
@@ -48,8 +33,8 @@ const PanelApp = {
 
 	methods: {
 		async submit() {
-			setCookie('address', this.address)
-			setCookie('port', this.port)
+			localStorage.setItem('address', this.address)
+			localStorage.setItem('port', this.port)
 
 			await this.connect(this.address, this.port)
 			this.dialogs.connect.show = false
@@ -70,7 +55,7 @@ const PanelApp = {
 			await this.updatePanels()
 			this.currentServer = recon.address
 			
-			let lastPanel = getCookie('lastPanel')
+			let lastPanel = localStorage.getItem('lastPanel')
 			if (lastPanel) {
 				this.loadPanel(lastPanel)
 			}
@@ -100,7 +85,7 @@ const PanelApp = {
 			}
 			
 			this.currentPanel = panelName
-			setCookie('lastPanel', panelName)
+			localStorage.setItem('lastPanel', panelName)
 
 			panel.build(panelData)
 
@@ -135,7 +120,7 @@ const PanelApp = {
 
 		closePanel() {
 			this.currentPanel = null
-			eraseCookie('lastPanel')
+			localStorage.removeItem('lastPanel')
 			panel.style.display = 'none'
 		},
 		
@@ -187,9 +172,9 @@ const PanelApp = {
 	},
 
 	async created() {
-		if (getCookie('address')) {
-			this.address = getCookie('address')
-			this.port = getCookie('port')
+		if (localStorage.getItem('address')) {
+			this.address = localStorage.getItem('address')
+			this.port = localStorage.getItem('port')
 			
 			this.connect(this.address, this.port)
 		} else {
