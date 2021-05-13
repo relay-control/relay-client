@@ -1,29 +1,42 @@
-const {app, BrowserWindow} = require('electron')
+const { app, BrowserWindow, protocol } = require('electron')
 const path = require('path')
+const url = require('url')
 
-let win
+const WEB_FOLDER = 'web'
+const PROTOCOL = 'file'
 
-app.on("ready", () => {
-	win = new BrowserWindow({
+init()
+
+async function init() {
+	await app.whenReady()
+
+	protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
+		let { pathname } = url.parse(request.url)
+		request.path = path.join(__dirname, WEB_FOLDER, pathname)
+		callback(request)
+	})
+
+	createWindow()
+
+	app.on('window-all-closed', () => {
+		app.quit()
+	})
+}
+
+function createWindow() {
+	let win = new BrowserWindow({
 		width: 1280,
 		height: 720,
 		show: false,
-		webPreferences: {
-			preload: path.join(__dirname, 'preload.js'),
-		},
 	})
-	
-	win.loadFile('web/index.html')
-	
-	win.on("page-title-updated", (e) => {
-		e.preventDefault()
-	})
-	
+
+	win.loadURL(url.format({
+		protocol: PROTOCOL,
+		pathname: 'index.html',
+		slashes: true,
+	}))
+
 	win.once('ready-to-show', () => {
 		win.show()
 	})
-	
-	win.on("closed", () => {
-		win = null
-	})
-})
+}

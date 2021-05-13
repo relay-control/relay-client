@@ -1,7 +1,7 @@
 {
   "name": "recon",
   "productName": "Recon",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -9,10 +9,8 @@
   },
   "author": "Lombra",
   "license": "MIT",
-  "dependencies": {
-    "electron-settings": "^3.1.1"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "electron": "^6.0.11"
+    "electron": "^12.0.7"
   }
 }
