@@ -30,6 +30,8 @@ function createWindow() {
 		show: false,
 	})
 
+	win.removeMenu()
+
 	win.loadURL(url.format({
 		protocol: PROTOCOL,
 		pathname: 'index.html',
