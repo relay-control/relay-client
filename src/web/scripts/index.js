@@ -47,14 +47,11 @@ const PanelApp = {
 	},
 
 	methods: {
-		async submit(e) {
-			let address = e.target.elements.address.value
-			let port = e.target.elements.port.value
+		async submit() {
+			setCookie('address', this.address)
+			setCookie('port', this.port)
 
-			setCookie('address', address)
-			setCookie('port', port)
-
-			await this.connect(address, port)
+			await this.connect(this.address, this.port)
 			this.dialogs.connect.show = false
 		},
 

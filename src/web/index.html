@@ -60,30 +60,26 @@
 	</section>
 </div>
 
-<div class="modal-mask" v-if="dialogs.connect.show">
-	<div class="modal-content">
-		<header>Connect to Recon server</header>
-		<form @submit.prevent="submit">
-			<div class="content">
-				<div class="input">
-					<label>Address</label>
-					<input name="address" required pattern="[\d.]+" v-model="address">
-				</div>
-				<div class="input">
-					<label>Port</label>
-					<input name="port" required pattern="\d+" v-model="port">
-				</div>
-			</div>
-			<div class="buttons">
-				<button type="button" :disabled="connecting" @click="dialogs.connect.show = false">Cancel</button>
-				<button type="submit" :disabled="connecting" class="primary">
-					<span class="loading" v-if="connecting"></span>
-					<span :style="{ visibility: connecting ? 'hidden' : 'visible' }">Connect</span>
-				</button>
-			</div>
-		</form>
+<modal-dialog v-if="dialogs.connect.show">
+	<template #header>Connect to Recon server</template>
+	<template #content>
+		<div class="input">
+			<label>Address</label>
+			<input name="address" required pattern="[\d.]+" v-model="address">
+		</div>
+		<div class="input">
+			<label>Port</label>
+			<input name="port" required pattern="\d+" v-model="port">
+		</div>
+	</template>
+	<div class="buttons">
+		<button type="button" :disabled="connecting" @click="dialogs.connect.show = false">Cancel</button>
+		<button type="button" :disabled="connecting" class="primary" @click="submit">
+			<span class="loading" v-if="connecting"></span>
+			<span :style="{ visibility: connecting ? 'hidden' : 'visible' }">Connect</span>
+		</button>
 	</div>
-</div>
+</modal-dialog>
 
 <modal-dialog v-if="dialogs.alert.show">
 	<template #header> {{ dialogs.alert.title }} </template>
