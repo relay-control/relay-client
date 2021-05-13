@@ -53,6 +53,7 @@ class Slider extends Control {
 			let value = e.currentTarget.value
 			if (45 < value && value < 55)
 			value = 50
+			e.currentTarget.value = value
 			
 			// avoid sending input if value is unchanged
 			if (value === this.previousValue) return
