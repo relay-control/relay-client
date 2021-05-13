@@ -1,6 +1,8 @@
 import { ControlStyle, Stylable, StyleElement } from '/scripts/styles.js'
 
 export default class Control extends ControlStyle(Stylable(StyleElement)) {
+	labels = []
+
 	constructor() {
 		super()
 		this.container = document.createElement('div')
@@ -35,25 +37,15 @@ export default class Control extends ControlStyle(Stylable(StyleElement)) {
 	set column(column) {
 		this.setStyleProperty('column', column)
 	}
-	
-	createTextLabel() {
-		let textLabel = document.createElement('text-label')
-		this.appendChild(textLabel)
-		this.textLabel = textLabel
-		return textLabel
-	}
-	
-	createIconLabel() {
-		let iconLabel = document.createElement('icon-label')
-		this.appendChild(iconLabel)
-		this.iconLabel = iconLabel
-		return iconLabel
-	}
-	
-	createImageLabel() {
-		let imageLabel = document.createElement('image-label')
-		this.appendChild(imageLabel)
-		this.imageLabel = imageLabel
-		return imageLabel
+
+	createLabel(labelType, parent) {
+		let label = document.createElement(labelType + '-label')
+		if (parent === 'container') {
+			this.appendChild(label)
+		} else {
+			this.control.appendChild(label)
+		}
+		this.labels.push(label)
+		return label
 	}
 }

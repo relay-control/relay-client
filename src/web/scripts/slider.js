@@ -48,13 +48,6 @@ class Slider extends Control {
 		}
 	}
 	
-	createValueLabel() {
-		let valueLabel = document.createElement('text-label')
-		this.appendChild(valueLabel)
-		this.valueLabel = valueLabel
-		return valueLabel
-	}
-	
 	events = {
 		input: e => {
 			if (45 < e.currentTarget.value && e.currentTarget.value < 55)

@@ -27,17 +27,9 @@ class Button extends Control {
 
 	resetStyle() {
 		super.resetStyle()
-		
-		if (this.textLabel) {
-			this.textLabel.resetStyle()
-		}
-		
-		if (this.iconLabel) {
-			this.iconLabel.resetStyle()
-		}
-		
-		if (this.imageLabel) {
-			this.imageLabel.resetStyle()
+
+		for (let label of this.labels) {
+			label.resetStyle()
 		}
 	}
 

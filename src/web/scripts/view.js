@@ -3,16 +3,6 @@ import Recon from '/scripts/recon.js'
 class View extends HTMLElement {
 	usedDevices = {}
 
-	// show() {
-		// Promise.all(this.assets)
-		 // .then(() => {
-			// let menu = document.getElementById('menu')
-			// menu.style.display = 'none'
-			
-			// this.element.style.display = 'grid'
-		 // })
-	// }
-	
 	build(view) {
 		for (let [controlData, tag] of view) {
 			let control = this.createControl(tag, controlData)
@@ -46,35 +36,20 @@ class View extends HTMLElement {
 			
 			let textLabelData = controlData.textLabel
 			if (textLabelData) {
-				let textLabel = control.createTextLabel()
-				textLabel.setText(textLabelData.text)
-				if (textLabelData.anchor?.parent === 'container') {
-					control.appendChild(textLabel)
-				} else {
-					control.control.appendChild(textLabel)
-				}
+				control.textLabel = control.createLabel('text', textLabelData.anchor?.parent)
+				control.textLabel.setText(textLabelData.text)
 			}
 			
 			let iconLabelData = controlData.iconLabel
 			if (iconLabelData) {
-				let iconLabel = control.createIconLabel()
-				iconLabel.setIcon(iconLabelData.icon)
-				if (iconLabelData.anchor?.parent === 'container') {
-					control.appendChild(iconLabel)
-				} else {
-					control.control.appendChild(iconLabel)
-				}
+				control.iconLabel = control.createLabel('icon', iconLabelData.anchor?.parent)
+				control.iconLabel.setIcon(iconLabelData.icon)
 			}
 			
 			let imageLabelData = controlData.imageLabel
 			if (imageLabelData) {
-				let imageLabel = control.createImageLabel()
-				imageLabel.setImage(imageLabelData.image)
-				if (imageLabelData.anchor?.parent === 'container') {
-					control.appendChild(imageLabel)
-				} else {
-					control.control.appendChild(imageLabel)
-				}
+				control.imageLabel = control.createLabel('image', imageLabelData.anchor?.parent)
+				control.imageLabel.setImage(imageLabelData.image)
 			}
 			
 			if (tag === 'Slider') {
@@ -82,8 +57,8 @@ class View extends HTMLElement {
 				control.setSnapValue(50)
 				
 				if (controlData.valueLabel) {
-					let valueLabel = control.createValueLabel()
-					valueLabel.setText("50%")
+					control.valueLabel = control.createLabel('text', 'container')
+					control.valueLabel.setText("50%")
 				}
 			}
 
@@ -91,9 +66,9 @@ class View extends HTMLElement {
 			
 			let action = controlData.action
 			if (action) {
-				this.addAction(controlData.action)
+				this.addAction(action)
+				control.action = action
 			}
-			control.action = action
 		}
 	}
 	
