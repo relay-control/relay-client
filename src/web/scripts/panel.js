@@ -64,11 +64,21 @@ class PanelContainer extends HTMLElement {
 			}
 		}
 
+		this.usedDeviceResources = { }
+
 		for (let [viewProperties] of panelData.views) {
 			let view = this.createView()
 			view.templates = panelData.templates
 			view.build(viewProperties)
-			this.usedDeviceResources = view.usedDevices
+			for (let deviceId in view.usedDevices) {
+				let device = view.usedDevices[deviceId]
+				if (deviceId in this.usedDeviceResources) {
+					let panelDevice = this.usedDeviceResources[deviceId]
+					device.buttons = Math.max(panelDevice.buttons, device.buttons)
+					device.axes = [...(new Set([...panelDevice.axes, ...device.axes]))]
+				}
+				this.usedDeviceResources[deviceId] = device
+			}
 		}
 
 		this.setView(1)
