@@ -50,7 +50,7 @@ class Slider extends Control {
 	
 	events = {
 		input: e => {
-			let value = e.currentTarget.value
+			let value = e.currentTarget.valueAsNumber
 			if (45 < value && value < 55)
 			value = 50
 			e.currentTarget.value = value
