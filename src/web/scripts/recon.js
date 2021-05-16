@@ -63,9 +63,8 @@ export default class Recon extends EventTarget {
 		this.dispatchEvent(event)
 	}
 
-	async getPanels() {
-		let res = await fetch(`http://${this.address}:${this.port}/api/panels`)
-		return res.json()
+	getPanels() {
+		return this.connection.invoke('GetPanels')
 	}
 
 	async getPanel(panel) {
