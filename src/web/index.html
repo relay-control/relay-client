@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>Recon</title>
+	<title>Relay</title>
 	
 	<link rel="stylesheet" href="/styles/font-awesome.min.css">
 	<link rel="stylesheet" href="/styles/menu.css">
@@ -11,12 +11,12 @@
 	<link rel="stylesheet" href="/styles/panel.css">
 	<link rel="stylesheet" href="/styles/var.css">
 	<link rel="stylesheet" href="/styles/defaults.css">
-	
+
 	<script type="module" src="/scripts/vue.esm-browser.js"></script>
 	<script type="module" src="/scripts/xml-parser.js"></script>
 	<script src="/scripts/signalr.js"></script>
 
-	<script type="module" src="/scripts/recon.js"></script>
+	<script type="module" src="/scripts/relay.js"></script>
 	<script type="module" src="/scripts/modal.js"></script>
 	<script type="module" src="/scripts/panel.js"></script>
 	<script type="module" src="/scripts/view.js"></script>
@@ -36,7 +36,7 @@
 
 <div id="menu" v-if="!currentPanel">
 	<header>
-		<h1>Recon</h1>
+		<h1>Relay</h1>
 	</header>
 	<section>
 		<header class="with-button">
@@ -61,7 +61,7 @@
 </div>
 
 <modal-dialog v-if="dialogs.connect.show">
-	<template #header>Connect to Recon server</template>
+	<template #header>Connect to Relay server</template>
 	<template #content>
 		<div class="input">
 			<label>Address</label>

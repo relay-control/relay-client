@@ -1,6 +1,6 @@
 import parseXml from '/scripts/xml-parser.js'
 
-export default class Recon extends EventTarget {
+export default class Relay extends EventTarget {
 	static InputType = {
 		key: 1,
 		button: 2,

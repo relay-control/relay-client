@@ -1,4 +1,4 @@
-package net.lombra.recon;
+package net.lombra.relay;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
 		// Context of the app under test.
 		Context appContext = InstrumentationRegistry.getTargetContext();
 
-		assertEquals("net.lombra.recon", appContext.getPackageName());
+		assertEquals("net.lombra.relay", appContext.getPackageName());
 	}
 }

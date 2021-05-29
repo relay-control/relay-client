@@ -1,8 +1,8 @@
-import Recon from '/scripts/recon.js'
+import Relay from '/scripts/relay.js'
 import { createApp } from '/scripts/vue.esm-browser.js'
 import { Dialog, DialogButton } from '/scripts/modal.js'
 
-let recon = new Recon()
+let relay = new Relay()
 
 let panel = document.createElement('panel-container')
 
@@ -18,16 +18,16 @@ const PanelApp = {
 		currentServer: '',
 		panels: [],
 		currentPanel: null,
-		connectionState: Recon.ConnectionState.Disconnected,
+		connectionState: Relay.ConnectionState.Disconnected,
 	}),
 
 	computed: {
 		connected() {
-			return this.connectionState === Recon.ConnectionState.Connected
+			return this.connectionState === Relay.ConnectionState.Connected
 		},
 
 		connecting() {
-			return this.connectionState === Recon.ConnectionState.Connecting
+			return this.connectionState === Relay.ConnectionState.Connecting
 		},
 	},
 
@@ -42,18 +42,18 @@ const PanelApp = {
 
 		async connect(address, port) {
 			try {
-				let promiseConnect = recon.connect(address, port)
-				this.connectionState = recon.connectionState
+				let promiseConnect = relay.connect(address, port)
+				this.connectionState = relay.connectionState
 				await promiseConnect
 			} catch (err) {
 				this.showAlertDialog("Connection error", [`Unable to connect to server ${address}:${port}.`, err.message])
 				this.dialogs.alert.connectAfterClose = true
 				return
 			} finally {
-				this.connectionState = recon.connectionState
+				this.connectionState = relay.connectionState
 			}
 			await this.updatePanels()
-			this.currentServer = recon.address
+			this.currentServer = relay.address
 			
 			let lastPanel = localStorage.getItem('lastPanel')
 			if (lastPanel) {
@@ -62,7 +62,7 @@ const PanelApp = {
 		},
 
 		async updatePanels() {
-			let panels = await recon.getPanels()
+			let panels = await relay.getPanels()
 			this.panels = panels
 		},
 
@@ -73,7 +73,7 @@ const PanelApp = {
 			
 			let panelData = null
 			try {
-				panelData = await recon.getPanel(panelName)
+				panelData = await relay.getPanel(panelName)
 			} catch (err) {
 				let message = []
 				if (err instanceof SyntaxError) {
@@ -115,7 +115,7 @@ const PanelApp = {
 		},
 
 		acquireDevices() {
-			return Promise.allSettled(Object.keys(panel.usedDeviceResources).map(e => recon.acquireDevice(parseInt(e))))
+			return Promise.allSettled(Object.keys(panel.usedDeviceResources).map(e => relay.acquireDevice(parseInt(e))))
 		},
 
 		closePanel() {
@@ -127,7 +127,7 @@ const PanelApp = {
 		reconnectingDialogClose() {
 			this.dialogs.reconnecting.show = false
 			this.dialogs.reconnecting.cancelled = true
-			recon.disconnect()
+			relay.disconnect()
 		},
 
 		showAlertDialog(title, message) {
@@ -144,7 +144,7 @@ const PanelApp = {
 
 		async sendInput(input) {
 			try {
-				await recon.sendInput(input)
+				await relay.sendInput(input)
 			} catch (err) {
 				this.showAlertDialog("Input error", ["Error sending input.", err.message])
 			}
@@ -153,13 +153,13 @@ const PanelApp = {
 		onButtonChange(e) {
 			let action = e.detail
 			switch (action.type) {
-				case Recon.InputType.macro:
+				case Relay.InputType.macro:
 					if (action.isPressed) return
 					break
-				case Recon.InputType.command:
+				case Relay.InputType.command:
 					if (action.isPressed) return
 					break
-				case Recon.InputType.view:
+				case Relay.InputType.view:
 					if (!action.isPressed) panel.setView(action.view)
 					return
 			}
@@ -181,22 +181,22 @@ const PanelApp = {
 			this.showConnectDialog = true
 		}
 
-		window.getAssetPath = (file) => recon.getAssetPath(this.currentPanel, file)
+		window.getAssetPath = (file) => relay.getAssetPath(this.currentPanel, file)
 
-		recon.addEventListener('reconnecting', e => {
-			this.connectionState = recon.connectionState
+		relay.addEventListener('reconnecting', e => {
+			this.connectionState = relay.connectionState
 			this.dialogs.reconnecting.show = true
 			this.dialogs.reconnecting.cancelled = false
 		})
 		
-		recon.addEventListener('reconnected', e => {
-			this.connectionState = recon.connectionState
+		relay.addEventListener('reconnected', e => {
+			this.connectionState = relay.connectionState
 			this.dialogs.reconnecting.show = false
 			this.acquireDevices()
 		})
 		
-		recon.addEventListener('close', e => {
-			this.connectionState = recon.connectionState
+		relay.addEventListener('close', e => {
+			this.connectionState = relay.connectionState
 			this.closePanel()
 			this.dialogs.reconnecting.show = false
 			if (!this.dialogs.reconnecting.cancelled) {

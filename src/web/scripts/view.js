@@ -1,4 +1,4 @@
-import Recon from '/scripts/recon.js'
+import Relay from '/scripts/relay.js'
 
 class View extends HTMLElement {
 	usedDevices = {}
@@ -87,9 +87,9 @@ class View extends HTMLElement {
 	}
 
 	addAction(action) {
-		action.type = Recon.InputType[action.type]
+		action.type = Relay.InputType[action.type]
 
-		if (action.type === Recon.InputType.macro) {
+		if (action.type === Relay.InputType.macro) {
 			action.actions = action.action
 			for (let macroAction of action.actions) {
 				this.addAction(macroAction)
@@ -105,10 +105,10 @@ class View extends HTMLElement {
 				}
 			}
 			let device = this.usedDevices[action.deviceId]
-			if (action.type === Recon.InputType.button) {
+			if (action.type === Relay.InputType.button) {
 				device.buttons = Math.max(action.button, device.buttons)
 			}
-			if (action.type === Recon.InputType.axis && !device.axes.includes(action.axis)) {
+			if (action.type === Relay.InputType.axis && !device.axes.includes(action.axis)) {
 				device.axes.push(action.axis)
 			}
 		}

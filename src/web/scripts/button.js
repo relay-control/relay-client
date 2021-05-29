@@ -1,13 +1,13 @@
 import Control from '/scripts/control.js'
-import Recon from '/scripts/recon.js'
+import Relay from '/scripts/relay.js'
 
 class Button extends Control {
 	static actionTypes = [
-		Recon.InputType.key,
-		Recon.InputType.button,
-		Recon.InputType.command,
-		Recon.InputType.macro,
-		Recon.InputType.view,
+		Relay.InputType.key,
+		Relay.InputType.button,
+		Relay.InputType.command,
+		Relay.InputType.macro,
+		Relay.InputType.view,
 	]
 	
 	constructor() {

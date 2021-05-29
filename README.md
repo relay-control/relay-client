@@ -1,6 +1,6 @@
-# Recon
+# Relay
 
-Client application for [Recon](https://github.com/Lombra/recon-server).
+Client application for [Relay](https://github.com/Lombra/relay-server).
 
 Send keyboard or joystick input remotely over network.
 

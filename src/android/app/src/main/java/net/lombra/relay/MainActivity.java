@@ -1,4 +1,4 @@
-package net.lombra.recon;
+package net.lombra.relay;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
