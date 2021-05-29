@@ -182,6 +182,7 @@ const PanelApp = {
 		}
 
 		window.getAssetPath = (file) => relay.getAssetPath(this.currentPanel, file)
+		window.closePanel = () => this.closePanel()
 
 		relay.addEventListener('reconnecting', e => {
 			this.connectionState = relay.connectionState
