@@ -143,10 +143,9 @@ const PanelApp = {
 		},
 
 		async sendInput(input) {
-			try {
-				await relay.sendInput(input)
-			} catch (err) {
-				this.showAlertDialog("Input error", ["Error sending input.", err.message])
+			let res = await relay.sendInput(input)
+			if (!res.ok) {
+				this.showAlertDialog("Input error", ["Error sending input.", res.message])
 			}
 		},
 
