@@ -81,6 +81,8 @@ export default class View extends HTMLElement {
 			case 'Slider':
 				var control = document.createElement('panel-slider')
 				break
+			default:
+				throw `Invalid control type '${type}'.`
 		}
 		this.appendChild(control)
 		return control

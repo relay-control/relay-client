@@ -100,7 +100,13 @@ const PanelApp = {
 			this.currentPanel = panelName
 			localStorage.setItem('lastPanel', panelName)
 
-			panel.build(panelData)
+			try {
+				panel.build(panelData)
+			} catch (err) {
+				this.showAlertDialog(`Unable to load panel ${panelName}`, [err])
+				this.closePanel()
+				return
+			}
 
 			// request devices
 			let devices = await this.acquireDevices()
