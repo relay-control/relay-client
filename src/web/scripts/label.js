@@ -1,4 +1,4 @@
-import { StylableLabel, StyleElement } from '/scripts/styles.js'
+import { StylableLabel, StyleElement } from 'styles'
 
 class Label extends StylableLabel(StyleElement) {
 	connectedCallback() {
@@ -18,8 +18,6 @@ class TextLabel extends Label {
 	}
 }
 
-customElements.define('text-label', TextLabel)
-
 class IconLabel extends Label {
 	constructor() {
 		super()
@@ -32,8 +30,6 @@ class IconLabel extends Label {
 	}
 }
 
-customElements.define('icon-label', IconLabel)
-
 class ImageLabel extends Label {
 	constructor() {
 		super()
@@ -45,4 +41,4 @@ class ImageLabel extends Label {
 	}
 }
 
-customElements.define('image-label', ImageLabel)
+export { TextLabel, IconLabel, ImageLabel }

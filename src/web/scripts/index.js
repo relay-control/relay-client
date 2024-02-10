@@ -1,8 +1,21 @@
-import Relay from '/scripts/relay.js'
-import { createApp } from '/scripts/vue.esm-browser.js'
-import { Dialog, DialogButton } from '/scripts/modal.js'
+import Relay from 'relay'
+import { createApp } from 'vue'
+import { Dialog, DialogButton } from 'modal'
+import PanelContainer from 'panel'
+import View from 'view'
+import Button from 'button'
+import Slider from 'slider'
+import { TextLabel, IconLabel, ImageLabel } from 'label'
 
 let relay = new Relay()
+
+customElements.define('panel-container', PanelContainer)
+customElements.define('panel-view', View)
+customElements.define('panel-button', Button)
+customElements.define('panel-slider', Slider)
+customElements.define('text-label', TextLabel)
+customElements.define('icon-label', IconLabel)
+customElements.define('image-label', ImageLabel)
 
 let panel = document.createElement('panel-container')
 
@@ -54,7 +67,7 @@ const PanelApp = {
 			}
 			await this.updatePanels()
 			this.currentServer = relay.address
-			
+
 			let lastPanel = localStorage.getItem('lastPanel')
 			if (lastPanel) {
 				this.loadPanel(lastPanel)
@@ -70,7 +83,7 @@ const PanelApp = {
 			// if (panelName !== currentPanel) {
 				panel.removeViews()
 			// }
-			
+
 			let panelData = null
 			try {
 				panelData = await relay.getPanel(panelName)
@@ -83,7 +96,7 @@ const PanelApp = {
 				this.showAlertDialog(`Unable to load panel ${panelName}`, message)
 				return
 			}
-			
+
 			this.currentPanel = panelName
 			localStorage.setItem('lastPanel', panelName)
 
@@ -123,7 +136,7 @@ const PanelApp = {
 			localStorage.removeItem('lastPanel')
 			panel.style.display = 'none'
 		},
-		
+
 		reconnectingDialogClose() {
 			this.dialogs.reconnecting.show = false
 			this.dialogs.reconnecting.cancelled = true
@@ -174,7 +187,7 @@ const PanelApp = {
 		if (localStorage.getItem('address')) {
 			this.address = localStorage.getItem('address')
 			this.port = localStorage.getItem('port')
-			
+
 			this.connect(this.address, this.port)
 		} else {
 			this.showConnectDialog = true
@@ -188,13 +201,13 @@ const PanelApp = {
 			this.dialogs.reconnecting.show = true
 			this.dialogs.reconnecting.cancelled = false
 		})
-		
+
 		relay.addEventListener('reconnected', e => {
 			this.connectionState = relay.connectionState
 			this.dialogs.reconnecting.show = false
 			this.acquireDevices()
 		})
-		
+
 		relay.addEventListener('close', e => {
 			this.connectionState = relay.connectionState
 			this.closePanel()
@@ -205,7 +218,7 @@ const PanelApp = {
 				this.dialogs.alert.connectAfterClose = true
 			}
 		})
-		
+
 		document.getElementById('app').appendChild(panel)
 
 		panel.addEventListener('button-change', this.onButtonChange)

@@ -1,5 +1,5 @@
-import { Stylesheet } from '/scripts/panel.js'
-import Colors from '/scripts/colors.js'
+import Stylesheet from 'stylesheet'
+import Colors from 'colors'
 
 const FlexPositions = {
 	top: 'flex-start',
@@ -62,21 +62,21 @@ const Stylable = (base = Object) => class extends base {
 		'border',
 		'shadows',
 	]
-	
+
 	setStyle(style) {
 		for (let property of this.styleProperties) {
 			if (property in style) this[property] = style[property]
 		}
 	}
-	
+
 	setStyleProperty(property, value) {
 		if (value) this.style.setProperty('--' + property, value)
 	}
-	
+
 	removeStyleProperty(property) {
 		this.style.removeProperty('--' + property)
 	}
-	
+
 	set anchor(anchor) {
 		if (anchor.point) {
 			let [vertical, horizontal] = anchor.point.split(/\s+/)
@@ -102,24 +102,24 @@ const Stylable = (base = Object) => class extends base {
 		this.setStyleProperty('offset-x', parseLength(anchor.offsetX))
 		this.setStyleProperty('offset-y', parseLength(anchor.offsetY))
 	}
-	
+
 	set size(size) {
 		this.width = size
 		this.height = size
 	}
-	
+
 	set width(width) {
 		this.setStyleProperty('width', parseLength(width))
 	}
-	
+
 	set height(height) {
 		this.setStyleProperty('height', parseLength(height))
 	}
-	
+
 	set inset(inset) {
 		this.setStyleProperty('inset', parseLength(inset))
 	}
-	
+
 	set background(background) {
 		if (background.color) {
 			this.setStyleProperty('background-color', parseColor(background.color, background.alpha))
@@ -152,14 +152,14 @@ const Stylable = (base = Object) => class extends base {
 			}
 		}
 	}
-	
+
 	set border(border) {
 		this.setStyleProperty('border-style', border.style)
 		this.setStyleProperty('border-width', parseLength(border.width))
 		this.setStyleProperty('border-color', border.color)
 		this.setStyleProperty('border-radius', parseLength(border.radius))
 	}
-	
+
 	set shadows(shadows) {
 		let boxShadows = []
 		for (let [shadow] of shadows) {
@@ -196,31 +196,31 @@ const ControlStyle = (base = Object) => class extends base {
 		'border',
 		'shadows',
 	]
-	
+
 	setStyle(style) {
 		super.setStyle(style)
 
 		if (style.textLabel && this.textLabel) {
 			this.textLabel.setStyle(style.textLabel)
 		}
-		
+
 		if (style.iconLabel && this.iconLabel) {
 			this.iconLabel.setStyle(style.iconLabel)
 		}
-		
+
 		if (style.imageLabel && this.imageLabel) {
 			this.imageLabel.setStyle(style.imageLabel)
 		}
-		
+
 		if (style.valueLabel && this.valueLabel) {
 			this.valueLabel.setStyle(style.valueLabel)
 		}
 	}
-	
+
 	set rowSpan(span) {
 		this.setStyleProperty('row-span', span)
 	}
-	
+
 	set columnSpan(span) {
 		this.setStyleProperty('column-span', span)
 	}
@@ -233,7 +233,7 @@ class ControlStyleTemplate extends ControlStyle(Style) {
 		this.iconLabel = this.createLabel('icon')
 		this.imageLabel = this.createLabel('image')
 	}
-	
+
 	setActiveStyle(style) {
 		let activeStyle = new ControlStyleTemplate(this.selector + '.active')
 		activeStyle.parent = this
@@ -252,23 +252,23 @@ class SliderStyle extends Style {
 		this.thumb = new SliderThumbStyle(this)
 		this.track = new SliderTrackStyle(this)
 	}
-	
+
 	setStyle(style) {
 		super.setStyle(style)
-		
+
 		if (style.valueLabel && this.valueLabel) {
 			this.valueLabel.setStyle(style.valueLabel)
 		}
-		
+
 		if (style.thumb && this.thumb) {
 			this.thumb.setStyle(style.thumb)
 		}
-		
+
 		if (style.track && this.track) {
 			this.track.setStyle(style.track)
 		}
 	}
-	
+
 	createValueLabel() {
 		return new LabelStyle(this.selector + ' text-label', this)
 	}
@@ -285,7 +285,7 @@ class StyleElement extends Stylable(HTMLElement) {
 		'offset-x',
 		'offset-y',
 	]
-	
+
 	resetStyle() {
 		for (let property of this.cssProperties) {
 			this.removeStyleProperty(property)
@@ -311,13 +311,13 @@ const StylableLabel = (base = Object) => class extends base {
 	set color(color) {
 		this.setStyleProperty('font-color', color)
 	}
-	
+
 	set font(font) {
 		if (font.family) this.setStyleProperty('font-family', font.family)
 		this.setStyleProperty('font-size', parseLength(font.size))
 		// this.setStyleProperty('font-color', parseColor(font.color, font.alpha))
 	}
-	
+
 	set textShadow(shadows) {
 		let textShadows = []
 		for (let [shadow] of shadows) {
@@ -337,7 +337,7 @@ class SliderThumbStyle extends Style {
 	constructor() {
 		super('panel-slider .control')
 	}
-	
+
 	setStyleProperty(property, value) {
 		this.style.setProperty('--thumb-' + property, value)
 	}
@@ -347,7 +347,7 @@ class SliderTrackStyle extends Style {
 	constructor() {
 		super('panel-slider .control')
 	}
-	
+
 	setStyleProperty(property, value) {
 		this.style.setProperty('--track-' + property, value)
 	}

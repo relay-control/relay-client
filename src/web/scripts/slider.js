@@ -1,7 +1,7 @@
-import Control from '/scripts/control.js'
-import { SliderThumbStyle, SliderTrackStyle } from '/scripts/styles.js'
+import Control from 'control'
+import { SliderThumbStyle, SliderTrackStyle } from 'styles'
 
-class Slider extends Control {
+export default class extends Control {
 	constructor() {
 		super()
 		this.control = document.createElement('input')
@@ -13,12 +13,12 @@ class Slider extends Control {
 	connectedCallback() {
 		super.connectedCallback()
 		this.container.appendChild(this.control)
-		
+
 		for (let [event, callback] of Object.entries(this.events)) {
 			this.control.addEventListener(event, callback)
 		}
 	}
-	
+
 	setSnapValue(value) {
 		let listID = 'datalist-' + this.id
 		this.control.setAttribute('list', listID)
@@ -29,39 +29,39 @@ class Slider extends Control {
 		option.value = value
 		datalist.appendChild(option)
 	}
-	
+
 	setStyle(style) {
 		super.setStyle(style)
-		
+
 		if (style.valueLabel && this.valueLabel) {
 			this.valueLabel.setStyle(style.valueLabel)
 		}
-		
+
 		if (style.thumb) {
 			let thumbStyle = new SliderThumbStyle(this)
 			thumbStyle.setStyle(style.thumb)
 		}
-		
+
 		if (style.track) {
 			let trackStyle = new SliderTrackStyle(this)
 			trackStyle.setStyle(style.track)
 		}
 	}
-	
+
 	events = {
 		input: e => {
 			let value = e.currentTarget.valueAsNumber
 			if (45 < value && value < 55)
-			value = 50
+				value = 50
 			e.currentTarget.value = value
-			
+
 			// avoid sending input if value is unchanged
 			if (value === this.previousValue) return
 			this.previousValue = value
-			
+
 			if (this.valueLabel)
 				this.valueLabel.setText(value + '%')
-			
+
 			if (this.action) {
 				let event = new CustomEvent('slider-change', {
 					bubbles: true,
@@ -72,5 +72,3 @@ class Slider extends Control {
 		},
 	}
 }
-
-customElements.define('panel-slider', Slider)

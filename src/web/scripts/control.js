@@ -1,4 +1,4 @@
-import { ControlStyle, Stylable, StyleElement } from '/scripts/styles.js'
+import { ControlStyle, Stylable, StyleElement } from 'styles'
 
 export default class Control extends ControlStyle(Stylable(StyleElement)) {
 	labels = []
@@ -21,19 +21,19 @@ export default class Control extends ControlStyle(Stylable(StyleElement)) {
 	setActiveStyle(style) {
 		this.activeStyle = style
 	}
-	
+
 	addClass(className) {
 		this.classList.add(className)
 	}
-	
+
 	removeClass(className) {
 		this.classList.remove(className)
 	}
-	
+
 	set row(row) {
 		this.setStyleProperty('row', row)
 	}
-	
+
 	set column(column) {
 		this.setStyleProperty('column', column)
 	}

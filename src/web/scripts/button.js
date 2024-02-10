@@ -1,7 +1,7 @@
-import Control from '/scripts/control.js'
-import Relay from '/scripts/relay.js'
+import Control from 'control'
+import Relay from 'relay'
 
-class Button extends Control {
+export default class Button extends Control {
 	static actionTypes = [
 		Relay.InputType.key,
 		Relay.InputType.button,
@@ -9,7 +9,7 @@ class Button extends Control {
 		Relay.InputType.macro,
 		Relay.InputType.view,
 	]
-	
+
 	constructor() {
 		super()
 		this.control = document.createElement('button')
@@ -19,7 +19,7 @@ class Button extends Control {
 	connectedCallback() {
 		super.connectedCallback()
 		this.container.appendChild(this.control)
-		
+
 		for (let [event, callback] of Object.entries(this.events)) {
 			this.control.addEventListener(event, callback)
 		}
@@ -51,21 +51,21 @@ class Button extends Control {
 		})
 		this.control.dispatchEvent(event)
 	}
-	
+
 	activate() {
 		this.addClass('active')
 		this.applyActiveStyle()
 		this.dispatchEvent('button-activate')
 		this.dispatchEvent('button-change', { isPressed: true })
 	}
-	
+
 	deactivate() {
 		this.removeClass('active')
 		this.applyBaseStyle()
 		this.dispatchEvent('button-deactivate')
 		this.dispatchEvent('button-change', { isPressed: false })
 	}
-	
+
 	press() {
 		if (this.mode === 'toggle') {
 			if (!this.wasActive) {
@@ -76,7 +76,7 @@ class Button extends Control {
 		}
 		this.isPressed = true
 	}
-	
+
 	release() {
 		if (this.mode === 'toggle') {
 			if (this.wasActive)
@@ -87,7 +87,7 @@ class Button extends Control {
 		}
 		this.isPressed = false
 	}
-	
+
 	events = {
 		mousedown: e => {
 			this.press()
@@ -110,5 +110,3 @@ class Button extends Control {
 		},
 	}
 }
-
-customElements.define('panel-button', Button)

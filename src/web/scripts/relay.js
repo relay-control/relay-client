@@ -1,4 +1,4 @@
-import parseXml from '/scripts/xml-parser.js'
+import parseXml from 'xml-parser'
 
 export default class Relay extends EventTarget {
 	static InputType = {
@@ -56,7 +56,7 @@ export default class Relay extends EventTarget {
 		let event = new CustomEvent('reconnected', { detail: connectionId })
 		this.dispatchEvent(event)
 	}
-	
+
 	onClose(error) {
 		console.assert(this.connection.state === signalR.HubConnectionState.Disconnected)
 		let event = new CustomEvent('close', { detail: error })
@@ -74,7 +74,7 @@ export default class Relay extends EventTarget {
 		let text = await response.text()
 		return parseXml(text).panel
 	}
-	
+
 	getAssetPath(panel, file) {
 		// return encodeURI(new URL(`panels/${panel}/assets/${file}`, this.url.origin).href)
 		return new URL(`panels/${panel}/assets/${file}`, this.url.origin).href

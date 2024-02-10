@@ -1,12 +1,12 @@
-import Relay from '/scripts/relay.js'
+import Relay from 'relay'
 
-class View extends HTMLElement {
+export default class View extends HTMLElement {
 	usedDevices = {}
 
 	build(view) {
 		for (let [controlData, tag] of view) {
 			let control = this.createControl(tag, controlData)
-			
+
 			// manually "inherit" properties that won't be applied using CSS from relevant templates
 			let style = {}
 			if (this.templates) {
@@ -20,42 +20,42 @@ class View extends HTMLElement {
 			
 			if (controlData.row) control.row = controlData.row
 			if (controlData.column) control.column = controlData.column
-			
+
 			if ('inherits' in controlData)
 				control.addClass(controlData.inherits)
-			
+
 			if (style.square) control.addClass('square')
 			if (style.circle) control.addClass('circle')
 			if ((style.square || style.circle) && !(style.size || style.width || style.height))
 				control.addClass('auto-size')
-			
+
 			control.setBaseStyle(controlData)
 			if (controlData.active) {
 				control.setActiveStyle(controlData.active)
 			}
-			
+
 			let textLabelData = controlData.textLabel
 			if (textLabelData) {
 				control.textLabel = control.createLabel('text', textLabelData.anchor?.parent)
 				control.textLabel.setText(textLabelData.text)
 			}
-			
+
 			let iconLabelData = controlData.iconLabel
 			if (iconLabelData) {
 				control.iconLabel = control.createLabel('icon', iconLabelData.anchor?.parent)
 				control.iconLabel.setIcon(iconLabelData.icon)
 			}
-			
+
 			let imageLabelData = controlData.imageLabel
 			if (imageLabelData) {
 				control.imageLabel = control.createLabel('image', imageLabelData.anchor?.parent)
 				control.imageLabel.setImage(imageLabelData.image)
 			}
-			
+
 			if (tag === 'Slider') {
 				// c.setSnapValue(control.snap)
 				control.setSnapValue(50)
-				
+
 				if (controlData.valueLabel) {
 					control.valueLabel = control.createLabel('text', 'container')
 					control.valueLabel.setText("50%")
@@ -63,7 +63,7 @@ class View extends HTMLElement {
 			}
 
 			control.setStyle(controlData)
-			
+
 			let action = controlData.action
 			if (action) {
 				this.addAction(action)
@@ -71,7 +71,7 @@ class View extends HTMLElement {
 			}
 		}
 	}
-	
+
 	createControl(type, data) {
 		switch (type) {
 			case 'Button':
@@ -114,5 +114,3 @@ class View extends HTMLElement {
 		}
 	}
 }
-
-customElements.define('panel-view', View)

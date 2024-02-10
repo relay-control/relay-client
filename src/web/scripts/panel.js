@@ -1,4 +1,5 @@
-import { ControlStyleTemplate, SliderStyle } from '/scripts/styles.js'
+import { ControlStyleTemplate, SliderStyle } from 'styles'
+import Stylesheet from 'stylesheet'
 
 function loadAudio(url) {
 	return new Promise((resolve, reject) => {
@@ -11,23 +12,23 @@ function loadAudio(url) {
 	})
 }
 
-class PanelContainer extends HTMLElement {
+export default class extends HTMLElement {
 	views = []
 	assets = []
-	
+
 	build(panelData) {
 		// create a separate stylesheet for dynamic style rules
 		Stylesheet.create()
-		
+
 		this.style = null
 		this.style.display = 'none'
 		if (panelData.background)
 			this.background = panelData.background
 		this.rows = panelData.grid.rows
 		this.columns = panelData.grid.columns
-		
+
 		/* validate grid size and control placement */
-		
+
 		if (panelData.assets) {
 			for (let [asset, type] of panelData.assets) {
 				switch (type) {
@@ -43,7 +44,7 @@ class PanelContainer extends HTMLElement {
 				}
 			}
 		}
-		
+
 		// map each template to a CSS class
 		if (panelData.templates) {
 			for (let [template, tag] of panelData.templates) {
@@ -82,30 +83,30 @@ class PanelContainer extends HTMLElement {
 		}
 
 		this.setView(1)
-		
+
 		this.show()
 	}
-	
+
 	async show() {
 		await Promise.allSettled(this.assets)
-		
+
 		this.style.display = 'block'
 	}
-	
+
 	createView() {
 		let view = document.createElement('panel-view')
 		this.appendChild(view)
 		this.views.push(view)
 		return view
 	}
-	
+
 	removeViews() {
 		while (this.lastChild) {
 			this.lastChild.remove()
 			this.views.pop()
 		}
 	}
-	
+
 	setView(view) {
 		// decrement to translate human index to 0 index
 		view--
@@ -124,14 +125,14 @@ class PanelContainer extends HTMLElement {
 			img.onerror = () => reject()
 		}))
 	}
-	
+
 	loadFont(family, file) {
 		let url = getAssetPath(file)
 		let font = new FontFace(family, `url(${url})`)
 		document.fonts.add(font)
 		this.assets.push(font.load())
 	}
-	
+
 	loadScript(file) {
 		let url = getAssetPath(file)
 		this.assets.push(new Promise((resolve, reject) => {
@@ -141,15 +142,15 @@ class PanelContainer extends HTMLElement {
 			this.appendChild(script)
 		}))
 	}
-	
+
 	set rows(rows) {
 		this.style.setProperty('--grid-rows', rows)
 	}
-	
+
 	set columns(columns) {
 		this.style.setProperty('--grid-columns', columns)
 	}
-	
+
 	set background(background) {
 		this.style.backgroundColor = background.color
 		if (background.image) {
@@ -157,21 +158,5 @@ class PanelContainer extends HTMLElement {
 			this.style.backgroundSize = 'cover'
 			this.style.backgroundPosition = 'center'
 		}
-	}
-}
-
-customElements.define('panel-container', PanelContainer)
-
-export class Stylesheet {
-	static create() {
-		Stylesheet.sheet = new CSSStyleSheet()
-		document.adoptedStyleSheets = [Stylesheet.sheet]
-	}
-	
-	static createRule(selector) {
-		let index = Stylesheet.sheet.rules.length
-		Stylesheet.sheet.insertRule(`${selector} {}`, index)
-		let rule = Stylesheet.sheet.rules[index].style
-		return rule
 	}
 }
