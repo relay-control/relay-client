@@ -1,6 +1,11 @@
 import Relay from 'relay'
 
 export default class View extends HTMLElement {
+	static CustomElements = {
+		'Button': 'button-control',
+		'Slider': 'slider-control',
+	}
+
 	usedDevices = {}
 
 	build(view) {
@@ -73,18 +78,26 @@ export default class View extends HTMLElement {
 	}
 
 	createControl(type, data) {
+		let tagName = View.CustomElements[type]
+
+		if (!tagName) {
+			throw new Error(`Invalid control type '${type}'.`)
+		}
+
+		if (!customElements.get(tagName)) {
+			throw new Error(`Unknown custom element '${tagName}'.`)
+		}
+
+		let control = document.createElement(tagName)
+
 		switch (type) {
 			case 'Button':
-				var control = document.createElement('button-control')
 				control.mode = data.mode
 				break
-			case 'Slider':
-				var control = document.createElement('slider-control')
-				break
-			default:
-				throw `Invalid control type '${type}'.`
 		}
+
 		this.appendChild(control)
+
 		return control
 	}
 

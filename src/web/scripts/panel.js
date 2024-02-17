@@ -12,11 +12,19 @@ function loadAudio(url) {
 	})
 }
 
-export default class extends HTMLElement {
+class AssetError extends Error {
+	constructor(message, errors) {
+		super(message)
+		this.name = this.constructor.name
+		this.errors = errors
+	}
+}
+
+class Panel extends HTMLElement {
 	views = []
 	assets = []
 
-	build(panelData) {
+	async build(panelData) {
 		// create a separate stylesheet for dynamic style rules
 		Stylesheet.create()
 
@@ -84,11 +92,19 @@ export default class extends HTMLElement {
 
 		this.setView(1)
 
-		this.show()
+		await this.show()
 	}
 
 	async show() {
-		await Promise.allSettled(this.assets)
+		let assets = await Promise.allSettled(this.assets)
+
+		let assetErrors = assets
+			.filter(e => e.status === 'rejected')
+			.map(e => e.reason.message)
+
+		if (assetErrors.length > 0) {
+			throw new AssetError('Errors occurred while loading assets.', assetErrors)
+		}
 
 		this.style.display = 'block'
 	}
@@ -160,3 +176,5 @@ export default class extends HTMLElement {
 		}
 	}
 }
+
+export { Panel as default, AssetError }

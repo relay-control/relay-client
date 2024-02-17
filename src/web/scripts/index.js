@@ -1,7 +1,7 @@
 import Relay from 'relay'
 import { createApp } from 'vue'
 import { Dialog, DialogButton } from 'modal'
-import PanelContainer from 'panel'
+import PanelContainer, { AssetError } from 'panel'
 import View from 'view'
 import ButtonControl from 'controls/button'
 import SliderControl from 'controls/slider'
@@ -93,7 +93,7 @@ const PanelApp = {
 					message.push(`Error on line ${err.lineNumber} at column ${err.columnNumber}:`)
 				}
 				message.push(err.message)
-				this.showAlertDialog(`Unable to load panel ${panelName}`, message)
+				this.showAlertDialog('Failed to load panel', message)
 				return
 			}
 
@@ -101,9 +101,14 @@ const PanelApp = {
 			localStorage.setItem('lastPanel', panelName)
 
 			try {
-				panel.build(panelData)
+				await panel.build(panelData)
 			} catch (err) {
-				this.showAlertDialog(`Unable to load panel ${panelName}`, [err])
+				let errors = []
+				errors.push(err.message)
+				if (err instanceof AssetError) {
+					errors = errors.concat(err.errors)
+				}
+				this.showAlertDialog(`Failed to load panel`, errors)
 				this.closePanel()
 				return
 			}
