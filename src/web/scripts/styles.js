@@ -335,7 +335,7 @@ class LabelStyle extends StylableLabel(Style) { }
 
 class SliderThumbStyle extends Style {
 	constructor() {
-		super('panel-slider .control')
+		super('slider-control .control')
 	}
 
 	setStyleProperty(property, value) {
@@ -345,7 +345,7 @@ class SliderThumbStyle extends Style {
 
 class SliderTrackStyle extends Style {
 	constructor() {
-		super('panel-slider .control')
+		super('slider-control .control')
 	}
 
 	setStyleProperty(property, value) {
@@ -353,4 +353,13 @@ class SliderTrackStyle extends Style {
 	}
 }
 
-export { ControlStyle, ControlStyleTemplate, SliderStyle, Stylable, StylableLabel, StyleElement, SliderThumbStyle, SliderTrackStyle }
+export {
+	ControlStyle,
+	ControlStyleTemplate,
+	SliderStyle,
+	Stylable,
+	StylableLabel,
+	StyleElement,
+	SliderThumbStyle,
+	SliderTrackStyle,
+}

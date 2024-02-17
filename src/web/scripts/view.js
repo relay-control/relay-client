@@ -75,11 +75,11 @@ export default class View extends HTMLElement {
 	createControl(type, data) {
 		switch (type) {
 			case 'Button':
-				var control = document.createElement('panel-button')
+				var control = document.createElement('button-control')
 				control.mode = data.mode
 				break
 			case 'Slider':
-				var control = document.createElement('panel-slider')
+				var control = document.createElement('slider-control')
 				break
 			default:
 				throw `Invalid control type '${type}'.`

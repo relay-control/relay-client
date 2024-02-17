@@ -1,7 +1,7 @@
-import Control from 'control'
+import BaseControl from 'controls/base'
 import { SliderThumbStyle, SliderTrackStyle } from 'styles'
 
-export default class extends Control {
+export default class extends BaseControl {
 	constructor() {
 		super()
 		this.control = document.createElement('input')

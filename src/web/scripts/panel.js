@@ -49,7 +49,7 @@ export default class extends HTMLElement {
 		if (panelData.templates) {
 			for (let [template, tag] of panelData.templates) {
 				let selector = template.name ? '.' + template.name : ''
-				selector = ((tag !== 'Control') ? 'panel-' + tag.toLowerCase() : '.cell') + selector
+				selector = ((tag !== 'Control') ? tag.toLowerCase() + '-control' : '.cell') + selector
 				let style = null
 				switch (tag) {
 					case 'Slider':

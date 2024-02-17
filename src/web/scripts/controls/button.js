@@ -1,7 +1,7 @@
-import Control from 'control'
+import StateControl from 'controls/state'
 import Relay from 'relay'
 
-export default class Button extends Control {
+export default class ButtonControl extends StateControl {
 	static actionTypes = [
 		Relay.InputType.key,
 		Relay.InputType.button,
@@ -10,41 +10,17 @@ export default class Button extends Control {
 		Relay.InputType.view,
 	]
 
-	constructor() {
-		super()
-		this.control = document.createElement('button')
-		this.control.classList.add('control')
-	}
-
 	connectedCallback() {
 		super.connectedCallback()
-		this.container.appendChild(this.control)
 
 		for (let [event, callback] of Object.entries(this.events)) {
 			this.control.addEventListener(event, callback)
 		}
 	}
 
-	resetStyle() {
-		super.resetStyle()
-
-		for (let label of this.labels) {
-			label.resetStyle()
-		}
-	}
-
-	applyBaseStyle() {
-		this.resetStyle()
-		if (this.baseStyle) this.setStyle(this.baseStyle)
-	}
-
-	applyActiveStyle() {
-		if (this.activeStyle) this.setStyle(this.activeStyle)
-	}
-
 	dispatchEvent(eventName, detail = { }) {
 		if (!this.action) return
-		if (!Button.actionTypes.includes(this.action.type)) return
+		if (!ButtonControl.actionTypes.includes(this.action.type)) return
 		let event = new CustomEvent(eventName, {
 			bubbles: true,
 			detail: Object.assign(detail, this.action),
@@ -53,15 +29,13 @@ export default class Button extends Control {
 	}
 
 	activate() {
-		this.addClass('active')
-		this.applyActiveStyle()
+		super.activate()
 		this.dispatchEvent('button-activate')
 		this.dispatchEvent('button-change', { isPressed: true })
 	}
 
 	deactivate() {
-		this.removeClass('active')
-		this.applyBaseStyle()
+		super.deactivate()
 		this.dispatchEvent('button-deactivate')
 		this.dispatchEvent('button-change', { isPressed: false })
 	}

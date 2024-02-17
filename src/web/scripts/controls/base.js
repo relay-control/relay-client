@@ -1,6 +1,6 @@
 import { ControlStyle, Stylable, StyleElement } from 'styles'
 
-export default class Control extends ControlStyle(Stylable(StyleElement)) {
+export default class BaseControl extends ControlStyle(Stylable(StyleElement)) {
 	labels = []
 
 	constructor() {

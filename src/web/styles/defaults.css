@@ -16,13 +16,13 @@ panel-view {
 	padding: 0;
 }
 
-panel-button,
-panel-slider {
+button-control,
+slider-control {
 	--width: 100%;
 	--height: 100%;
 }
 
-panel-button {
+button-control {
 	--background-color: #fff;
 	--border-style: none;
 }
@@ -47,7 +47,7 @@ input[type=range] {
 	--thumb-width: 30px;
 	--thumb-height: 40px;
 	--thumb-background-color: #fff;
-	
+
 	--track-height: 20px;
 	--track-background-color: #aaa;
 }

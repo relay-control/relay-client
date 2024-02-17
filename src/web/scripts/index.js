@@ -3,16 +3,16 @@ import { createApp } from 'vue'
 import { Dialog, DialogButton } from 'modal'
 import PanelContainer from 'panel'
 import View from 'view'
-import Button from 'button'
-import Slider from 'slider'
+import ButtonControl from 'controls/button'
+import SliderControl from 'controls/slider'
 import { TextLabel, IconLabel, ImageLabel } from 'label'
 
 let relay = new Relay()
 
 customElements.define('panel-container', PanelContainer)
 customElements.define('panel-view', View)
-customElements.define('panel-button', Button)
-customElements.define('panel-slider', Slider)
+customElements.define('button-control', ButtonControl)
+customElements.define('slider-control', SliderControl)
 customElements.define('text-label', TextLabel)
 customElements.define('icon-label', IconLabel)
 customElements.define('image-label', ImageLabel)
