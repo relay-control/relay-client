@@ -3,6 +3,8 @@ import { createApp } from 'vue'
 import { Dialog, DialogButton } from 'modal'
 import PanelContainer, { AssetError } from 'panel'
 import View from 'view'
+import BaseControl from 'controls/base'
+import StateControl from 'controls/state'
 import ButtonControl from 'controls/button'
 import SliderControl from 'controls/slider'
 import { TextLabel, IconLabel, ImageLabel } from 'label'
@@ -11,6 +13,8 @@ let relay = new Relay()
 
 customElements.define('panel-container', PanelContainer)
 customElements.define('panel-view', View)
+customElements.define('simple-control', BaseControl)
+customElements.define('state-control', StateControl)
 customElements.define('button-control', ButtonControl)
 customElements.define('slider-control', SliderControl)
 customElements.define('text-label', TextLabel)

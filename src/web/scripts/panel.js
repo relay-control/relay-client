@@ -151,12 +151,7 @@ class Panel extends HTMLElement {
 
 	loadScript(file) {
 		let url = getAssetPath(file)
-		this.assets.push(new Promise((resolve, reject) => {
-			let script = document.createElement('script')
-			script.src = url
-			script.onload = () => resolve()
-			this.appendChild(script)
-		}))
+		this.assets.push(import(url))
 	}
 
 	set rows(rows) {

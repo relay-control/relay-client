@@ -40,7 +40,7 @@ export default class BaseControl extends ControlStyle(Stylable(StyleElement)) {
 
 	createLabel(labelType, parent) {
 		let label = document.createElement(labelType + '-label')
-		if (parent === 'container') {
+		if (parent === 'container' || !this.control) {
 			this.appendChild(label)
 		} else {
 			this.control.appendChild(label)

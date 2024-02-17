@@ -2,6 +2,8 @@ import Relay from 'relay'
 
 export default class View extends HTMLElement {
 	static CustomElements = {
+		'Simple': 'simple-control',
+		'State': 'state-control',
 		'Button': 'button-control',
 		'Slider': 'slider-control',
 	}
@@ -22,9 +24,14 @@ export default class View extends HTMLElement {
 				}
 			}
 			Object.assign(style, controlData)
-			
-			if (controlData.row) control.row = controlData.row
-			if (controlData.column) control.column = controlData.column
+
+			if ('id' in controlData)
+				control.id = controlData.id
+
+			if (controlData.row)
+				control.row = controlData.row
+			if (controlData.column)
+				control.column = controlData.column
 
 			if ('inherits' in controlData)
 				control.addClass(controlData.inherits)
