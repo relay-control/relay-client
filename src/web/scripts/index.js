@@ -1,6 +1,5 @@
 import Relay from 'relay'
 import { createApp } from 'vue'
-import { Dialog, DialogButton } from 'modal'
 import PanelContainer, { AssetError } from 'panel'
 import View from 'view'
 import BaseControl from 'controls/base'
@@ -22,6 +21,16 @@ customElements.define('icon-label', IconLabel)
 customElements.define('image-label', ImageLabel)
 
 let panel = document.createElement('panel-container')
+
+const ModalDialog = {
+	template: '#modal-dialog',
+}
+
+const DialogButton = {
+	props: ['primary'],
+	emits: ['click'],
+	template: '#dialog-button',
+}
 
 const PanelApp = {
 	data: () => ({
@@ -247,8 +256,8 @@ const PanelApp = {
 	},
 
 	components: {
-		'modal-dialog': Dialog,
-		'dialog-button': DialogButton,
+		ModalDialog,
+		DialogButton,
 	},
 }
 

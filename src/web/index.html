@@ -19,7 +19,6 @@
 				"xml-parser": "/scripts/xml-parser.js",
 				"api": "/scripts/api.js",
 				"relay": "/scripts/relay.js",
-				"modal": "/scripts/modal.js",
 				"panel": "/scripts/panel.js",
 				"view": "/scripts/view.js",
 				"stylesheet": "/scripts/stylesheet.js",
@@ -110,6 +109,28 @@
 </modal-dialog>
 
 </div>
+
+<template id="modal-dialog">
+	<div class="modal-mask">
+		<div class="modal-content">
+			<header>
+				<slot name="header"></slot>
+			</header>
+			<div class="content">
+				<slot name="content"></slot>
+			</div>
+			<slot></slot>
+		</div>
+	</div>
+</template>
+
+<template id="dialog-button">
+	<div class="buttons">
+		<button :class="primary" @click="$emit('click')">
+			<slot></slot>
+		</button>
+	</div>
+</template>
 
 </body>
 
