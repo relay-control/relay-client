@@ -39,7 +39,7 @@
 	margin-bottom: 0;
 }
 
-.modal-content .buttons {
+.modal-content footer {
 	background: #f9fafb;
 	padding: 1rem;
 	border-top: var(--border);
@@ -49,14 +49,14 @@
     border-bottom-right-radius: var(--border-radius);
 }
 
-.modal-content .buttons button {
+.modal-content footer button {
 	margin-left: 0.75em;
 	position: relative;
 }
 
 .modal-content div.input {
 	margin-bottom: 1em;
-	
+
 	font-size: 1em;
 	display: flex;
 	color: rgba(0, 0, 0, 0.87);

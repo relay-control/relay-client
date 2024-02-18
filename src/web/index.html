@@ -72,8 +72,8 @@
 </div>
 
 <modal-dialog v-if="dialogs.connect.show">
-	<template #header>Connect to Relay server</template>
-	<template #content>
+	<header>Connect to Relay server</header>
+	<div class="content">
 		<div class="input">
 			<label>Address</label>
 			<input name="address" required pattern="[\d.]+" v-model="address">
@@ -82,30 +82,34 @@
 			<label>Port</label>
 			<input name="port" required pattern="\d+" v-model="port">
 		</div>
-	</template>
-	<div class="buttons">
+	</div>
+	<footer>
 		<button type="button" :disabled="connecting" @click="dialogs.connect.show = false">Cancel</button>
 		<button type="button" :disabled="connecting" class="primary" @click="submit">
 			<span class="loading" v-if="connecting"></span>
 			<span :style="{ visibility: connecting ? 'hidden' : 'visible' }">Connect</span>
 		</button>
-	</div>
+	</footer>
 </modal-dialog>
 
 <modal-dialog v-if="dialogs.alert.show">
-	<template #header> {{ dialogs.alert.title }} </template>
-	<template #content>
-		<p v-for="line in dialogs.alert.message"> {{ line }} </p>
-	</template>
-	<dialog-button primary @click="alertDialogClose">OK</dialog-button>
+	<header>{{ dialogs.alert.title }}</header>
+	<div class="content">
+		<p v-for="line in dialogs.alert.message">{{ line }}</p>
+	</div>
+	<footer>
+		<button class="primary" @click="alertDialogClose">OK</button>
+	</footer>
 </modal-dialog>
 
 <modal-dialog id="reconnecting-dialog" v-if="dialogs.reconnecting.show">
-	<template #header>Disconnected from server</template>
-	<template #content>
+	<header>Disconnected from server</header>
+	<div class="content">
 		<div class="loading">Reconnecting</div>
-	</template>
-	<dialog-button @click="reconnectingDialogClose">Cancel</dialog-button>
+	</div>
+	<footer>
+		<button @click="reconnectingDialogClose">Cancel</button>
+	</footer>
 </modal-dialog>
 
 </div>
@@ -113,22 +117,8 @@
 <template id="modal-dialog">
 	<div class="modal-mask">
 		<div class="modal-content">
-			<header>
-				<slot name="header"></slot>
-			</header>
-			<div class="content">
-				<slot name="content"></slot>
-			</div>
 			<slot></slot>
 		</div>
-	</div>
-</template>
-
-<template id="dialog-button">
-	<div class="buttons">
-		<button :class="primary" @click="$emit('click')">
-			<slot></slot>
-		</button>
 	</div>
 </template>
 

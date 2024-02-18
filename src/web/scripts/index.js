@@ -26,12 +26,6 @@ const ModalDialog = {
 	template: '#modal-dialog',
 }
 
-const DialogButton = {
-	props: ['primary'],
-	emits: ['click'],
-	template: '#dialog-button',
-}
-
 const PanelApp = {
 	data: () => ({
 		dialogs: {
@@ -257,7 +251,6 @@ const PanelApp = {
 
 	components: {
 		ModalDialog,
-		DialogButton,
 	},
 }
 
