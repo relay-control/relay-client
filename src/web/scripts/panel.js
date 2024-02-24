@@ -1,5 +1,6 @@
 import { ControlStyleTemplate, SliderStyle } from 'styles'
 import Stylesheet from 'stylesheet'
+import Grid from 'grid'
 
 function loadAudio(url) {
 	return new Promise((resolve, reject) => {
@@ -20,26 +21,32 @@ class AssetError extends Error {
 	}
 }
 
-class Panel extends HTMLElement {
-	views = []
+class Panel {
 	assets = []
 
-	async build(panelData) {
+	constructor(name, options) {
+		this.name = name
+		this.options = options
+	}
+
+	async build() {
 		// create a separate stylesheet for dynamic style rules
 		Stylesheet.create()
 
-		this.style = null
-		this.style.display = 'none'
-		if (panelData.background)
-			this.background = panelData.background
-		this.rows = panelData.grid.rows
-		this.columns = panelData.grid.columns
+		let panelContainer = document.getElementById('panel-container')
+
+		this.options.grid.templates = this.options.templates
+
+		let grid = Grid.create(this.options.grid)
+		panelContainer.appendChild(grid)
+
+		this.grid = grid
 
 		/* validate grid size and control placement */
 
-		if (panelData.assets) {
-			for (let [asset, type] of panelData.assets) {
-				switch (type) {
+		if (this.options.assets) {
+			for (let asset of this.options.assets) {
+				switch (asset.tagName) {
 					case 'Image':
 						this.loadImage(asset.file)
 						break
@@ -54,8 +61,9 @@ class Panel extends HTMLElement {
 		}
 
 		// map each template to a CSS class
-		if (panelData.templates) {
-			for (let [template, tag] of panelData.templates) {
+		if (this.options.templates) {
+			for (let template of this.options.templates) {
+				let tag = template.tagName
 				let selector = template.name ? '.' + template.name : ''
 				selector = ((tag !== 'Control') ? tag.toLowerCase() + '-control' : '.cell') + selector
 				let style = null
@@ -75,23 +83,6 @@ class Panel extends HTMLElement {
 
 		this.usedDeviceResources = { }
 
-		for (let [viewProperties] of panelData.views) {
-			let view = this.createView()
-			view.templates = panelData.templates
-			view.build(viewProperties)
-			for (let deviceId in view.usedDevices) {
-				let device = view.usedDevices[deviceId]
-				if (deviceId in this.usedDeviceResources) {
-					let panelDevice = this.usedDeviceResources[deviceId]
-					device.buttons = Math.max(panelDevice.buttons, device.buttons)
-					device.axes = [...(new Set([...panelDevice.axes, ...device.axes]))]
-				}
-				this.usedDeviceResources[deviceId] = device
-			}
-		}
-
-		this.setView(1)
-
 		await this.show()
 	}
 
@@ -105,31 +96,10 @@ class Panel extends HTMLElement {
 		if (assetErrors.length > 0) {
 			throw new AssetError('Errors occurred while loading assets.', assetErrors)
 		}
-
-		this.style.display = 'block'
 	}
 
-	createView() {
-		let view = document.createElement('panel-view')
-		this.appendChild(view)
-		this.views.push(view)
-		return view
-	}
-
-	removeViews() {
-		while (this.lastChild) {
-			this.lastChild.remove()
-			this.views.pop()
-		}
-	}
-
-	setView(view) {
-		// decrement to translate human index to 0 index
-		view--
-		for (let i = 0; i < this.views.length; i++) {
-			let isViewActive = (i == view)
-			this.views[i].classList.toggle('active', isViewActive)
-		}
+	destroy() {
+		this.grid?.remove()
 	}
 
 	loadImage(file) {
@@ -152,23 +122,6 @@ class Panel extends HTMLElement {
 	loadScript(file) {
 		let url = getAssetPath(file)
 		this.assets.push(import(url))
-	}
-
-	set rows(rows) {
-		this.style.setProperty('--grid-rows', rows)
-	}
-
-	set columns(columns) {
-		this.style.setProperty('--grid-columns', columns)
-	}
-
-	set background(background) {
-		this.style.backgroundColor = background.color
-		if (background.image) {
-			this.style.backgroundImage = `url(${getAssetPath(background.image)})`
-			this.style.backgroundSize = 'cover'
-			this.style.backgroundPosition = 'center'
-		}
 	}
 }
 

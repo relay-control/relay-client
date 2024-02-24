@@ -1,6 +1,6 @@
 class Relay {
 	static getControl(id) {
-		return document.querySelector(`panel-container #${id}`)
+		return document.querySelector(`#panel-container #${id}`)
 	}
 }
 

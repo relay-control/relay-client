@@ -3,7 +3,7 @@ const domParser = new DOMParser()
 const collections = [
 	"Assets",
 	"Templates",
-	"Views",
+	"Grid",
 	"View",
 	"Gradient",
 	"Shadows",
@@ -34,7 +34,8 @@ function parseNumber(str) {
 
 function parse(xml) {
 	let isCollection = collections.includes(xml.nodeName)
-	let data = isCollection ? [] : {}
+	let data = []
+	data.tagName = xml.tagName
 
 	let isText = xml.nodeType === 3,
 		isElement = xml.nodeType === 1,
@@ -66,14 +67,15 @@ function parse(xml) {
 	// recursively call #parse over children, adding results to data
 	for (let child of xml.children) {
 		let nodeName = child.nodeName
-		if (isCollection) {
+		let childData = parse(child)
+		if (isCollection && (xml.nodeName !== 'Grid' || nodeName === 'View')) {
 			// certain predetermined tags gets their children populated in an array
-			data.push([parse(child), nodeName])
+			data.push(childData)
 		} else if (xml.nodeName === 'Action' && xml.attributes.getNamedItem('type').value == 'macro') {
-			data.action.push(parse(child))
+			data.action.push(childData)
 		} else {
 			// the rest gets added as properties
-			data[firstCharLowerCase(nodeName)] = parse(child)
+			data[firstCharLowerCase(nodeName)] = childData
 		}
 	}
 	

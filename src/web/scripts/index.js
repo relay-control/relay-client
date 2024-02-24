@@ -1,6 +1,7 @@
 import Relay from 'relay'
 import { createApp } from 'vue'
 import PanelContainer, { AssetError } from 'panel'
+import Grid from 'grid'
 import View from 'view'
 import BaseControl from 'controls/base'
 import StateControl from 'controls/state'
@@ -10,7 +11,7 @@ import { TextLabel, IconLabel, ImageLabel } from 'label'
 
 let relay = new Relay()
 
-customElements.define('panel-container', PanelContainer)
+customElements.define('panel-grid', Grid)
 customElements.define('panel-view', View)
 customElements.define('simple-control', BaseControl)
 customElements.define('state-control', StateControl)
@@ -20,7 +21,9 @@ customElements.define('text-label', TextLabel)
 customElements.define('icon-label', IconLabel)
 customElements.define('image-label', ImageLabel)
 
-let panel = document.createElement('panel-container')
+// create dynamically in order to avoid event listener issues with Vue
+let panelContainer = document.createElement('div')
+panelContainer.id = 'panel-container'
 
 const ModalDialog = {
 	template: '#modal-dialog',
@@ -87,13 +90,9 @@ const PanelApp = {
 		},
 
 		async loadPanel(panelName) {
-			// if (panelName !== currentPanel) {
-				panel.removeViews()
-			// }
-
-			let panelData = null
+			let panel = null
 			try {
-				panelData = await relay.getPanel(panelName)
+				panel = await relay.getPanel(panelName)
 			} catch (err) {
 				let message = []
 				if (err instanceof SyntaxError) {
@@ -104,11 +103,11 @@ const PanelApp = {
 				return
 			}
 
-			this.currentPanel = panelName
-			localStorage.setItem('lastPanel', panelName)
+			this.currentPanel = panel
+			localStorage.setItem('lastPanel', panel.name)
 
 			try {
-				await panel.build(panelData)
+				await panel.build()
 			} catch (err) {
 				let errors = []
 				errors.push(err.message)
@@ -119,6 +118,8 @@ const PanelApp = {
 				this.closePanel()
 				return
 			}
+
+			panelContainer.classList.add('shown')
 
 			// request devices
 			let devices = await this.acquireDevices()
@@ -146,13 +147,14 @@ const PanelApp = {
 		},
 
 		acquireDevices() {
-			return Promise.allSettled(Object.keys(panel.usedDeviceResources).map(e => relay.acquireDevice(parseInt(e))))
+			return Promise.allSettled(Object.keys(this.currentPanel.usedDeviceResources).map(e => relay.acquireDevice(parseInt(e))))
 		},
 
 		closePanel() {
+			this.currentPanel?.destroy()
 			this.currentPanel = null
 			localStorage.removeItem('lastPanel')
-			panel.style.display = 'none'
+			panelContainer.classList.remove('shown')
 		},
 
 		reconnectingDialogClose() {
@@ -190,7 +192,8 @@ const PanelApp = {
 					if (action.isPressed) return
 					break
 				case Relay.InputType.view:
-					if (!action.isPressed) panel.setView(action.view)
+					if (!action.isPressed)
+						this.currentPanel.grid.setView(action.view)
 					return
 			}
 			this.sendInput(action)
@@ -237,13 +240,13 @@ const PanelApp = {
 			}
 		})
 
-		document.getElementById('app').appendChild(panel)
+		document.getElementById('app').appendChild(panelContainer)
 
-		panel.addEventListener('button-change', this.onButtonChange)
-		panel.addEventListener('slider-change', this.onSliderChange)
+		panelContainer.addEventListener('button-change', this.onButtonChange)
+		panelContainer.addEventListener('slider-change', this.onSliderChange)
 
 		window.addEventListener('keydown', e => {
-			if (e.code === 'Escape' || e.code === 'Backspace') {
+			if (this.currentPanel && (e.code === 'Escape' || e.code === 'Backspace')) {
 				this.closePanel()
 			}
 		})

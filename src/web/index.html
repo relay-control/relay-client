@@ -20,6 +20,7 @@
 				"api": "/scripts/api.js",
 				"relay": "/scripts/relay.js",
 				"panel": "/scripts/panel.js",
+				"grid": "/scripts/grid.js",
 				"view": "/scripts/view.js",
 				"stylesheet": "/scripts/stylesheet.js",
 				"styles": "/scripts/styles.js",
@@ -62,7 +63,7 @@
 			<ul id="panel-list" v-if="panels.length > 0">
 				<li v-for="panel in panels" @click="loadPanel(panel)">
 					<span> {{ panel }} </span>
-					<i class="far fa-circle-o-notch fa-spin fa-fw" v-if="panel === currentPanel"></i>
+					<i class="far fa-circle-o-notch fa-spin fa-fw" v-if="panel === currentPanel?.name"></i>
 				</li>
 			</ul>
 

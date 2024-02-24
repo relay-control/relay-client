@@ -10,15 +10,18 @@ export default class View extends HTMLElement {
 
 	usedDevices = {}
 
-	build(view) {
-		for (let [controlData, tag] of view) {
-			let control = this.createControl(tag, controlData)
+	static create(options) {
+		let view = document.createElement('panel-view')
+
+		for (let controlData of options) {
+			let tag = controlData.tagName
+			let control = view.addControl(tag, controlData)
 
 			// manually "inherit" properties that won't be applied using CSS from relevant templates
 			let style = {}
-			if (this.templates) {
-				for (let [template, tag2] of this.templates) {
-					if ((tag2 === 'Control' || tag2 === tag) && (!controlData.inherits || template.name === controlData.inherits)) {
+			if (options.templates) {
+				for (let template of options.templates) {
+					if ((template.tagName === 'Control' || template.tagName === tag) && (!controlData.inherits || template.name === controlData.inherits)) {
 						Object.assign(style, JSON.parse(JSON.stringify(template)))
 					}
 				}
@@ -78,13 +81,15 @@ export default class View extends HTMLElement {
 
 			let action = controlData.action
 			if (action) {
-				this.addAction(action)
+				view.addAction(action)
 				control.action = action
 			}
 		}
+
+		return view
 	}
 
-	createControl(type, data) {
+	addControl(type, options) {
 		let tagName = View.CustomElements[type]
 
 		if (!tagName) {
@@ -99,7 +104,7 @@ export default class View extends HTMLElement {
 
 		switch (type) {
 			case 'Button':
-				control.mode = data.mode
+				control.mode = options.mode
 				break
 		}
 

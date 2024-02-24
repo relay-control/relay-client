@@ -131,7 +131,7 @@ const Stylable = (base = Object) => class extends base {
 		}
 		if (background.gradient) {
 			let gradient = []
-			for (let [point] of background.gradient) {
+			for (let point of background.gradient) {
 				let colorStop = point.color
 				if (point.stop)
 					colorStop += ' ' +point.stop
@@ -162,7 +162,7 @@ const Stylable = (base = Object) => class extends base {
 
 	set shadows(shadows) {
 		let boxShadows = []
-		for (let [shadow] of shadows) {
+		for (let shadow of shadows) {
 			let boxShadow = []
 			if (shadow.inset) boxShadow.push('inset')
 			boxShadow.push(parseLength(shadow.offsetX || 0), parseLength(shadow.offsetY || 0))
@@ -320,7 +320,7 @@ const StylableLabel = (base = Object) => class extends base {
 
 	set textShadow(shadows) {
 		let textShadows = []
-		for (let [shadow] of shadows) {
+		for (let shadow of shadows) {
 			let textShadow = []
 			textShadow.push(parseLength(shadow.offsetX || 0), parseLength(shadow.offsetY || 0))
 			if ('blurRadius' in shadow) textShadow.push(parseLength(shadow.blurRadius))

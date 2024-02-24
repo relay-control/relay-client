@@ -1,4 +1,4 @@
-panel-container {
+#panel-container > panel-grid {
 	background: #ccc;
 }
 
