@@ -205,6 +205,7 @@ const PanelApp = {
 					if (action.isPressed) {
 						return
 					}
+					break
 				case Relay.InputType.view:
 					if (!action.isPressed) {
 						this.currentPanel.grid.setView(action.view)
