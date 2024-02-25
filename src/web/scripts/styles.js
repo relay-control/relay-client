@@ -81,6 +81,9 @@ const Stylable = (base = Object) => class extends base {
 		if (anchor.point) {
 			let [vertical, horizontal] = anchor.point.split(/\s+/)
 			if (vertical && horizontal) {
+				if (!(vertical in FlexPositions && horizontal in FlexPositions)) {
+					throw new Error(`Invalid anchor point '${anchor.point}' in <${this.localName}>`)
+				}
 				this.setStyleProperty('vertical-alignment', FlexPositions[vertical])
 				this.setStyleProperty('horizontal-alignment', FlexPositions[horizontal])
 			} else if (anchor.point === 'center') {
@@ -96,6 +99,8 @@ const Stylable = (base = Object) => class extends base {
 					case 'right':
 						this.setStyleProperty('horizontal-alignment', FlexPositions[anchor.point])
 						break
+					default:
+						throw new Error(`Invalid anchor point '${anchor.point}' in <${this.localName}>`)
 				}
 			}
 		}
