@@ -74,23 +74,25 @@
 
 <modal-dialog v-if="dialogs.connect.show">
 	<header>Connect to Relay server</header>
-	<div class="content">
-		<div class="input">
-			<label>Address</label>
-			<input name="address" required v-model="address">
+	<form @submit.prevent="onSubmit">
+		<div class="content">
+			<div class="input">
+				<label>Address</label>
+				<input name="address" required v-model="address">
+			</div>
+			<div class="input">
+				<label>Port</label>
+				<input name="port" required pattern="\d+" v-model="port">
+			</div>
 		</div>
-		<div class="input">
-			<label>Port</label>
-			<input name="port" required pattern="\d+" v-model="port">
-		</div>
-	</div>
-	<footer>
-		<button type="button" :disabled="connecting" @click="dialogs.connect.show = false">Cancel</button>
-		<button type="button" :disabled="connecting" class="primary" @click="submit">
-			<span class="loading" v-if="connecting"></span>
-			<span :style="{ visibility: connecting ? 'hidden' : 'visible' }">Connect</span>
-		</button>
-	</footer>
+		<footer>
+			<button type="button" :disabled="connecting" @click="dialogs.connect.show = false">Cancel</button>
+			<button type="submit" :disabled="connecting" class="primary">
+				<span class="loading" v-if="connecting"></span>
+				<span :style="{ visibility: connecting ? 'hidden' : 'visible' }">Connect</span>
+			</button>
+		</footer>
+	</form>
 </modal-dialog>
 
 <modal-dialog v-if="dialogs.alert.show">

@@ -56,7 +56,7 @@ const PanelApp = {
 	},
 
 	methods: {
-		async submit() {
+		async onSubmit() {
 			localStorage.setItem('address', this.address)
 			localStorage.setItem('port', this.port)
 
