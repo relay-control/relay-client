@@ -1,13 +1,13 @@
 const domParser = new DOMParser()
 
-const collections = [
-	"Assets",
-	"Templates",
-	"Grid",
-	"View",
-	"Gradient",
-	"Shadows",
-	"TextShadow",
+const CollectionTagNames = [
+	'Assets',
+	'Templates',
+	'Grid',
+	'View',
+	'Gradient',
+	'Shadows',
+	'TextShadow',
 ]
 
 function firstCharLowerCase(str) {
@@ -33,27 +33,31 @@ function parseNumber(str) {
 }
 
 function parse(xml) {
-	let isCollection = collections.includes(xml.nodeName)
+	let isCollection = CollectionTagNames.includes(xml.nodeName)
 	let data = []
 	data.tagName = xml.tagName
 
-	let isText = xml.nodeType === 3,
-		isElement = xml.nodeType === 1,
-		body = xml.textContent && xml.textContent.trim(),
-		hasChildren = xml.children && xml.children.length,
-		hasAttributes = xml.attributes && xml.attributes.length
-
 	// if it's text, just return it
-	if (isText) { return xml.nodeValue.trim() }
+	if (xml.nodeType === Node.TEXT_NODE) {
+		return xml.nodeValue.trim()
+	}
+
+	let hasChildren = xml.children?.length
+	let hasAttributes = xml.attributes?.length
 
 	// if it doesn't have any children or attributes, just return the contents
-	if (!hasChildren && !hasAttributes) { return data }
+	if (!hasChildren && !hasAttributes) {
+		return data
+	}
 
 	// if it doesn't have children but _does_ have body content, use that
-	if (!hasChildren && body.length) { data.text = body }
+	let body = xml.textContent?.trim()
+	if (!hasChildren && body.length) {
+		data.text = body
+	}
 
 	// if it's an element with attributes, add them to data.attributes
-	if (isElement && hasAttributes) {
+	if (xml.nodeType === Node.ELEMENT_NODE && hasAttributes) {
 		for (let attribute of xml.attributes) {
 			// also convert kebab case to camel case
 			data[attribute.name.replace(/-(\w)/, (m, s) => s.toUpperCase())] = parseNumber(attribute.value)
@@ -63,22 +67,21 @@ function parse(xml) {
 	if (xml.nodeName === 'Action' && xml.attributes.getNamedItem('type').value == 'macro') {
 		data.action = []
 	}
-	
+
 	// recursively call #parse over children, adding results to data
 	for (let child of xml.children) {
-		let nodeName = child.nodeName
 		let childData = parse(child)
-		if (isCollection && (xml.nodeName !== 'Grid' || nodeName === 'View')) {
+		if (isCollection && (xml.nodeName !== 'Grid' || child.nodeName === 'View')) {
 			// certain predetermined tags gets their children populated in an array
 			data.push(childData)
 		} else if (xml.nodeName === 'Action' && xml.attributes.getNamedItem('type').value == 'macro') {
 			data.action.push(childData)
 		} else {
 			// the rest gets added as properties
-			data[firstCharLowerCase(nodeName)] = childData
+			data[firstCharLowerCase(child.nodeName)] = childData
 		}
 	}
-	
+
 	return data
 }
 

@@ -63,11 +63,16 @@ class Panel {
 		// map each template to a CSS class
 		if (this.options.templates) {
 			for (let template of this.options.templates) {
-				let tag = template.tagName
-				let selector = template.name ? '.' + template.name : ''
-				selector = ((tag !== 'Control') ? tag.toLowerCase() + '-control' : '.cell') + selector
+				let tagName = template.tagName
+				let selector
+				if (tagName === 'Control') {
+					selector = '.cell'
+				} else {
+					selector = tagName.toLowerCase() + '-control'
+				}
+				selector += template.name ? '.' + template.name : ''
 				let style = null
-				switch (tag) {
+				switch (tagName) {
 					case 'Slider':
 						style = new SliderStyle(selector)
 						break

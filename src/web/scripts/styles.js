@@ -65,12 +65,16 @@ const Stylable = (base = Object) => class extends base {
 
 	setStyle(style) {
 		for (let property of this.styleProperties) {
-			if (property in style) this[property] = style[property]
+			if (property in style) {
+				this[property] = style[property]
+			}
 		}
 	}
 
 	setStyleProperty(property, value) {
-		if (value) this.style.setProperty('--' + property, value)
+		if (value) {
+			this.style.setProperty('--' + property, value)
+		}
 	}
 
 	removeStyleProperty(property) {
@@ -138,21 +142,25 @@ const Stylable = (base = Object) => class extends base {
 			let gradient = []
 			for (let point of background.gradient) {
 				let colorStop = point.color
-				if (point.stop)
+				if (point.stop) {
 					colorStop += ' ' +point.stop
+				}
 				gradient.push(colorStop)
 			}
 			gradient = gradient.join(', ')
 			if (background.gradient.type === 'radial') {
-				if (background.gradient.position)
+				if (background.gradient.position) {
 					gradient = 'circle at ' + background.gradient.position + ', ' + gradient
+				}
 				this.setStyleProperty('background-image', `radial-gradient(${gradient})`)
 			} else {
 				let direction = background.gradient.direction
-				if (direction && !direction.match(/\d+deg/))
-					direction = 'to ' + direction
-				if (direction)
+				if (direction) {
+					if (!direction.match(/\d+deg/)) {
+						direction = 'to ' + direction
+					}
 					gradient = direction + ', ' + gradient
+				}
 				this.setStyleProperty('background-image', `linear-gradient(${gradient})`)
 			}
 		}
@@ -169,11 +177,19 @@ const Stylable = (base = Object) => class extends base {
 		let boxShadows = []
 		for (let shadow of shadows) {
 			let boxShadow = []
-			if (shadow.inset) boxShadow.push('inset')
+			if (shadow.inset) {
+				boxShadow.push('inset')
+			}
 			boxShadow.push(parseLength(shadow.offsetX || 0), parseLength(shadow.offsetY || 0))
-			if (typeof shadow.blurRadius !== 'undefined') boxShadow.push(parseLength(shadow.blurRadius))
-			if (typeof shadow.spreadRadius !== 'undefined') boxShadow.push(parseLength(shadow.spreadRadius))
-			if (shadow.color) boxShadow.push(parseColor(shadow.color, shadow.alpha))
+			if (typeof shadow.blurRadius !== 'undefined') {
+				boxShadow.push(parseLength(shadow.blurRadius))
+			}
+			if (typeof shadow.spreadRadius !== 'undefined') {
+				boxShadow.push(parseLength(shadow.spreadRadius))
+			}
+			if (shadow.color) {
+				boxShadow.push(parseColor(shadow.color, shadow.alpha))
+			}
 			boxShadows.push(boxShadow.join(' '))
 		}
 		this.setStyleProperty('box-shadow', boxShadows.join(', '))
@@ -318,7 +334,9 @@ const StylableLabel = (base = Object) => class extends base {
 	}
 
 	set font(font) {
-		if (font.family) this.setStyleProperty('font-family', font.family)
+		if (font.family) {
+			this.setStyleProperty('font-family', font.family)
+		}
 		this.setStyleProperty('font-size', parseLength(font.size))
 		// this.setStyleProperty('font-color', parseColor(font.color, font.alpha))
 	}
@@ -328,8 +346,12 @@ const StylableLabel = (base = Object) => class extends base {
 		for (let shadow of shadows) {
 			let textShadow = []
 			textShadow.push(parseLength(shadow.offsetX || 0), parseLength(shadow.offsetY || 0))
-			if ('blurRadius' in shadow) textShadow.push(parseLength(shadow.blurRadius))
-			if (shadow.color) textShadow.push(parseColor(shadow.color, shadow.alpha))
+			if ('blurRadius' in shadow) {
+				textShadow.push(parseLength(shadow.blurRadius))
+			}
+			if (shadow.color) {
+				textShadow.push(parseColor(shadow.color, shadow.alpha))
+			}
 			textShadows.push(textShadow.join(' '))
 		}
 		this.setStyleProperty('text-shadow', textShadows.join(', '))

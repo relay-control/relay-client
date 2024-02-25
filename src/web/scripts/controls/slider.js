@@ -51,16 +51,20 @@ export default class extends BaseControl {
 	events = {
 		input: e => {
 			let value = e.currentTarget.valueAsNumber
-			if (45 < value && value < 55)
+			if (45 < value && value < 55) {
 				value = 50
+			}
 			e.currentTarget.value = value
 
 			// avoid sending input if value is unchanged
-			if (value === this.previousValue) return
+			if (value === this.previousValue) {
+				return
+			}
 			this.previousValue = value
 
-			if (this.valueLabel)
+			if (this.valueLabel) {
 				this.valueLabel.setText(value + '%')
+			}
 
 			if (this.action) {
 				let event = new CustomEvent('slider-change', {

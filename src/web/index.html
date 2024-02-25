@@ -57,7 +57,7 @@
 		<div v-if="connected">
 			<header class="with-button">
 				<h3>Available panels</h3>
-				<button @click="updatePanels"><i class="fa fa-refresh fa-fw"></i></button>
+				<button @click="refreshPanelList"><i class="fa fa-refresh fa-fw"></i></button>
 			</header>
 
 			<ul id="panel-list" v-if="panels.length > 0">

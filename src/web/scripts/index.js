@@ -76,7 +76,7 @@ const PanelApp = {
 			} finally {
 				this.connectionState = relay.connectionState
 			}
-			await this.updatePanels()
+			await this.refreshPanelList()
 			this.currentServer = relay.address
 
 			let lastPanel = localStorage.getItem('lastPanel')
@@ -85,7 +85,7 @@ const PanelApp = {
 			}
 		},
 
-		async updatePanels() {
+		async refreshPanelList() {
 			let panels = await relay.getPanels()
 			this.panels = panels
 		},
@@ -95,8 +95,9 @@ const PanelApp = {
 			try {
 				let panelUrl = relay.getStaticUrl(`panels/${panelName}/panel.xml`)
 				let response = await fetch(panelUrl, {cache: 'no-cache'})
-				if (!response.ok)
+				if (!response.ok) {
 					throw new Error(response.statusText)
+				}
 				let text = await response.text()
 				let panelDocument = parseXml(text)
 				panel = new Panel(panelName, panelDocument.panel)
@@ -178,7 +179,9 @@ const PanelApp = {
 
 		alertDialogClose(event) {
 			this.dialogs.alert.show = false
-			if (this.dialogs.alert.connectAfterClose) this.dialogs.connect.show = true
+			if (this.dialogs.alert.connectAfterClose) {
+				this.dialogs.connect.show = true
+			}
 			this.dialogs.alert.connectAfterClose = false
 		},
 
@@ -193,14 +196,14 @@ const PanelApp = {
 			let action = e.detail
 			switch (action.type) {
 				case Relay.InputType.macro:
-					if (action.isPressed) return
-					break
 				case Relay.InputType.command:
-					if (action.isPressed) return
-					break
+					if (action.isPressed) {
+						return
+					}
 				case Relay.InputType.view:
-					if (!action.isPressed)
+					if (!action.isPressed) {
 						this.currentPanel.grid.setView(action.view)
+					}
 					return
 			}
 			this.sendInput(action)

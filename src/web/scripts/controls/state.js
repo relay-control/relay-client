@@ -22,11 +22,15 @@ export default class StateControl extends BaseControl {
 
 	applyBaseStyle() {
 		this.resetStyle()
-		if (this.baseStyle) this.setStyle(this.baseStyle)
+		if (this.baseStyle) {
+			this.setStyle(this.baseStyle)
+		}
 	}
 
 	applyActiveStyle() {
-		if (this.activeStyle) this.setStyle(this.activeStyle)
+		if (this.activeStyle) {
+			this.setStyle(this.activeStyle)
+		}
 	}
 
 	activate() {

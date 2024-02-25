@@ -14,35 +14,47 @@ export default class View extends HTMLElement {
 		let view = document.createElement('panel-view')
 
 		for (let controlData of options) {
-			let tag = controlData.tagName
-			let control = view.addControl(tag, controlData)
+			let tagName = controlData.tagName
+			let control = view.addControl(tagName, controlData)
 
 			// manually "inherit" properties that won't be applied using CSS from relevant templates
 			let style = {}
 			if (options.templates) {
 				for (let template of options.templates) {
-					if ((template.tagName === 'Control' || template.tagName === tag) && (!controlData.inherits || template.name === controlData.inherits)) {
+					if ((template.tagName === 'Control' || template.tagName === tagName) && (!controlData.inherits || template.name === controlData.inherits)) {
 						Object.assign(style, JSON.parse(JSON.stringify(template)))
 					}
 				}
 			}
 			Object.assign(style, controlData)
 
-			if ('id' in controlData)
+			if ('id' in controlData) {
 				control.id = controlData.id
+			}
 
-			if (controlData.row)
+			if (controlData.row) {
 				control.row = controlData.row
-			if (controlData.column)
+			}
+
+			if (controlData.column) {
 				control.column = controlData.column
+			}
 
-			if ('inherits' in controlData)
+			if ('inherits' in controlData) {
 				control.addClass(controlData.inherits)
+			}
 
-			if (style.square) control.addClass('square')
-			if (style.circle) control.addClass('circle')
-			if ((style.square || style.circle) && !(style.size || style.width || style.height))
+			if (style.square) {
+				control.addClass('square')
+			}
+
+			if (style.circle) {
+				control.addClass('circle')
+			}
+
+			if ((style.square || style.circle) && !(style.size || style.width || style.height)) {
 				control.addClass('auto-size')
+			}
 
 			control.setBaseStyle(controlData)
 			if (controlData.active) {
@@ -67,7 +79,7 @@ export default class View extends HTMLElement {
 				control.imageLabel.setImage(imageLabelData.image)
 			}
 
-			if (tag === 'Slider') {
+			if (tagName === 'Slider') {
 				// c.setSnapValue(control.snap)
 				control.setSnapValue(50)
 
@@ -102,10 +114,8 @@ export default class View extends HTMLElement {
 
 		let control = document.createElement(tagName)
 
-		switch (type) {
-			case 'Button':
-				control.mode = options.mode
-				break
+		if (type === 'Button') {
+			control.mode = options.mode
 		}
 
 		this.appendChild(control)

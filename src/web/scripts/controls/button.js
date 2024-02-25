@@ -18,12 +18,12 @@ export default class ButtonControl extends StateControl {
 		}
 	}
 
-	dispatchEvent(eventName, detail = { }) {
+	dispatchEvent(eventName, detail) {
 		if (!this.action) return
 		if (!ButtonControl.actionTypes.includes(this.action.type)) return
 		let event = new CustomEvent(eventName, {
 			bubbles: true,
-			detail: Object.assign(detail, this.action),
+			detail: Object.assign(detail ?? { }, this.action),
 		})
 		this.control.dispatchEvent(event)
 	}
@@ -53,8 +53,9 @@ export default class ButtonControl extends StateControl {
 
 	release() {
 		if (this.mode === 'toggle') {
-			if (this.wasActive)
+			if (this.wasActive) {
 				this.deactivate()
+			}
 			this.wasActive = !this.wasActive
 		} else {
 			this.deactivate()

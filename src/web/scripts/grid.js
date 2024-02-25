@@ -7,11 +7,12 @@ export default class Grid extends HTMLElement {
 	static create(options) {
 		let grid = document.createElement('panel-grid')
 
-		grid.rows = options.rows
-		grid.columns = options.columns
+		grid.numRows = options.rows
+		grid.numColumns = options.columns
 
-		if (options.background)
+		if (options.background) {
 			grid.background = options.background
+		}
 
 		for (let viewProperties of options) {
 			if (viewProperties.tagName !== 'View') continue
@@ -49,12 +50,12 @@ export default class Grid extends HTMLElement {
 		}
 	}
 
-	set rows(rows) {
-		this.style.setProperty('--grid-rows', rows)
+	set numRows(numRows) {
+		this.style.setProperty('--grid-rows', numRows)
 	}
 
-	set columns(columns) {
-		this.style.setProperty('--grid-columns', columns)
+	set numColumns(numColumns) {
+		this.style.setProperty('--grid-columns', numColumns)
 	}
 
 	set background(background) {
