@@ -90,7 +90,7 @@ class Panel {
 		let assets = await Promise.allSettled(this.assets)
 
 		let assetErrors = assets
-			.filter(e => e.status === 'rejected')
+			.filter(e => e.status === 'rejected' && e.reason)
 			.map(e => e.reason.message)
 
 		if (assetErrors.length > 0) {
