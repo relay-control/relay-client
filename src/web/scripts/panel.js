@@ -125,7 +125,7 @@ class Panel {
 	}
 
 	loadScript(file) {
-		let url = getAssetUrl(file)
+		let url = getAssetUrl(file + '?v=' + Date.now())
 		this.assets.push(import(url))
 	}
 }
