@@ -65,7 +65,7 @@ function parse(xml) {
 	}
 
 	if (xml.nodeName === 'Action' && xml.attributes.getNamedItem('type').value == 'macro') {
-		data.action = []
+		data.actions = []
 	}
 
 	// recursively call #parse over children, adding results to data
@@ -75,7 +75,7 @@ function parse(xml) {
 			// certain predetermined tags gets their children populated in an array
 			data.push(childData)
 		} else if (xml.nodeName === 'Action' && xml.attributes.getNamedItem('type').value == 'macro') {
-			data.action.push(childData)
+			data.actions.push(Object.assign({ }, childData))
 		} else {
 			// the rest gets added as properties
 			data[firstCharLowerCase(child.nodeName)] = childData

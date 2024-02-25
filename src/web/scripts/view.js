@@ -127,7 +127,6 @@ export default class View extends HTMLElement {
 		action.type = Relay.InputType[action.type]
 
 		if (action.type === Relay.InputType.macro) {
-			action.actions = action.action
 			for (let macroAction of action.actions) {
 				this.addAction(macroAction)
 			}
