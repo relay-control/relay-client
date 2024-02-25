@@ -107,7 +107,7 @@ const PanelApp = {
 				}
 				message.push(err.message)
 				this.showAlertDialog('Failed to load panel', message)
-				return
+				throw err
 			}
 
 			this.currentPanel = panel
@@ -123,7 +123,7 @@ const PanelApp = {
 				}
 				this.showAlertDialog(`Failed to load panel`, errors)
 				this.closePanel()
-				return
+				throw err
 			}
 
 			panelContainer.classList.add('shown')
