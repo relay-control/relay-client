@@ -22,7 +22,7 @@ export default class View extends HTMLElement {
 			if (options.templates) {
 				for (let template of options.templates) {
 					if ((template.tagName === 'Control' || template.tagName === tagName) && (!controlData.inherits || template.name === controlData.inherits)) {
-						Object.assign(style, JSON.parse(JSON.stringify(template)))
+						Object.assign(style, structuredClone(template))
 					}
 				}
 			}
