@@ -23,6 +23,7 @@ class AssetError extends Error {
 
 class Panel {
 	assets = []
+	modules = []
 
 	constructor(name, options) {
 		this.name = name
@@ -101,10 +102,20 @@ class Panel {
 		if (assetErrors.length > 0) {
 			throw new AssetError('Errors occurred while loading assets.', assetErrors)
 		}
+
+		this.modules = assets
+			.filter(e => e.value && e.value[Symbol.toStringTag] === 'Module')
+			.map(e => e.value)
 	}
 
 	destroy() {
-		this.grid?.remove()
+		try {
+			for (let module of this.modules) {
+				module.unload()
+			}
+		} finally {
+			this.grid?.remove()
+		}
 	}
 
 	loadImage(file) {

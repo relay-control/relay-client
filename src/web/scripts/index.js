@@ -159,7 +159,12 @@ const PanelApp = {
 		},
 
 		closePanel() {
-			this.currentPanel?.destroy()
+			try {
+				this.currentPanel?.destroy()
+			} catch (err) {
+				this.showAlertDialog(`Error unloading panel`, [err.message])
+				console.error(err)
+			}
 			this.currentPanel = null
 			localStorage.removeItem('lastPanel')
 			panelContainer.classList.remove('shown')
