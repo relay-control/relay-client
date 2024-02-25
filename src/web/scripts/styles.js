@@ -126,7 +126,7 @@ const Stylable = (base = Object) => class extends base {
 			this.removeStyleProperty('background-image')
 		}
 		if (background.image) {
-			this.setStyleProperty('background-image', `url(${getAssetPath(background.image)})`)
+			this.setStyleProperty('background-image', `url(${getAssetUrl(background.image)})`)
 			this.setStyleProperty('background-size', 'cover')
 		}
 		if (background.gradient) {

@@ -103,7 +103,7 @@ class Panel {
 	}
 
 	loadImage(file) {
-		let url = getAssetPath(file)
+		let url = getAssetUrl(file)
 		this.assets.push(new Promise((resolve, reject) => {
 			let img = new Image()
 			img.src = url
@@ -113,14 +113,14 @@ class Panel {
 	}
 
 	loadFont(family, file) {
-		let url = getAssetPath(file)
+		let url = getAssetUrl(file)
 		let font = new FontFace(family, `url(${url})`)
 		document.fonts.add(font)
 		this.assets.push(font.load())
 	}
 
 	loadScript(file) {
-		let url = getAssetPath(file)
+		let url = getAssetUrl(file)
 		this.assets.push(import(url))
 	}
 }

@@ -1,6 +1,3 @@
-import parseXml from 'xml-parser'
-import Panel from 'panel'
-
 export default class Relay extends EventTarget {
 	static InputType = {
 		key: 1,
@@ -68,17 +65,9 @@ export default class Relay extends EventTarget {
 		return this.connection.invoke('GetPanels')
 	}
 
-	async getPanel(name) {
-		let response = await fetch(`${this.url.origin}/panels/${name}/panel.xml`, {cache: 'no-cache'})
-		if (!response.ok)
-			throw new Error()
-		let text = await response.text()
-		return new Panel(name, parseXml(text).panel)
-	}
-
-	getAssetPath(panel, file) {
-		// return encodeURI(new URL(`panels/${panel}/assets/${file}`, this.url.origin).href)
-		return new URL(`panels/${panel.name}/assets/${file}`, this.url.origin).href
+	getStaticUrl(path) {
+		let url = new URL(path, this.url.origin)
+		return url.href
 	}
 
 	sendInput(input) {

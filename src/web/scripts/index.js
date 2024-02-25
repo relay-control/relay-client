@@ -1,6 +1,7 @@
 import Relay from 'relay'
 import { createApp } from 'vue'
-import PanelContainer, { AssetError } from 'panel'
+import parseXml from 'xml-parser'
+import Panel, { AssetError } from 'panel'
 import Grid from 'grid'
 import View from 'view'
 import BaseControl from 'controls/base'
@@ -92,7 +93,13 @@ const PanelApp = {
 		async loadPanel(panelName) {
 			let panel = null
 			try {
-				panel = await relay.getPanel(panelName)
+				let panelUrl = relay.getStaticUrl(`panels/${panelName}/panel.xml`)
+				let response = await fetch(panelUrl, {cache: 'no-cache'})
+				if (!response.ok)
+					throw new Error(response.statusText)
+				let text = await response.text()
+				let panelDocument = parseXml(text)
+				panel = new Panel(panelName, panelDocument.panel)
 			} catch (err) {
 				let message = []
 				if (err instanceof SyntaxError) {
@@ -214,7 +221,7 @@ const PanelApp = {
 			this.showConnectDialog = true
 		}
 
-		window.getAssetPath = (file) => relay.getAssetPath(this.currentPanel, file)
+		window.getAssetUrl = (fileName) => relay.getStaticUrl(`panels/${this.currentPanel.name}/assets/${fileName}`)
 		window.closePanel = () => this.closePanel()
 
 		relay.addEventListener('reconnecting', e => {

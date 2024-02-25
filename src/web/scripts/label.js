@@ -37,7 +37,7 @@ class ImageLabel extends Label {
 	}
 
 	setImage(image) {
-		this.label.src = getAssetPath(image)
+		this.label.src = getAssetUrl(image)
 	}
 }
 
