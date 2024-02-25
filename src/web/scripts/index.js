@@ -208,7 +208,11 @@ const PanelApp = {
 					break
 				case Relay.InputType.view:
 					if (!action.isPressed) {
-						this.currentPanel.grid.setView(action.view)
+						try {
+							this.currentPanel.grid.setView(action.view)
+						} catch (e) {
+							this.showAlertDialog('Failed to switch view', [e.message])
+						}
 					}
 					return
 			}

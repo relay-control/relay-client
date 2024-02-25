@@ -44,6 +44,9 @@ export default class Grid extends HTMLElement {
 	setView(view) {
 		// decrement to translate human index to 0 index
 		view--
+		if (!this.views[view]) {
+			throw new Error(`View ${view + 1} does not exist.`)
+		}
 		for (let i = 0; i < this.views.length; i++) {
 			let isViewActive = (i == view)
 			this.views[i].classList.toggle('active', isViewActive)
