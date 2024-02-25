@@ -82,23 +82,26 @@ function parse(xml) {
 	return data
 }
 
-const errorDoc = domParser.parseFromString('INVALID', 'text/xml')
-const parsererrorNs = errorDoc.getElementsByTagName("parsererror")[0].namespaceURI
+const CHROMIUM_ERROR_HEADER = 'This page contains the following errors:'
+const CHROMIUM_ERROR_FOOTER = 'Below is a rendering of the page up to the first error.'
 
 export default function parseXml(xml) {
 	let xmlDocument = domParser.parseFromString(xml, 'text/xml')
-	let parserErrors = xmlDocument.getElementsByTagNameNS(parsererrorNs, 'parsererror')
-	if (parserErrors.length > 0) {
-		let matches = parserErrors[0].children[1].textContent.match(/error on line (\d+) at column (\d+): (.+)/)
-		if (matches) {
-			let error = new SyntaxError()
-			error.lineNumber = matches[1]
-			error.columnNumber = matches[2]
-			error.message = matches[3]
-			throw error
+	let errorNode = xmlDocument.querySelector('parsererror')
+	if (errorNode) {
+		let message = errorNode.textContent
+		// sourcetext exists on Firefox error views
+		let sourceText = errorNode.querySelector('sourcetext')
+		if (sourceText) {
+			message = errorNode.childNodes[0].textContent
+		} else if (errorNode.children.length === 3 &&
+			errorNode.children[0].textContent === CHROMIUM_ERROR_HEADER &&
+			errorNode.children[2].textContent === CHROMIUM_ERROR_FOOTER) {
+			message = errorNode.children[1].textContent
 		} else {
-			throw new Error(parserErrors[0].textContent)
+			message = errorNode.textContent
 		}
+		throw new SyntaxError(message)
 	}
 	return parse(xmlDocument)
 }

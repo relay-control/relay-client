@@ -103,7 +103,7 @@ const PanelApp = {
 			} catch (err) {
 				let message = []
 				if (err instanceof SyntaxError) {
-					message.push(`Error on line ${err.lineNumber} at column ${err.columnNumber}:`)
+					message.push(`Failed to parse XML`)
 				}
 				message.push(err.message)
 				this.showAlertDialog('Failed to load panel', message)
