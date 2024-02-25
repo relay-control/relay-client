@@ -82,7 +82,7 @@
 			</div>
 			<div class="input">
 				<label>Port</label>
-				<input name="port" required pattern="\d+" v-model="port">
+				<input type="number" name="port" required min="1" max="65535" v-model="port">
 			</div>
 		</div>
 		<footer>
