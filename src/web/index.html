@@ -72,9 +72,9 @@
 	</section>
 </div>
 
-<modal-dialog v-if="dialogs.connect.show">
+<dialog ref="connectDialog">
 	<header>Connect to Relay server</header>
-	<form @submit.prevent="onSubmit">
+	<form method="dialog" @submit.prevent="onSubmit">
 		<div class="content">
 			<div class="input">
 				<label>Address</label>
@@ -93,9 +93,9 @@
 			</button>
 		</footer>
 	</form>
-</modal-dialog>
+</dialog>
 
-<modal-dialog v-if="dialogs.alert.show">
+<dialog ref="alertDialog">
 	<header>{{ dialogs.alert.title }}</header>
 	<div class="content">
 		<p v-for="line in dialogs.alert.message">{{ line }}</p>
@@ -103,27 +103,19 @@
 	<footer>
 		<button class="primary" @click="closeAlertDialog">OK</button>
 	</footer>
-</modal-dialog>
+</dialog>
 
-<modal-dialog id="reconnecting-dialog" v-if="dialogs.reconnecting.show">
+<dialog ref="reconnectingDialog">
 	<header>Disconnected from server</header>
-	<div class="content">
+	<div class="content centered">
 		<div class="loading">Reconnecting</div>
 	</div>
 	<footer>
 		<button @click="cancelReconnect">Cancel</button>
 	</footer>
-</modal-dialog>
+</dialog>
 
 </div>
-
-<template id="modal-dialog">
-	<div class="modal-mask">
-		<div class="modal-content">
-			<slot></slot>
-		</div>
-	</div>
-</template>
 
 </body>
 

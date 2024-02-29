@@ -1,25 +1,17 @@
-.modal-mask {
-	position: fixed;
-	top: 0px;
-	left: 0px;
-	width: 100%;
-	height: 100%;
+::backdrop {
 	background-color: rgba(0, 0, 0, 0.85);
-	transition: opacity 0.3s ease;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	z-index: 1;
 }
 
-.modal-content {
+dialog {
 	font-family: 'Open Sans';
 	background-color: #fff;
+	padding: 0px;
+	border: none;
 	border-radius: var(--border-radius);
 	min-width: 300px;
 }
 
-.modal-content > header {
+dialog > header {
 	font-size: 1.3rem;
 	font-weight: bold;
 	line-height: 1.28571429em;
@@ -27,34 +19,34 @@
 	border-bottom: var(--border);
 }
 
-.modal-content .content {
+dialog .content {
 	padding: 1.5rem;
 }
 
-.modal-content .content p:first-child {
+dialog .content p:first-child {
 	margin-top: 0;
 }
 
-.modal-content .content p:last-child {
+dialog .content p:last-child {
 	margin-bottom: 0;
 }
 
-.modal-content footer {
+dialog footer {
 	background: #f9fafb;
 	padding: 1rem;
 	border-top: var(--border);
 	display: flex;
 	justify-content: flex-end;
-    border-bottom-left-radius: var(--border-radius);
-    border-bottom-right-radius: var(--border-radius);
+	border-bottom-left-radius: var(--border-radius);
+	border-bottom-right-radius: var(--border-radius);
 }
 
-.modal-content footer button {
+dialog footer button {
 	margin-left: 0.75em;
 	position: relative;
 }
 
-.modal-content div.input {
+dialog div.input {
 	margin-bottom: 1em;
 
 	font-size: 1em;
@@ -62,15 +54,15 @@
 	color: rgba(0, 0, 0, 0.87);
 }
 
-.modal-content div.input:last-child {
+dialog div.input:last-child {
 	margin: 0;
 }
-/* 
+/*
 dialog label {
 	font-size: 1rem;
 }
  */
-.modal-content .input label {
+dialog .input label {
 	line-height: 1;
 	background-color: #e8e8e8;
 	padding: .78571429em .833em;
@@ -84,7 +76,7 @@ dialog label {
 	width: 4em;
 }
 
-.modal-content .input input {
+dialog .input input {
 	margin: 0;
 	flex: 1 0 auto;
 	outline: 0;
@@ -99,12 +91,12 @@ dialog label {
 	transition: border-color .1s ease;
 }
 
-.modal-content .input input:focus {
+dialog .input input:focus {
 	border-color: #85b7d9;
 	color: rgba(0, 0, 0, 0.8);
 }
 
-#reconnecting-dialog > .modal-content > .content {
+dialog .content.centered {
 	display: flex;
 	justify-content: center;
 	align-items: center;

@@ -26,16 +26,11 @@ customElements.define('image-label', ImageLabel)
 let panelContainer = document.createElement('div')
 panelContainer.id = 'panel-container'
 
-const ModalDialog = {
-	template: '#modal-dialog',
-}
-
 const PanelApp = {
 	data: () => ({
 		dialogs: {
-			connect: { show: false },
-			alert: { show: false },
-			reconnecting: { show: false },
+			alert: {},
+			reconnecting: {},
 		},
 		address: '',
 		port: 32155,
@@ -104,10 +99,10 @@ const PanelApp = {
 			} catch (err) {
 				let message = []
 				if (err instanceof SyntaxError) {
-					message.push(`Failed to parse XML`)
+					message.push("Failed to parse XML")
 				}
 				message.push(err.message)
-				this.showAlertDialog('Failed to load panel', message)
+				this.showAlertDialog("Failed to load panel", message)
 				throw err
 			}
 
@@ -122,7 +117,7 @@ const PanelApp = {
 				if (err instanceof AssetError) {
 					errors = errors.concat(err.errors)
 				}
-				this.showAlertDialog(`Failed to load panel`, errors)
+				this.showAlertDialog("Failed to load panel", errors)
 				this.closePanel()
 				throw err
 			}
@@ -162,7 +157,7 @@ const PanelApp = {
 			try {
 				this.currentPanel?.destroy()
 			} catch (err) {
-				this.showAlertDialog(`Error unloading panel`, [err.message])
+				this.showAlertDialog("Error unloading panel", [err.message])
 				console.error(err)
 			}
 			this.currentPanel = null
@@ -177,29 +172,29 @@ const PanelApp = {
 		},
 
 		showConnectDialog() {
-			this.dialogs.connect.show = true
+			this.$refs.connectDialog.showModal()
 		},
 
 		closeConnectDialog() {
-			this.dialogs.connect.show = false
+			this.$refs.connectDialog.close()
 		},
 
 		showReconnectingDialog() {
-			this.dialogs.reconnecting.show = true
+			this.$refs.reconnectingDialog.showModal()
 		},
 
 		closeReconnectingDialog() {
-			this.dialogs.reconnecting.show = false
+			this.$refs.reconnectingDialog.close()
 		},
 
 		showAlertDialog(title, message) {
 			this.dialogs.alert.title = title
 			this.dialogs.alert.message = message
-			this.dialogs.alert.show = true
+			this.$refs.alertDialog.showModal()
 		},
 
 		closeAlertDialog(event) {
-			this.dialogs.alert.show = false
+			this.$refs.alertDialog.close()
 			if (this.dialogs.alert.connectAfterClose) {
 				this.showConnectDialog()
 			}
@@ -240,7 +235,7 @@ const PanelApp = {
 		},
 	},
 
-	async created() {
+	async mounted() {
 		if (localStorage.getItem('address')) {
 			this.address = localStorage.getItem('address')
 			this.port = localStorage.getItem('port')
@@ -286,10 +281,6 @@ const PanelApp = {
 				this.closePanel()
 			}
 		})
-	},
-
-	components: {
-		ModalDialog,
 	},
 }
 

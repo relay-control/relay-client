@@ -68,9 +68,9 @@ header.with-button {
 }
 
 #menu button,
-.modal-content button {
+dialog button {
 	font-size: 1rem;
-	
+
 	min-height: 1em;
 	outline: none;
 	border: none;
@@ -86,23 +86,23 @@ header.with-button {
 }
 
 #menu button:active,
-.modal-content button:active {
+dialog button:active {
 	background-color: #babbbc;
 	color: rgba(0, 0, 0, 0.9);
 }
 
 #menu button.primary,
-.modal-content button.primary {
+dialog button.primary {
 	background-color: #2185D0;
 	color: white;
 }
 
 #menu button.primary:enabled:active,
-.modal-content button.primary:enabled:active {
+dialog button.primary:enabled:active {
 	background-color: #1a69a4;
 }
 
-.modal-content button:disabled {
+dialog button:disabled {
 	color: #ccc;
 }
 
@@ -211,7 +211,7 @@ button span.loading::before {
 input[type=checkbox] {
 	-webkit-appearance: none;
 	position: relative;
-		
+
 	font-family: sans-serif;
 	font-size: 100%;
 	line-height: 1.15;
