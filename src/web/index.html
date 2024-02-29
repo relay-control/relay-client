@@ -51,7 +51,7 @@
 	<section>
 		<header class="with-button">
 			<h1> {{ connected ? `Connected to ${currentServer}` : 'Not connected' }} </h1>
-			<button @click="dialogs.connect.show = true">Connect</button>
+			<button @click="showConnectDialog">Connect</button>
 		</header>
 
 		<div v-if="connected">
@@ -86,7 +86,7 @@
 			</div>
 		</div>
 		<footer>
-			<button type="button" :disabled="connecting" @click="dialogs.connect.show = false">Cancel</button>
+			<button type="button" :disabled="connecting" @click="closeConnectDialog">Cancel</button>
 			<button type="submit" :disabled="connecting" class="primary">
 				<span class="loading" v-if="connecting"></span>
 				<span :style="{ visibility: connecting ? 'hidden' : 'visible' }">Connect</span>
@@ -101,7 +101,7 @@
 		<p v-for="line in dialogs.alert.message">{{ line }}</p>
 	</div>
 	<footer>
-		<button class="primary" @click="alertDialogClose">OK</button>
+		<button class="primary" @click="closeAlertDialog">OK</button>
 	</footer>
 </modal-dialog>
 
@@ -111,7 +111,7 @@
 		<div class="loading">Reconnecting</div>
 	</div>
 	<footer>
-		<button @click="reconnectingDialogClose">Cancel</button>
+		<button @click="cancelReconnect">Cancel</button>
 	</footer>
 </modal-dialog>
 

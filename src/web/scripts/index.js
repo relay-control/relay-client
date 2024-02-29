@@ -61,7 +61,7 @@ const PanelApp = {
 			localStorage.setItem('port', this.port)
 
 			await this.connect(this.address, this.port)
-			this.dialogs.connect.show = false
+			this.closeConnectDialog()
 		},
 
 		async connect(address, port) {
@@ -170,10 +170,26 @@ const PanelApp = {
 			panelContainer.classList.remove('shown')
 		},
 
-		reconnectingDialogClose() {
-			this.dialogs.reconnecting.show = false
+		cancelReconnect() {
+			this.closeReconnectingDialog()
 			this.dialogs.reconnecting.cancelled = true
 			relay.disconnect()
+		},
+
+		showConnectDialog() {
+			this.dialogs.connect.show = true
+		},
+
+		closeConnectDialog() {
+			this.dialogs.connect.show = false
+		},
+
+		showReconnectingDialog() {
+			this.dialogs.reconnecting.show = true
+		},
+
+		closeReconnectingDialog() {
+			this.dialogs.reconnecting.show = false
 		},
 
 		showAlertDialog(title, message) {
@@ -182,10 +198,10 @@ const PanelApp = {
 			this.dialogs.alert.show = true
 		},
 
-		alertDialogClose(event) {
+		closeAlertDialog(event) {
 			this.dialogs.alert.show = false
 			if (this.dialogs.alert.connectAfterClose) {
-				this.dialogs.connect.show = true
+				this.showConnectDialog()
 			}
 			this.dialogs.alert.connectAfterClose = false
 		},
@@ -231,7 +247,7 @@ const PanelApp = {
 
 			this.connect(this.address, this.port)
 		} else {
-			this.showConnectDialog = true
+			this.showConnectDialog()
 		}
 
 		window.getAssetUrl = (fileName) => relay.getStaticUrl(`panels/${this.currentPanel.name}/assets/${fileName}`)
@@ -239,20 +255,20 @@ const PanelApp = {
 
 		relay.addEventListener('reconnecting', e => {
 			this.connectionState = relay.connectionState
-			this.dialogs.reconnecting.show = true
+			this.showReconnectingDialog()
 			this.dialogs.reconnecting.cancelled = false
 		})
 
 		relay.addEventListener('reconnected', e => {
 			this.connectionState = relay.connectionState
-			this.dialogs.reconnecting.show = false
+			this.closeReconnectingDialog()
 			this.acquireDevices()
 		})
 
 		relay.addEventListener('close', e => {
 			this.connectionState = relay.connectionState
 			this.closePanel()
-			this.dialogs.reconnecting.show = false
+			this.closeReconnectingDialog()
 			if (!this.dialogs.reconnecting.cancelled) {
 				this.dialogs.reconnecting.cancelled = false
 				this.showAlertDialog("Connection error", ["Server connection lost.", e.detail?.message])
