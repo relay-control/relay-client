@@ -21,7 +21,7 @@ export default class View extends HTMLElement {
 			let style = {}
 			if (options.templates) {
 				for (let template of options.templates) {
-					if ((template.tagName === 'Control' || template.tagName === tagName) && (!controlData.inherits || template.name === controlData.inherits)) {
+					if ((template.tagName === 'Control' || template.tagName === tagName) && template.name === controlData.inherits) {
 						Object.assign(style, structuredClone(template))
 					}
 				}
