@@ -8,7 +8,7 @@ export default class View extends HTMLElement {
 		'Slider': 'slider-control',
 	}
 
-	usedDevices = {}
+	joystickActions = []
 
 	static create(options) {
 		let view = document.createElement('panel-view')
@@ -134,19 +134,7 @@ export default class View extends HTMLElement {
 		}
 
 		if (action.deviceId) {
-			if (!(action.deviceId in this.usedDevices)) {
-				this.usedDevices[action.deviceId] = {
-					buttons: 0,
-					axes: [],
-				}
-			}
-			let device = this.usedDevices[action.deviceId]
-			if (action.type === Relay.InputType.button) {
-				device.buttons = Math.max(action.button, device.buttons)
-			}
-			if (action.type === Relay.InputType.axis && !device.axes.includes(action.axis)) {
-				device.axes.push(action.axis)
-			}
+			this.joystickActions.push(action)
 		}
 	}
 }

@@ -2,7 +2,7 @@ import View from 'view'
 
 export default class Grid extends HTMLElement {
 	views = []
-	usedDeviceResources = { }
+	joystickActions = []
 
 	static create(options) {
 		let grid = document.createElement('panel-grid')
@@ -18,15 +18,7 @@ export default class Grid extends HTMLElement {
 			if (viewProperties.tagName !== 'View') continue
 			viewProperties.templates = options.templates
 			let view = grid.addView(viewProperties)
-			for (let deviceId in view.usedDevices) {
-				let device = view.usedDevices[deviceId]
-				if (deviceId in grid.usedDeviceResources) {
-					let panelDevice = grid.usedDeviceResources[deviceId]
-					device.buttons = Math.max(panelDevice.buttons, device.buttons)
-					device.axes = [...(new Set([...panelDevice.axes, ...device.axes]))]
-				}
-				grid.usedDeviceResources[deviceId] = device
-			}
+			grid.joystickActions.push(...view.joystickActions)
 		}
 
 		grid.setView(1)

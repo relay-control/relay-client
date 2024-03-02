@@ -1,3 +1,4 @@
+import Relay from 'relay'
 import { ControlStyleTemplate, SliderStyle } from 'styles'
 import Stylesheet from 'stylesheet'
 import Grid from 'grid'
@@ -24,6 +25,7 @@ class AssetError extends Error {
 class Panel {
 	assets = []
 	modules = []
+	usedDeviceResources = {}
 
 	constructor(name, options) {
 		this.name = name
@@ -87,7 +89,21 @@ class Panel {
 			}
 		}
 
-		this.usedDeviceResources = { }
+		for (let action of grid.joystickActions) {
+			if (!(action.deviceId in this.usedDeviceResources)) {
+				this.usedDeviceResources[action.deviceId] = {
+					buttons: 0,
+					axes: [],
+				}
+			}
+			let device = this.usedDeviceResources[action.deviceId]
+			if (action.type === Relay.InputType.button) {
+				device.buttons = Math.max(action.button, device.buttons)
+			}
+			if (action.type === Relay.InputType.axis && !device.axes.includes(action.axis)) {
+				device.axes.push(action.axis)
+			}
+		}
 
 		await this.show()
 	}
