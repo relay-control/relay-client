@@ -76,7 +76,11 @@ const PanelApp = {
 
 			let lastPanel = localStorage.getItem('lastPanel')
 			if (lastPanel) {
-				this.loadPanel(lastPanel)
+				if (this.panels.includes(lastPanel)) {
+					this.loadPanel(lastPanel)
+				} else {
+					localStorage.removeItem('lastPanel')
+				}
 			}
 		},
 
