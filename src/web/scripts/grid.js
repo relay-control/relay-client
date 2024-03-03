@@ -57,8 +57,6 @@ export default class Grid extends HTMLElement {
 		this.style.backgroundColor = background.color
 		if (background.image) {
 			this.style.backgroundImage = `url(${getAssetUrl(background.image)})`
-			this.style.backgroundSize = 'cover'
-			this.style.backgroundPosition = 'center'
 		}
 	}
 }

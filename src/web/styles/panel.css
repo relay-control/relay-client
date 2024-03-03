@@ -10,6 +10,12 @@
 #panel-container > panel-grid {
 	display: block;
 	height: 100%;
+}
+
+panel-grid,
+.control,
+text-label span {
+	background-size: cover;
 	background-position: center;
 }
 
@@ -67,7 +73,6 @@ panel-view.active {
 	width: 100%;
 	height: 100%;
 	outline: none;
-	background-position: center;
 }
 
 .cell.circle.auto-size .container,

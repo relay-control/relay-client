@@ -136,7 +136,6 @@ const Stylable = (base = Object) => class extends base {
 		}
 		if (background.image) {
 			this.setStyleProperty('background-image', `url(${getAssetUrl(background.image)})`)
-			this.setStyleProperty('background-size', 'cover')
 		}
 		if (background.gradient) {
 			let gradient = []
