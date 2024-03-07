@@ -70,6 +70,8 @@ class Panel {
 				let selector
 				if (tagName === 'Control') {
 					selector = '.cell'
+				} else if (tagName === 'Grid') {
+					selector = 'panel-grid'
 				} else {
 					selector = tagName.toLowerCase() + '-control'
 				}

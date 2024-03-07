@@ -1,4 +1,5 @@
 import Relay from 'relay'
+import Grid from 'grid'
 
 export default class View extends HTMLElement {
 	static CustomElements = {
@@ -15,7 +16,9 @@ export default class View extends HTMLElement {
 
 		for (let controlData of options) {
 			let tagName = controlData.tagName
-			let control = view.addControl(tagName, controlData)
+
+			controlData.templates = options.templates
+			let control = tagName === 'Grid' ? view.addGrid(controlData) : view.addControl(tagName, controlData)
 
 			// manually "inherit" properties that won't be applied using CSS from relevant templates
 			let style = {}
@@ -42,6 +45,10 @@ export default class View extends HTMLElement {
 
 			if ('inherits' in controlData) {
 				control.addClass(controlData.inherits)
+			}
+
+			if (tagName === 'Grid') {
+				continue
 			}
 
 			if (style.square) {
@@ -99,6 +106,19 @@ export default class View extends HTMLElement {
 		}
 
 		return view
+	}
+
+	addGrid(options) {
+		let grid = Grid.create(options)
+		grid.classList.add('cell')
+		if (options.rowSpan) {
+			grid.rowSpan = options.rowSpan
+		}
+		if (options.columnSpan) {
+			grid.columnSpan = options.columnSpan
+		}
+		this.appendChild(grid)
+		return grid
 	}
 
 	addControl(type, options) {

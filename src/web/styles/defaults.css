@@ -1,9 +1,27 @@
 #panel-container > panel-grid {
-	background-color: #ccc;
+	--background-color: #ccc;
+}
+
+panel-grid {
+	--grid-rows: 1;
+	--grid-columns: 1;
 }
 
 panel-view {
 	--gap: 20px;
+
+	/* reset variables cascaded down from grid */
+	--row: auto;
+	--column: auto;
+	--row-span: 1;
+	--column-span: 1;
+	--background-color: initial;
+	--background-image: initial;
+	--border-style: initial;
+	--border-width: initial;
+	--border-color: initial;
+	--border-radius: initial;
+	--box-shadow: initial;
 }
 
 .cell {

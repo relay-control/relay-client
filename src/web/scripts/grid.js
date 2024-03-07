@@ -1,18 +1,22 @@
 import View from 'view'
+import { StylableBase, StyleElement } from 'styles'
 
-export default class Grid extends HTMLElement {
+export default class Grid extends StylableBase(HTMLElement) {
 	views = []
 	joystickActions = []
 
 	static create(options) {
 		let grid = document.createElement('panel-grid')
 
-		grid.numRows = options.rows
-		grid.numColumns = options.columns
-
-		if (options.background) {
-			grid.background = options.background
+		if (options.rows) {
+			grid.numRows = options.rows
 		}
+
+		if (options.columns) {
+			grid.numColumns = options.columns
+		}
+
+		grid.setStyle(options)
 
 		for (let viewProperties of options) {
 			if (viewProperties.tagName !== 'View') continue
@@ -21,7 +25,9 @@ export default class Grid extends HTMLElement {
 			grid.joystickActions.push(...view.joystickActions)
 		}
 
-		grid.setView(1)
+		if (grid.views.length > 0) {
+			grid.setView(1)
+		}
 
 		return grid
 	}
@@ -45,18 +51,31 @@ export default class Grid extends HTMLElement {
 		}
 	}
 
+	addClass(className) {
+		this.classList.add(className)
+	}
+
 	set numRows(numRows) {
-		this.style.setProperty('--grid-rows', numRows)
+		this.setStyleProperty('grid-rows', numRows)
 	}
 
 	set numColumns(numColumns) {
-		this.style.setProperty('--grid-columns', numColumns)
+		this.setStyleProperty('grid-columns', numColumns)
 	}
 
-	set background(background) {
-		this.style.backgroundColor = background.color
-		if (background.image) {
-			this.style.backgroundImage = `url(${getAssetUrl(background.image)})`
-		}
+	set row(row) {
+		this.setStyleProperty('row', row)
+	}
+
+	set column(column) {
+		this.setStyleProperty('column', column)
+	}
+
+	set rowSpan(span) {
+		this.setStyleProperty('row-span', span)
+	}
+
+	set columnSpan(span) {
+		this.setStyleProperty('column-span', span)
 	}
 }

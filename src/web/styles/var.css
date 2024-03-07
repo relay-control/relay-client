@@ -8,6 +8,7 @@ cell {
 	height: var(--height);
 }
 
+panel-grid,
 .control,
 text-label span {
 	background-color: var(--background-color);

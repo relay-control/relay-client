@@ -51,13 +51,8 @@ function parseColor(color, alpha) {
 	return color
 }
 
-const Stylable = (base = Object) => class extends base {
+const StylableBase = (base = Object) => class extends base {
 	styleProperties = [
-		'anchor',
-		'size',
-		'width',
-		'height',
-		'inset',
 		'background',
 		'border',
 		'shadows',
@@ -79,54 +74,6 @@ const Stylable = (base = Object) => class extends base {
 
 	removeStyleProperty(property) {
 		this.style.removeProperty('--' + property)
-	}
-
-	set anchor(anchor) {
-		if (anchor.point) {
-			let [vertical, horizontal] = anchor.point.split(/\s+/)
-			if (vertical && horizontal) {
-				if (!(vertical in FlexPositions && horizontal in FlexPositions)) {
-					throw new Error(`Invalid anchor point '${anchor.point}' in <${this.localName}>`)
-				}
-				this.setStyleProperty('vertical-alignment', FlexPositions[vertical])
-				this.setStyleProperty('horizontal-alignment', FlexPositions[horizontal])
-			} else if (anchor.point === 'center') {
-				this.setStyleProperty('vertical-alignment', 'center')
-				this.setStyleProperty('horizontal-alignment', 'center')
-			} else {
-				switch (anchor.point) {
-					case 'top':
-					case 'bottom':
-						this.setStyleProperty('vertical-alignment', FlexPositions[anchor.point])
-						break
-					case 'left':
-					case 'right':
-						this.setStyleProperty('horizontal-alignment', FlexPositions[anchor.point])
-						break
-					default:
-						throw new Error(`Invalid anchor point '${anchor.point}' in <${this.localName}>`)
-				}
-			}
-		}
-		this.setStyleProperty('offset-x', parseLength(anchor.offsetX))
-		this.setStyleProperty('offset-y', parseLength(anchor.offsetY))
-	}
-
-	set size(size) {
-		this.width = size
-		this.height = size
-	}
-
-	set width(width) {
-		this.setStyleProperty('width', parseLength(width))
-	}
-
-	set height(height) {
-		this.setStyleProperty('height', parseLength(height))
-	}
-
-	set inset(inset) {
-		this.setStyleProperty('inset', parseLength(inset))
 	}
 
 	set background(background) {
@@ -195,7 +142,68 @@ const Stylable = (base = Object) => class extends base {
 	}
 }
 
-class Style extends Stylable() {
+const Stylable = (base = Object) => class extends base {
+	styleProperties = [
+		'anchor',
+		'size',
+		'width',
+		'height',
+		'inset',
+		'background',
+		'border',
+		'shadows',
+	]
+
+	set anchor(anchor) {
+		if (anchor.point) {
+			let [vertical, horizontal] = anchor.point.split(/\s+/)
+			if (vertical && horizontal) {
+				if (!(vertical in FlexPositions && horizontal in FlexPositions)) {
+					throw new Error(`Invalid anchor point '${anchor.point}' in <${this.localName}>`)
+				}
+				this.setStyleProperty('vertical-alignment', FlexPositions[vertical])
+				this.setStyleProperty('horizontal-alignment', FlexPositions[horizontal])
+			} else if (anchor.point === 'center') {
+				this.setStyleProperty('vertical-alignment', 'center')
+				this.setStyleProperty('horizontal-alignment', 'center')
+			} else {
+				switch (anchor.point) {
+					case 'top':
+					case 'bottom':
+						this.setStyleProperty('vertical-alignment', FlexPositions[anchor.point])
+						break
+					case 'left':
+					case 'right':
+						this.setStyleProperty('horizontal-alignment', FlexPositions[anchor.point])
+						break
+					default:
+						throw new Error(`Invalid anchor point '${anchor.point}' in <${this.localName}>`)
+				}
+			}
+		}
+		this.setStyleProperty('offset-x', parseLength(anchor.offsetX))
+		this.setStyleProperty('offset-y', parseLength(anchor.offsetY))
+	}
+
+	set size(size) {
+		this.width = size
+		this.height = size
+	}
+
+	set width(width) {
+		this.setStyleProperty('width', parseLength(width))
+	}
+
+	set height(height) {
+		this.setStyleProperty('height', parseLength(height))
+	}
+
+	set inset(inset) {
+		this.setStyleProperty('inset', parseLength(inset))
+	}
+}
+
+class Style extends Stylable(StylableBase()) {
 	constructor(selector) {
 		super()
 		this.style = Stylesheet.createRule(selector)
@@ -294,7 +302,7 @@ class SliderStyle extends Style {
 	}
 }
 
-class StyleElement extends Stylable(HTMLElement) {
+class StyleElement extends Stylable(StylableBase(HTMLElement)) {
 	cssProperties = [
 		'alignItems',
 		'justifyContent',
@@ -383,7 +391,7 @@ export {
 	ControlStyle,
 	ControlStyleTemplate,
 	SliderStyle,
-	Stylable,
+	StylableBase,
 	StylableLabel,
 	StyleElement,
 	SliderThumbStyle,
