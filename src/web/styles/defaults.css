@@ -15,11 +15,16 @@ panel-view {
 	--column: auto;
 	--row-span: 1;
 	--column-span: 1;
+}
+
+panel-view,
+text-label,
+icon-label {
 	--background-color: initial;
 	--background-image: initial;
-	--border-style: initial;
-	--border-width: initial;
-	--border-color: initial;
+	--border-style: solid;
+	--border-width: 0;
+	--border-color: black;
 	--border-radius: initial;
 	--box-shadow: initial;
 }
@@ -43,7 +48,6 @@ slider-control {
 
 button-control {
 	--background-color: #fff;
-	--border-style: none;
 }
 
 text-label,
@@ -52,10 +56,6 @@ icon-label {
 	--font-size: 36px;
 	--vertical-alignment: center;
 	--horizontal-alignment: center;
-	--background-color: initial;
-	--background-image: initial;
-	--border-style: initial;
-	--box-shadow: initial;
 }
 
 .label, .text, .icon {
