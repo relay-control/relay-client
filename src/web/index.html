@@ -70,50 +70,50 @@
 			<p v-if="panels.length === 0" style="text-align: center; margin-top: 4em">No panels found</p>
 		</div>
 	</section>
-</div>
 
-<dialog ref="connectDialog">
-	<header>Connect to Relay server</header>
-	<form method="dialog" @submit.prevent="onSubmit">
+	<dialog ref="connectDialog">
+		<header>Connect to Relay server</header>
+		<form method="dialog" @submit.prevent="onSubmit">
+			<div class="content">
+				<div class="input">
+					<label>Address</label>
+					<input name="address" required v-model="address">
+				</div>
+				<div class="input">
+					<label>Port</label>
+					<input type="number" name="port" required min="1" max="65535" v-model="port">
+				</div>
+			</div>
+			<footer>
+				<button type="button" :disabled="connecting" @click="closeConnectDialog">Cancel</button>
+				<button type="submit" :disabled="connecting" class="primary">
+					<span class="loading" v-if="connecting"></span>
+					<span :style="{ visibility: connecting ? 'hidden' : 'visible' }">Connect</span>
+				</button>
+			</footer>
+		</form>
+	</dialog>
+
+	<dialog ref="alertDialog">
+		<header>{{ dialogs.alert.title }}</header>
 		<div class="content">
-			<div class="input">
-				<label>Address</label>
-				<input name="address" required v-model="address">
-			</div>
-			<div class="input">
-				<label>Port</label>
-				<input type="number" name="port" required min="1" max="65535" v-model="port">
-			</div>
+			<p v-for="line in dialogs.alert.message">{{ line }}</p>
 		</div>
 		<footer>
-			<button type="button" :disabled="connecting" @click="closeConnectDialog">Cancel</button>
-			<button type="submit" :disabled="connecting" class="primary">
-				<span class="loading" v-if="connecting"></span>
-				<span :style="{ visibility: connecting ? 'hidden' : 'visible' }">Connect</span>
-			</button>
+			<button class="primary" @click="closeAlertDialog">OK</button>
 		</footer>
-	</form>
-</dialog>
+	</dialog>
 
-<dialog ref="alertDialog">
-	<header>{{ dialogs.alert.title }}</header>
-	<div class="content">
-		<p v-for="line in dialogs.alert.message">{{ line }}</p>
-	</div>
-	<footer>
-		<button class="primary" @click="closeAlertDialog">OK</button>
-	</footer>
-</dialog>
-
-<dialog ref="reconnectingDialog">
-	<header>Disconnected from server</header>
-	<div class="content centered">
-		<div class="loading">Reconnecting</div>
-	</div>
-	<footer>
-		<button @click="cancelReconnect">Cancel</button>
-	</footer>
-</dialog>
+	<dialog ref="reconnectingDialog">
+		<header>Disconnected from server</header>
+		<div class="content centered">
+			<div class="loading">Reconnecting</div>
+		</div>
+		<footer>
+			<button @click="cancelReconnect">Cancel</button>
+		</footer>
+	</dialog>
+</div>
 
 </div>
 

@@ -12,9 +12,6 @@ body {
 	height: 100vh;
 	user-select: none;
 	cursor: default;
-	--border: 1px solid var(--border-color);
-	--border-color: rgba(34, 36, 38, 0.15);
-	--border-radius: 0.28571429rem;
 }
 
 #app {
@@ -26,6 +23,9 @@ body {
 	flex-flow: column;
 	height: 100%;
 	background: #eee;
+	--border: 1px solid var(--border-color);
+	--border-color: rgba(34, 36, 38, 0.15);
+	--border-radius: 0.28571429rem;
 }
 
 #menu {
