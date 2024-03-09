@@ -26,45 +26,43 @@ body {
 	--border: 1px solid var(--border-color);
 	--border-color: rgba(34, 36, 38, 0.15);
 	--border-radius: 0.28571429rem;
-}
 
-#menu {
 	font-family: 'Open Sans';
-}
 
-#menu > header {
-	flex: 0 0 auto;
-	height: 100px;
-	background: #333;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	color: white;
-}
+	> header {
+		flex: 0 0 auto;
+		height: 100px;
+		background: #333;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: white;
+	}
 
-header.with-button {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
+	header.with-button {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
 
-#menu section {
-	flex: 1 1 auto;
-	background: white;
-	width: 500px;
-	padding: 1em 4em;
-	margin: auto;
-	justify-content: center;
-	flex-direction: column;
-	overflow: auto;
-}
+	section {
+		flex: 1 1 auto;
+		background: white;
+		width: 500px;
+		padding: 1em 4em;
+		margin: auto;
+		justify-content: center;
+		flex-direction: column;
+		overflow: auto;
 
-#menu section header {
-	margin: 1em 0;
-}
+		> header {
+			margin-bottom: 2em;
+		}
 
-#menu section > header {
-	margin-bottom: 2em;
+		header {
+			margin: 1em 0;
+		}
+	}
 }
 
 #menu button,
@@ -83,23 +81,20 @@ dialog button {
 	line-height: 1em;
 	border-radius: var(--border-radius);
 	transition: background-color 0.1s ease, color 0.1s ease;
-}
 
-#menu button:active,
-dialog button:active {
-	background-color: #babbbc;
-	color: rgba(0, 0, 0, 0.9);
-}
+	&:active {
+		background-color: #babbbc;
+		color: rgba(0, 0, 0, 0.9);
+	}
 
-#menu button.primary,
-dialog button.primary {
-	background-color: #2185D0;
-	color: white;
-}
+	&.primary {
+		background-color: #2185D0;
+		color: white;
 
-#menu button.primary:enabled:active,
-dialog button.primary:enabled:active {
-	background-color: #1a69a4;
+		&:enabled:active {
+			background-color: #1a69a4;
+		}
+	}
 }
 
 dialog button:disabled {
@@ -121,32 +116,32 @@ h3 {
 	border: var(--border);
 	box-shadow: 0px 1px 2px 0 var(--border-color);
 	border-radius: var(--border-radius);
-}
 
-#panel-list li {
-	padding: 1em;
-	font-size: 1rem;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	border-top: var(--border);
-	transition: 0.1s background-color ease;
-}
+	li {
+		padding: 1em;
+		font-size: 1rem;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		border-top: var(--border);
+		transition: 0.1s background-color ease;
 
-#panel-list li:active {
-	background: rgba(0, 0, 0, 0.05);
-	color: rgba(0, 0, 0, 0.9);
-}
+		&:active {
+			background: rgba(0, 0, 0, 0.05);
+			color: rgba(0, 0, 0, 0.9);
+		}
 
-#panel-list li:first-child {
-	border-top: none;
-	border-top-left-radius: var(--border-radius);
-	border-top-right-radius: var(--border-radius);
-}
+		&:first-child {
+			border-top: none;
+			border-top-left-radius: var(--border-radius);
+			border-top-right-radius: var(--border-radius);
+		}
 
-#panel-list li:last-child {
-    border-bottom-left-radius: var(--border-radius);
-    border-bottom-right-radius: var(--border-radius);
+		&:last-child {
+			border-bottom-left-radius: var(--border-radius);
+			border-bottom-right-radius: var(--border-radius);
+		}
+	}
 }
 
 .fa-spin {
@@ -159,14 +154,14 @@ h3 {
 
 .loading {
 	position: absolute;
-}
 
-.loading::before {
-	content: '';
-	border: 0.2em solid rgba(0, 0, 0, 0.15);
-	border-radius: 50%;
-	animation: rotate 0.6s linear infinite;
-	box-sizing: border-box;
+	&::before {
+		content: '';
+		border: 0.2em solid rgba(0, 0, 0, 0.15);
+		border-radius: 50%;
+		animation: rotate 0.6s linear infinite;
+		box-sizing: border-box;
+	}
 }
 
 button span.loading {
@@ -177,12 +172,12 @@ button span.loading {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-}
 
-button span.loading::before {
-	width: 24px;
-	height: 24px;
-	border-top-color: white;
+	&::before {
+		width: 24px;
+		height: 24px;
+		border-top-color: white;
+	}
 }
 
 @keyframes rotate {

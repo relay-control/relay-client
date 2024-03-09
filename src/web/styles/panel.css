@@ -1,15 +1,15 @@
 #panel-container {
 	height: 100%;
 	display: none;
-}
 
-#panel-container.shown {
-	display: revert;
-}
+	&.shown {
+		display: revert;
+	}
 
-#panel-container > panel-grid {
-	display: block;
-	height: 100%;
+	> panel-grid {
+		display: block;
+		height: 100%;
+	}
 }
 
 panel-grid,
