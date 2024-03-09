@@ -58,6 +58,10 @@ icon-label {
 	--horizontal-alignment: center;
 }
 
+text-label {
+	--text-align: center;
+}
+
 .label, .text, .icon {
 	padding: 10px;
 }

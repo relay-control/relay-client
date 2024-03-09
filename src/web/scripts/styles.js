@@ -163,6 +163,7 @@ const Stylable = (base = Object) => class extends base {
 				}
 				this.setStyleProperty('vertical-alignment', FlexPositions[vertical])
 				this.setStyleProperty('horizontal-alignment', FlexPositions[horizontal])
+				this.setStyleProperty('text-align', horizontal)
 			} else if (anchor.point === 'center') {
 				this.setStyleProperty('vertical-alignment', 'center')
 				this.setStyleProperty('horizontal-alignment', 'center')
@@ -175,6 +176,7 @@ const Stylable = (base = Object) => class extends base {
 					case 'left':
 					case 'right':
 						this.setStyleProperty('horizontal-alignment', FlexPositions[anchor.point])
+						this.setStyleProperty('text-align', anchor.point)
 						break
 					default:
 						throw new Error(`Invalid anchor point '${anchor.point}' in <${this.localName}>`)

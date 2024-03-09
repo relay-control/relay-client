@@ -33,6 +33,10 @@ icon-label {
 	text-shadow: var(--text-shadow);
 }
 
+text-label span {
+	text-align: var(--text-align);
+}
+
 input[type=range]::-moz-range-thumb {
 	width: var(--thumb-width);
 	height: var(--thumb-height);
