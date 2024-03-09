@@ -34,6 +34,7 @@ panel-view {
 	padding: 0;
 }
 
+state-control,
 button-control,
 slider-control {
 	--width: 100%;
